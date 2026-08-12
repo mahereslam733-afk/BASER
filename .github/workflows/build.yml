@@ -14,10 +14,20 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew || true
-      - name: Build APK
-        run: ./gradlew assembleRelease || gradle assembleRelease
+
+      - name: Find and Build Gradle Project
+        run: |
+          GRADLE_DIR=$(find . -name "gradlew" -exec dirname {} \;)
+          if [ -n "$GRADLE_DIR" ]; then
+            cd "$GRADLE_DIR"
+            chmod +x gradlew
+            ./gradlew assembleRelease
+          else
+            GRADLE_BUILD=$(find . -name "build.gradle*" -exec dirname {} \; | head -n 1)
+            cd "$GRADLE_BUILD"
+            gradle assembleRelease
+          fi
+
       - uses: actions/upload-artifact@v4
         with:
           name: app-release
