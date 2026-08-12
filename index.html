@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<meta name="description" content="أبصار AI - مساعد بصري عربي للمكفوفين">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+<title>أبصار AI</title>
+</head>
+<body>
+<main class="app" aria-label="أبصار AI">
+  <header>
+    <div>
+      <h1>أبصار AI</h1>
+      <p>مساعدك اليومي بالصوت</p>
+    </div>
+    <button class="icon-btn" id="speakTitle" aria-label="قراءة اسم التطبيق">🔊</button>
+  </header>
+
+  <section class="status" aria-live="polite">
+    <span id="statusDot"></span><span id="statusText">جاهز للمساعدة</span>
+  </section>
+
+  <section class="grid" aria-label="الخدمات الأساسية">
+    <button class="feature" data-action="read"><span>📄</span><strong>قراءة النصوص</strong><small>تصوير ورقة وقراءتها</small></button>
+    <button class="feature" data-action="objects"><span>📷</span><strong>التعرف على الأشياء</strong><small>التعرف البصري بالكاميرا</small></button>
+    <button class="feature" data-action="currency"><span>💵</span><strong>التعرف على العملات</strong><small>مساعدة في تمييز العملة</small></button>
+    <button class="feature" data-action="volunteer"><span>🧑‍🤝‍🧑</span><strong>مساعدة بشرية</strong><small>طلب متطوع</small></button>
+    <button class="feature" data-action="navigate"><span>🧭</span><strong>الملاحة والتوجيه</strong><small>فتح التوجيه الصوتي</small></button>
+    <button class="feature" data-action="audio"><span>🎧</span><strong>المحتوى الصوتي</strong><small>تشغيل محتوى مسموع</small></button>
+    <button class="feature" data-action="daily"><span>🛠️</span><strong>الخدمات اليومية</strong><small>الهاتف والرسائل والخدمات</small></button>
+    <button class="feature" data-action="offline"><span>📴</span><strong>دعم بدون إنترنت</strong><small>الأدوات المتاحة محليًا</small></button>
+  </section>
+
+  <section class="voice">
+    <button id="voiceBtn" class="voice-btn" aria-label="اضغط للتحدث">🎙️<span>اضغط وتكلم</span></button>
+    <p id="heard" aria-live="polite">يمكنك قول: اقرأ النص، تعرف على الشيء، اطلب متطوع، أو الملاحة.</p>
+  </section>
+
+  <section class="camera-panel" id="cameraPanel" hidden>
+    <video id="camera" autoplay playsinline></video>
+    <canvas id="canvas" hidden></canvas>
+    <div class="camera-actions">
+      <button id="capture">التقاط</button>
+      <button id="closeCamera">إغلاق</button>
+    </div>
+    <input id="fileInput" type="file" accept="image/*" capture="environment" hidden>
+  </section>
+
+  <footer>
+    <button id="installBtn" hidden>تثبيت التطبيق</button>
+    <button id="helpBtn">❓ المساعدة الصوتية</button>
+  </footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

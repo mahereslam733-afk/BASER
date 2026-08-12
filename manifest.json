@@ -1,0 +1,11 @@
+{
+  "name":"أبصار AI - مساعد المكفوفين",
+  "short_name":"أبصار AI",
+  "start_url":".",
+  "display":"standalone",
+  "background_color":"#000000",
+  "theme_color":"#000000",
+  "lang":"ar",
+  "dir":"rtl",
+  "description":"تطبيق عربي مساعد للمكفوفين"
+}
