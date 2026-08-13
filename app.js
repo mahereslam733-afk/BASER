@@ -49,7 +49,7 @@ function speakCloudFallback(text) {
 // الترحيب عند الفتح
 window.addEventListener('load', () => {
     setTimeout(() => {
-        speak("أهلاً بك في تطبيق بصير. المراحل الخمسة مفعلة وجاهزة للاستخدام.");
+        speak("أهلاً بك في تطبيق بصير. المراحل الست مفعلة وجاهزة للاستخدام.");
     }, 500);
 });
 
@@ -225,7 +225,7 @@ if (sendLocationBtn) {
     });
 }
 
-// --- المرحلة الخامسة: الملاحة والاتجاهات (كاملة) ---
+// --- المرحلة الخامسة: الملاحة والاتجاهات ---
 const compassBtn = document.getElementById('compassBtn');
 const whereAmIBtn = document.getElementById('whereAmIBtn');
 
@@ -270,5 +270,31 @@ if (whereAmIBtn) {
         } else {
             speak("خدمة الموقع الجغرافي غير مدعومة.");
         }
+    });
+}
+
+// --- المرحلة السادسة: المكتبة الصوتية (كاملة) ---
+const playManualBtn = document.getElementById('playManualBtn');
+const playTipsBtn = document.getElementById('playTipsBtn');
+const stopAudioBtn = document.getElementById('stopAudioBtn');
+
+if (playManualBtn) {
+    playManualBtn.addEventListener('click', () => {
+        speak("مرحباً بك في الدليل الصوتي التفاعلي لتطبيق بصير. يتكون التطبيق من أقسام رئيسية تساعدك على القراءة والتعرف على الأشياء والعملات والاتجاهات. يمكنك التنقل بين الأقسام بسهولة عبر الضغط المزدوج أو إشارات الصوت.");
+    });
+}
+
+if (playTipsBtn) {
+    playTipsBtn.addEventListener('click', () => {
+        speak("إليك نصيحة للحصول على أفضل دقة: عند التقاط صورة للنصوص أو العملات، احرص على إبعاد الهاتف مسافة ثلاثين سنتيمتراً وتأكد من وجود إضاءة كافية حولك.");
+    });
+}
+
+if (stopAudioBtn) {
+    stopAudioBtn.addEventListener('click', () => {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+        statusBox.innerText = "تم إيقاف الصوت بنجاح.";
     });
 }
