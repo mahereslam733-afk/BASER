@@ -49,7 +49,7 @@ function speakCloudFallback(text) {
 // الترحيب عند الفتح
 window.addEventListener('load', () => {
     setTimeout(() => {
-        speak("أهلاً بك في تطبيق بصير. المراحل الست مفعلة وجاهزة للاستخدام.");
+        speak("أهلاً بك في تطبيق بصير. المراحل السبع مفعلة وجاهزة للاستخدام.");
     }, 500);
 });
 
@@ -273,14 +273,14 @@ if (whereAmIBtn) {
     });
 }
 
-// --- المرحلة السادسة: المكتبة الصوتية (كاملة) ---
+// --- المرحلة السادسة: المكتبة الصوتية ---
 const playManualBtn = document.getElementById('playManualBtn');
 const playTipsBtn = document.getElementById('playTipsBtn');
 const stopAudioBtn = document.getElementById('stopAudioBtn');
 
 if (playManualBtn) {
     playManualBtn.addEventListener('click', () => {
-        speak("مرحباً بك في الدليل الصوتي التفاعلي لتطبيق بصير. يتكون التطبيق من أقسام رئيسية تساعدك على القراءة والتعرف على الأشياء والعملات والاتجاهات. يمكنك التنقل بين الأقسام بسهولة عبر الضغط المزدوج أو إشارات الصوت.");
+        speak("مرحباً بك في الدليل الصوتي التفاعلي لتطبيق بصير. يتكون التطبيق من أقسام رئيسية تساعدك على القراءة والتعرف على الأشياء والعملات والاتجاهات بسهولة تامّة.");
     });
 }
 
@@ -296,5 +296,66 @@ if (stopAudioBtn) {
             window.speechSynthesis.cancel();
         }
         statusBox.innerText = "تم إيقاف الصوت بنجاح.";
+    });
+}
+
+// --- المرحلة السابعة: الخدمات اليومية والألوان (كاملة) ---
+const colorBtn = document.getElementById('colorBtn');
+const colorCameraInput = document.getElementById('colorCameraInput');
+const dateTimeBtn = document.getElementById('dateTimeBtn');
+
+if (colorBtn && colorCameraInput) {
+    colorBtn.addEventListener('click', () => {
+        speak("وجه الكاميرا نحو القماش أو العنصر للتعرف على لونه.");
+        setTimeout(() => colorCameraInput.click(), 1000);
+    });
+
+    colorCameraInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        speak("تم التقاط الصورة، جاري تحليل اللون الأساسي...");
+
+        const img = new Image();
+        img.src = URL.createObjectURL(file);
+        img.onload = () => {
+            const canvas = document.getElementById('colorCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+
+            // أخذ عينة من مركز الصورة
+            const pixelData = ctx.getImageData(Math.floor(img.width / 2), Math.floor(img.height / 2), 1, 1).data;
+            const r = pixelData[0];
+            const g = pixelData[1];
+            const b = pixelData[2];
+
+            const colorName = getColorName(r, g, b);
+            speak(`اللون الأغلب في منتصف الصورة هو: ${colorName}`);
+        };
+    });
+}
+
+// دالة تحليل قيم RGB ومعرفة اسم اللون باللغة العربية
+function getColorName(r, g, b) {
+    if (r < 50 && g < 50 && b < 50) return "الأسود";
+    if (r > 200 && g > 200 && b > 200) return "الأبيض";
+    if (r > 150 && g < 100 && b < 100) return "الأحمر";
+    if (g > 150 && r < 100 && b < 100) return "الأخضر";
+    if (b > 150 && r < 100 && g < 100) return "الأزرق";
+    if (r > 180 && g > 180 && b < 100) return "الأصفر";
+    if (r > 180 && g < 100 && b > 180) return "الوردي أو البنفسجي";
+    if (r > 150 && g > 100 && b < 80) return "البرتقالي";
+    return "لون متدرج، يرجى ضبط الإضاءة وتصوير القماش مباشرة";
+}
+
+// معرفة الوقت والتاريخ
+if (dateTimeBtn) {
+    dateTimeBtn.addEventListener('click', () => {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const dateStr = now.toLocaleDateString('ar-EG', options);
+        const timeStr = now.toLocaleTimeString('ar-EG');
+        speak(`اليوم هو ${dateStr}، والساعة الآن هي ${timeStr}.`);
     });
 }
