@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تطبيق بصير - BASER</title>
-    <!-- محرك التيسراكت القوي لقراءة النصوص بشكل مباشر -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <title>تطبيق بصير - النسخة الشاملة والدقيقة (المراحل 1 - 8)</title>
     <style>
         * {
             box-sizing: border-box;
@@ -68,8 +66,8 @@
         }
         .btn-large {
             width: 100%;
-            padding: 18px;
-            font-size: 1.3rem;
+            padding: 20px;
+            font-size: 1.4rem;
             font-weight: bold;
             border: 3px solid #FFFFFF;
             border-radius: 15px;
@@ -105,7 +103,7 @@
             border: 3px solid #FFFF00;
             border-radius: 10px;
             padding: 15px;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             color: #00FF00;
             margin-top: 15px;
             text-align: center;
@@ -130,7 +128,7 @@
         <input type="range" id="speedRange" min="0.5" max="1.5" step="0.1" value="0.9" aria-label="تغيير سرعة الصوت">
     </div>
 
-    <!-- الشاشة الرئيسية (تغطي الـ 8 أقسام) -->
+    <!-- الشاشة الرئيسية -->
     <main id="homeScreen" class="screen active">
         <div class="grid-container">
             <button class="btn-large" data-screen="ocrScreen" aria-label="القسم الأول: قراءة النصوص والمستندات">القسم الأول: قراءة النصوص</button>
@@ -155,7 +153,7 @@
     <section id="objectScreen" class="screen">
         <h2>قسم التعرف على الأشياء</h2>
         <p style="font-size: 1.2rem;">وجه الكاميرا نحو الشيء المطلوب التعرف عليه.</p>
-        <button id="captureObjectBtn" class="action-btn btn-green" aria-label="التقاط صورة للتعرف على الشيء">التعرف على الشيء أمامك</button>
+        <button id="captureObjectBtn" class="action-btn btn-green" aria-label="التقاط صورة للتعرف على الشيء بالذكاء الاصطناعي">التعرف على الشيء أمامك</button>
     </section>
 
     <!-- 3. شاشة التعرف على العملات -->
@@ -169,7 +167,7 @@
     <section id="humanHelpScreen" class="screen">
         <h2>قسم المساعدة البشرية والطوارئ</h2>
         <p style="font-size: 1.2rem;">الاتصال المباشر بالطوارئ أو تحديد موقعك الجغرافي.</p>
-        <button id="callVolunteerBtn" class="action-btn btn-red" aria-label="اتصال مباشر بالطوارئ">الاتصال المباشر بالطوارئ</button>
+        <button id="callVolunteerBtn" class="action-btn btn-red" aria-label="اتصال مباشر بالمساعد أو المتطوع">الاتصال بالمساعد المباشر</button>
         <button id="sendLocationBtn" class="action-btn btn-blue" aria-label="تحديد ومشاركة موقعي الجغرافي للطوارئ">تحديد موقعي الجغرافي</button>
     </section>
 
@@ -206,17 +204,18 @@
         <button id="resetAppBtn" class="action-btn btn-red" aria-label="إعادة تحميل وتحديث التطبيق">إعادة تحميل التطبيق</button>
     </section>
 
-    <!-- مدخلات الكاميرا المخفية -->
+    <!-- مدخلات الكاميرا الخفية -->
     <input type="file" id="ocrCameraInput" accept="image/*" capture="environment">
     <input type="file" id="objectCameraInput" accept="image/*" capture="environment">
     <input type="file" id="moneyCameraInput" accept="image/*" capture="environment">
     <input type="file" id="colorCameraInput" accept="image/*" capture="environment">
 
-    <!-- صندوق الإشعارات والنطق -->
+    <!-- صندوق الإشعارات والقراءة -->
     <div id="status-box" aria-live="assertive" role="status">
-        مرحباً بك في تطبيق بصير. تم تحميل كافة المراحل الثمانية بنجاح!
+        مرحباً بك في تطبيق بصير. تم تحميل جميع المراحل الثماني بنجاح!
     </div>
 
+    <!-- لوحة قماشية خفية لمعالجة الألوان -->
     <canvas id="colorCanvas" style="display:none;"></canvas>
 
     <script src="app.js"></script>
