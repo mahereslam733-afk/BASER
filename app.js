@@ -87,7 +87,7 @@ if (backBtn) {
     });
 }
 
-// --- 1. الوظيفة الأولى: قراءة النصوص (OCR) ---
+// --- 1. قراءة النصوص OCR ---
 const captureOcrBtn = document.getElementById('captureOcrBtn');
 const ocrCameraInput = document.getElementById('ocrCameraInput');
 
@@ -126,7 +126,7 @@ if (captureOcrBtn && ocrCameraInput) {
     });
 }
 
-// --- 2. الوظيفة الثانية: التعرف على الأشياء (المرحلة الثالثة) ---
+// --- 2. التعرف على الأشياء ---
 const captureObjectBtn = document.getElementById('captureObjectBtn');
 const objectCameraInput = document.getElementById('objectCameraInput');
 
@@ -142,7 +142,6 @@ if (captureObjectBtn && objectCameraInput) {
 
         speak("تم التقاط الصورة، جاري تحليل الشيء أمامك...");
         try {
-            // استخدام نموذج تحليل العناصر السحابي المباشر
             const reader = new FileReader();
             reader.onload = async function() {
                 const response = await fetch("https://api-inference.huggingface.co/models/google/vit-base-patch16-224", {
@@ -153,13 +152,12 @@ if (captureObjectBtn && objectCameraInput) {
                 if (response.ok) {
                     const result = await response.json();
                     if (result && result.length > 0) {
-                        const topLabel = result[0].label;
-                        speak(`تم التعرف على العنصر أمامك: ${topLabel}`);
+                        speak(`تم التعرف على العنصر أمامك: ${result[0].label}`);
                     } else {
-                        speak("لم نتمكن من التعرف على الشيء بدقة، يرجى المحاولة في إضاءة أفضل.");
+                        speak("لم نتمكن من التعرف على الشيء بدقة.");
                     }
                 } else {
-                    speak("السيرفر مشغول حالياً، يرجى أخذ صورة أخرى.");
+                    speak("السيرفر مشغول حالياً.");
                 }
             };
             reader.readAsArrayBuffer(file);
@@ -169,7 +167,7 @@ if (captureObjectBtn && objectCameraInput) {
     });
 }
 
-// --- 3. الوظيفة الثالثة: التعرف على العملة المصرية (المرحلة الثالثة) ---
+// --- 3. التعرف على العملة المصرية ---
 const captureMoneyBtn = document.getElementById('captureMoneyBtn');
 const moneyCameraInput = document.getElementById('moneyCameraInput');
 
@@ -197,7 +195,7 @@ if (captureMoneyBtn && moneyCameraInput) {
                     if (result && result.length > 0 && result[0].score > 0.4) {
                         speak("تم التعرف على ورقة نقدية، يرجى التأكد من استقامة الورقة للتحقق التام من الفئة.");
                     } else {
-                        speak("غير متأكد من فئة العملة، اضبط الإضاءة وصور كاملاً الورقة النقدية.");
+                        speak("غير متأكد من فئة العملة، اضبط الإضاءة وصور كامل الورقة النقدية.");
                     }
                 } else {
                     speak("خدمة التعرف على العملات غير متاحة مؤقتاً.");
@@ -206,6 +204,40 @@ if (captureMoneyBtn && moneyCameraInput) {
             reader.readAsArrayBuffer(file);
         } catch (e) {
             speak("تعذر الاتصال بمركز معالجة العملات.");
+        }
+    });
+}
+
+// --- 4. المساعدة البشرية والطوارئ (المرحلة الرابعة) ---
+const callVolunteerBtn = document.getElementById('callVolunteerBtn');
+const sendLocationBtn = document.getElementById('sendLocationBtn');
+
+if (callVolunteerBtn) {
+    callVolunteerBtn.addEventListener('click', () => {
+        speak("جاري الاتصال بالمساعد المباشر الآن.");
+        setTimeout(() => {
+            // فتح واجهة الاتصال الهاتفي بالرقم المحدد للأنظمة والطوارئ
+            window.location.href = "tel:122";
+        }, 1200);
+    });
+}
+
+if (sendLocationBtn) {
+    sendLocationBtn.addEventListener('click', () => {
+        speak("جاري تحديد موقعك الجغرافي عبر الأقمار الصناعية...");
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const lat = position.coords.latitude.toFixed(4);
+                const lon = position.coords.longitude.toFixed(4);
+                const mapsUrl = `https://maps.google.com/?q=${lat},${lon}`;
+                
+                speak(`تم تحديد موقعك بنجاح. خط العرض ${lat} وخط الطول ${lon}. يمكنك مشاركة رابط الخرائط مع المتطوع.`);
+            }, (error) => {
+                speak("لم نتمكن من الحصول على الموقع، يرجى التأكد من تفعيل خدمة الـ GPS في الهاتف.");
+            });
+        } else {
+            speak("خدمة تحديد الموقع غير مدعومة على جهازك.");
         }
     });
 }
