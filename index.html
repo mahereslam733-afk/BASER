@@ -1,441 +1,224 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    >
-
-    <meta
-        name="description"
-        content="تطبيق بصير الشامل لمساعدة المكفوفين"
-    >
-
-    <title>بصير - تطبيق مساعد للمكفوفين</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تطبيق بصير - النسخة الشاملة والدقيقة (المراحل 1 - 8)</title>
     <style>
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family:
-                "Segoe UI",
-                Tahoma,
-                Arial,
-                sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        html,
         body {
-            width: 100%;
-            min-height: 100%;
-        }
-
-        body {
-            background: #000000;
-            color: #ffffff;
+            background-color: #000000;
+            color: #FFFFFF;
             padding: 15px;
-            min-height: 100vh;
-        }
-
-        /* =========================
-           الرأس
-        ========================= */
-
-        header {
-            width: 100%;
-            min-height: 70px;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            border-bottom: 4px solid #ffff00;
-
-            padding: 10px 0;
-            margin-bottom: 15px;
-        }
-
-        h1 {
-            color: #ffff00;
-            font-size: 2rem;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .top-btn {
-            background: #222222;
-            color: #ffff00;
-
-            border: 2px solid #ffff00;
-            border-radius: 10px;
-
-            padding: 10px 15px;
-
-            font-size: 1rem;
-            font-weight: bold;
-
-            cursor: pointer;
-        }
-
-        .top-btn:focus,
-        .top-btn:active {
-            background: #ffff00;
-            color: #000000;
-            outline: 3px solid #ffffff;
-        }
-
-        /* =========================
-           سرعة الصوت
-        ========================= */
-
-        .speed-box {
-            width: 100%;
-
-            background: #111111;
-
-            border: 2px solid #ffffff;
-            border-radius: 12px;
-
-            padding: 12px;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            gap: 15px;
-
-            margin-bottom: 15px;
-        }
-
-        .speed-box label {
-            color: #ffff00;
-            font-size: 1.15rem;
-            font-weight: bold;
-        }
-
-        .speed-box input {
-            width: 50%;
-            min-height: 30px;
-        }
-
-        /* =========================
-           الشاشات
-        ========================= */
-
-        .screen {
-            display: none;
-        }
-
-        .screen.active {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            width: 100%;
+            min-height: 100vh;
         }
-
-        .screen h2 {
-            color: #ffff00;
-            font-size: 1.7rem;
-            margin-bottom: 5px;
+        header {
+            text-align: center;
+            padding: 10px 0;
+            border-bottom: 4px solid #FFFF00;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-
-        .screen p {
-            line-height: 1.7;
+        h1 {
+            color: #FFFF00;
+            font-size: 2rem;
         }
+        .top-btn {
+            background: #333333;
+            color: #FFFF00;
+            border: 2px solid #FFFF00;
+            padding: 8px 15px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .screen { display: none; }
+        .screen.active { display: flex; flex-direction: column; gap: 15px; flex-grow: 1; }
 
-        /* =========================
-           الشاشة الرئيسية
-        ========================= */
+        .speed-box {
+            background: #111111;
+            padding: 10px;
+            border: 2px solid #FFFFFF;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .speed-box label { font-size: 1.2rem; color: #FFFF00; }
+        .speed-box input { width: 50%; height: 25px; }
 
         .grid-container {
-            width: 100%;
-
             display: grid;
-
             grid-template-columns: 1fr;
-
             gap: 12px;
+            flex-grow: 1;
         }
-
         .btn-large {
             width: 100%;
-
-            min-height: 80px;
-
-            padding: 18px;
-
-            font-size: 1.3rem;
+            padding: 20px;
+            font-size: 1.4rem;
             font-weight: bold;
-
-            text-align: right;
-
-            background: #111111;
-            color: #ffffff;
-
-            border: 3px solid #ffffff;
+            border: 3px solid #FFFFFF;
             border-radius: 15px;
-
             cursor: pointer;
+            text-align: right;
+            background-color: #111111;
+            color: #FFFFFF;
         }
-
-        .btn-large:hover {
-            background: #222222;
-        }
-
-        .btn-large:focus,
-        .btn-large:active {
-            background: #ffff00;
+        .btn-large:focus, .btn-large:active {
+            background-color: #FFFF00;
             color: #000000;
-
-            outline: 4px solid #ffffff;
+            outline: none;
         }
-
-        /* =========================
-           أزرار العمليات
-        ========================= */
 
         .action-btn {
-            width: 100%;
-
-            min-height: 70px;
-
-            padding: 18px;
-
-            font-size: 1.35rem;
+            padding: 22px;
+            font-size: 1.5rem;
             font-weight: bold;
-
             border-radius: 15px;
-            border: 3px solid #ffffff;
-
+            border: 3px solid #FFFFFF;
             cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
         }
-
-        .action-btn:focus,
-        .action-btn:active {
-            outline: 4px solid #ffff00;
-            transform: scale(0.99);
-        }
-
-        .btn-blue {
-            background: #0055ff;
-            color: #ffffff;
-        }
-
-        .btn-green {
-            background: #008000;
-            color: #ffffff;
-        }
-
-        .btn-yellow {
-            background: #d4a000;
-            color: #000000;
-        }
-
-        .btn-red {
-            background: #cc0000;
-            color: #ffffff;
-        }
-
-        .btn-purple {
-            background: #800080;
-            color: #ffffff;
-        }
-
-        /* =========================
-           صندوق الحالة
-        ========================= */
+        .btn-blue { background-color: #0055FF; color: #FFFFFF; }
+        .btn-green { background-color: #008000; color: #FFFFFF; }
+        .btn-yellow { background-color: #D4A000; color: #000000; }
+        .btn-red { background-color: #CC0000; color: #FFFFFF; }
+        .btn-purple { background-color: #800080; color: #FFFFFF; }
 
         #status-box {
-            width: 100%;
-
-            background: #111111;
-
-            border: 3px solid #ffff00;
-            border-radius: 12px;
-
+            background-color: #111111;
+            border: 3px solid #FFFF00;
+            border-radius: 10px;
             padding: 15px;
-
-            margin-top: 20px;
-
-            min-height: 90px;
-
-            color: #00ff00;
-
-            font-size: 1.25rem;
-
-            line-height: 1.7;
-
+            font-size: 1.4rem;
+            color: #00FF00;
+            margin-top: 15px;
             text-align: center;
-
+            min-height: 80px;
+            line-height: 1.5;
             word-break: break-word;
         }
-
-        /* =========================
-           إخفاء ملفات الكاميرا
-        ========================= */
-
-        input[type="file"] {
-            display: none;
-        }
-
-        /* =========================
-           تحسين الهاتف
-        ========================= */
-
-        @media (max-width: 600px) {
-
-            body {
-                padding: 10px;
-            }
-
-            h1 {
-                font-size: 1.6rem;
-            }
-
-            .btn-large {
-                min-height: 75px;
-                font-size: 1.15rem;
-            }
-
-            .action-btn {
-                min-height: 70px;
-                font-size: 1.2rem;
-            }
-
-            .speed-box label {
-                font-size: 1rem;
-            }
-
-            #status-box {
-                font-size: 1.1rem;
-            }
-        }
-
+        
+        input[type="file"] { display: none; }
     </style>
 </head>
-
 <body>
 
-    <!-- ==========================================
-         رأس التطبيق
-    =========================================== -->
-
     <header>
-
-        <button
-            id="backBtn"
-            class="top-btn"
-            aria-label="رجوع للشاشة الرئيسية"
-            style="visibility: hidden;"
-        >
-            رجوع للخلف
-        </button>
-
+        <button id="backBtn" class="top-btn" aria-label="رجوع للشاشة الرئيسية" style="visibility: hidden;">رجوع للخلف</button>
         <h1>تطبيق بصير</h1>
-
     </header>
 
-
-    <!-- ==========================================
-         التحكم في سرعة الصوت
-    =========================================== -->
-
+    <!-- التحكم بسرعة الصوت -->
     <div class="speed-box">
-
-        <label for="speedRange">
-            سرعة الصوت:
-        </label>
-
-        <input
-            type="range"
-            id="speedRange"
-            min="0.5"
-            max="1.5"
-            step="0.1"
-            value="0.9"
-            aria-label="تغيير سرعة الصوت"
-        >
-
+        <label for="speedRange">سرعة الصوت:</label>
+        <input type="range" id="speedRange" min="0.5" max="1.5" step="0.1" value="0.9" aria-label="تغيير سرعة الصوت">
     </div>
 
-
-    <!-- ==========================================
-         الشاشة الرئيسية
-    =========================================== -->
-
-    <main
-        id="homeScreen"
-        class="screen active"
-    >
-
+    <!-- الشاشة الرئيسية -->
+    <main id="homeScreen" class="screen active">
         <div class="grid-container">
+            <button class="btn-large" data-screen="ocrScreen" aria-label="القسم الأول: قراءة النصوص والمستندات">القسم الأول: قراءة النصوص</button>
+            <button class="btn-large" data-screen="objectScreen" aria-label="القسم الثاني: التعرف على الأشياء والصور">القسم الثاني: التعرف على الأشياء</button>
+            <button class="btn-large" data-screen="moneyScreen" aria-label="القسم الثالث: التعرف على العملات النقدية">القسم الثالث: التعرف على العملات</button>
+            <button class="btn-large" data-screen="humanHelpScreen" aria-label="القسم الرابع: مساعدة بشرية والطوارئ">القسم الرابع: مساعدة بشرية وطوارئ</button>
+            <button class="btn-large" data-screen="navScreen" aria-label="القسم الخامس: الملاحة والاتجاهات">القسم الخامس: الملاحة والاتجاهات</button>
+            <button class="btn-large" data-screen="libraryScreen" aria-label="القسم السادس: المكتبة الصوتية">القسم السادس: المكتبة الصوتية</button>
+            <button class="btn-large" data-screen="dailyScreen" aria-label="القسم السابع: الخدمات اليومية والألوان">القسم السابع: الخدمات اليومية والألوان</button>
+            <button class="btn-large" data-screen="settingsScreen" aria-label="القسم الثامن: إعدادات التطبيق والتحكم">القسم الثامن: إعدادات التطبيق</button>
+        </div>
+    </main>
 
-            <button
-                class="btn-large"
-                data-screen="ocrScreen"
-                aria-label="القسم الأول: قراءة النصوص والمستندات"
-            >
-                القسم الأول: قراءة النصوص
-            </button>
+    <!-- 1. شاشة قراءة النصوص -->
+    <section id="ocrScreen" class="screen">
+        <h2>قسم قراءة النصوص</h2>
+        <p style="font-size: 1.2rem;">وجه الكاميرا نحو الورقة أو الكارت وقوم بالتصوير.</p>
+        <button id="captureOcrBtn" class="action-btn btn-blue" aria-label="التقاط صورة للورقة وقراءة النص">التقاط وقراءة النص</button>
+    </section>
 
+    <!-- 2. شاشة التعرف على الأشياء -->
+    <section id="objectScreen" class="screen">
+        <h2>قسم التعرف على الأشياء</h2>
+        <p style="font-size: 1.2rem;">وجه الكاميرا نحو الشيء المطلوب التعرف عليه.</p>
+        <button id="captureObjectBtn" class="action-btn btn-green" aria-label="التقاط صورة للتعرف على الشيء بالذكاء الاصطناعي">التعرف على الشيء أمامك</button>
+    </section>
 
-            <button
-                class="btn-large"
-                data-screen="objectScreen"
-                aria-label="القسم الثاني: التعرف على الأشياء والصور"
-            >
-                القسم الثاني: التعرف على الأشياء
-            </button>
+    <!-- 3. شاشة التعرف على العملات -->
+    <section id="moneyScreen" class="screen">
+        <h2>قسم التعرف على العملات</h2>
+        <p style="font-size: 1.2rem;">وجه الكاميرا نحو الورقة النقدية.</p>
+        <button id="captureMoneyBtn" class="action-btn btn-yellow" aria-label="التقاط صورة للتعرف على العملة النقدية">التعرف على العملة</button>
+    </section>
 
+    <!-- 4. شاشة المساعدة البشرية -->
+    <section id="humanHelpScreen" class="screen">
+        <h2>قسم المساعدة البشرية والطوارئ</h2>
+        <p style="font-size: 1.2rem;">الاتصال المباشر بالطوارئ أو تحديد موقعك الجغرافي.</p>
+        <button id="callVolunteerBtn" class="action-btn btn-red" aria-label="اتصال مباشر بالمساعد أو المتطوع">الاتصال بالمساعد المباشر</button>
+        <button id="sendLocationBtn" class="action-btn btn-blue" aria-label="تحديد ومشاركة موقعي الجغرافي للطوارئ">تحديد موقعي الجغرافي</button>
+    </section>
 
-            <button
-                class="btn-large"
-                data-screen="moneyScreen"
-                aria-label="القسم الثالث: التعرف على العملات النقدية"
-            >
-                القسم الثالث: التعرف على العملات
-            </button>
+    <!-- 5. شاشة الملاحة والاتجاهات -->
+    <section id="navScreen" class="screen">
+        <h2>قسم الملاحة والاتجاهات</h2>
+        <p style="font-size: 1.2rem;">استخدم البوصلة لمعرفة اتجاهك أو تحديد إحداثيات موقعك.</p>
+        <button id="compassBtn" class="action-btn btn-purple" aria-label="تحديد اتجاه البوصلة الحالي">تحديد اتجاه البوصلة</button>
+        <button id="whereAmIBtn" class="action-btn btn-blue" aria-label="معرفة المكان والموقع الحالي">أين أنا الآن؟</button>
+    </section>
 
+    <!-- 6. شاشة المكتبة الصوتية -->
+    <section id="libraryScreen" class="screen">
+        <h2>قسم المكتبة الصوتية</h2>
+        <p style="font-size: 1.2rem;">استمع للإرشادات والدليل الصوتي الشامل لاستخدام التطبيق.</p>
+        <button id="playManualBtn" class="action-btn btn-green" aria-label="تشغيل الدليل الصوتي الشامل للتطبيق">تشغيل الدليل الصوتي</button>
+        <button id="playTipsBtn" class="action-btn btn-blue" aria-label="تشغيل النصائح والاستخدام الصوتي">نصائح الاستخدام التفصيلية</button>
+        <button id="stopAudioBtn" class="action-btn btn-red" aria-label="إيقاف القراءة الصوتية الحالية">إيقاف الصوت فوراً</button>
+    </section>
 
-            <button
-                class="btn-large"
-                data-screen="humanHelpScreen"
-                aria-label="القسم الرابع: المساعدة البشرية والطوارئ"
-            >
-                القسم الرابع: مساعدة بشرية وطوارئ
-            </button>
+    <!-- 7. شاشة الخدمات اليومية والألوان -->
+    <section id="dailyScreen" class="screen">
+        <h2>قسم الخدمات اليومية والألوان</h2>
+        <p style="font-size: 1.2rem;">التعرف على لون الملابس والأشياء ومعرفة الوقت والتاريخ.</p>
+        <button id="colorBtn" class="action-btn btn-yellow" aria-label="التقاط صورة للتعرف على اللون">التعرف على اللون</button>
+        <button id="dateTimeBtn" class="action-btn btn-blue" aria-label="قراءة الوقت والتاريخ الحالي">معرفة الوقت والتاريخ</button>
+    </section>
 
+    <!-- 8. شاشة الإعدادات والتحكم -->
+    <section id="settingsScreen" class="screen">
+        <h2>قسم الإعدادات والتحكم</h2>
+        <p style="font-size: 1.2rem;">اختبار محرك الصوت وإعادة ضبط وتحديث التطبيق.</p>
+        <button id="testVoiceBtn" class="action-btn btn-blue" aria-label="اختبار جودة المحرك الصوتي">اختبار المحرك الصوتي</button>
+        <button id="resetAppBtn" class="action-btn btn-red" aria-label="إعادة تحميل وتحديث التطبيق">إعادة تحميل التطبيق</button>
+    </section>
 
-            <button
-                class="btn-large"
-                data-screen="navScreen"
-                aria-label="القسم الخامس: الملاحة والاتجاهات"
-            >
-                القسم الخامس: الملاحة والاتجاهات
-            </button>
+    <!-- مدخلات الكاميرا الخفية -->
+    <input type="file" id="ocrCameraInput" accept="image/*" capture="environment">
+    <input type="file" id="objectCameraInput" accept="image/*" capture="environment">
+    <input type="file" id="moneyCameraInput" accept="image/*" capture="environment">
+    <input type="file" id="colorCameraInput" accept="image/*" capture="environment">
 
+    <!-- صندوق الإشعارات والقراءة -->
+    <div id="status-box" aria-live="assertive" role="status">
+        مرحباً بك في تطبيق بصير. تم تحميل جميع المراحل الثماني بنجاح!
+    </div>
 
-            <button
-                class="btn-large"
-                data-screen="libraryScreen"
-                aria-label="القسم السادس: المكتبة الصوتية"
-            >
-                القسم السادس: المكتبة الصوتية
-            </button>
+    <!-- لوحة قماشية خفية لمعالجة الألوان -->
+    <canvas id="colorCanvas" style="display:none;"></canvas>
 
-
-            <button
-                class="btn-large"
-                data-screen="dailyScreen"
-                aria-label="القسم السابع: الخدمات اليومية والألوان"
-            >
-                القسم السابع: الخدمات اليومية والألوان
-            </button>
-
-
-            <button
-                class="
+    <script src="app.js"></script>
+</body>
+</html>
