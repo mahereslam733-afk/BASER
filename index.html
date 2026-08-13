@@ -3,110 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تطبيق أبصار الذكي</title>
+    <title>تطبيق بصير - المساعد الذكي</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
         }
         body {
             background-color: #000000;
             color: #FFFFFF;
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             min-height: 100vh;
-            padding: 15px;
-            text-align: center;
         }
         header {
+            text-align: center;
             padding: 10px 0;
-            border-bottom: 3px solid #FFFF00;
+            border-bottom: 4px solid #FFFF00;
+            margin-bottom: 15px;
         }
         h1 {
             color: #FFFF00;
-            font-size: 2.2rem;
-            margin-bottom: 5px;
+            font-size: 2.5rem;
         }
-        .subtitle {
-            color: #00FF00;
-            font-size: 1.2rem;
+        /* التحكم في سرعة الصوت */
+        .speed-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #111;
+            padding: 10px;
+            border: 2px solid #FFF;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .speed-control label {
+            font-size: 1.3rem;
+            color: #FFFF00;
             font-weight: bold;
         }
-        main {
-            display: flex;
-            flex-direction: column;
+        .speed-control input {
+            width: 50%;
+            height: 25px;
+        }
+        /* شبكة الأزرار الكبيرة للمكفوفين */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 15px;
-            margin: 20px 0;
+            flex-grow: 1;
         }
         .btn-large {
             width: 100%;
-            padding: 25px 15px;
+            padding: 20px;
             font-size: 1.8rem;
             font-weight: bold;
             border: 4px solid #FFFFFF;
-            border-radius: 20px;
-            cursor: pointer;
-            outline: none;
-            transition: transform 0.1s ease;
-        }
-        .btn-large:active {
-            transform: scale(0.98);
-        }
-        .btn-cam {
-            background-color: #008000;
-            color: #FFFFFF;
-        }
-        .btn-speak {
-            background-color: #0055FF;
-            color: #FFFFFF;
-        }
-        #status-box {
-            background-color: #111111;
-            border: 3px solid #FFFF00;
             border-radius: 15px;
-            padding: 20px;
-            font-size: 1.6rem;
-            color: #00FF00;
-            min-height: 120px;
+            cursor: pointer;
+            text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
-            line-height: 1.5;
-            word-break: break-word;
+            gap: 10px;
         }
-        #fileInput {
-            display: none;
+        .btn-ocr { background-color: #0055FF; color: #FFFFFF; }
+        .btn-object { background-color: #008000; color: #FFFFFF; }
+        .btn-money { background-color: #CC8800; color: #FFFFFF; }
+        .btn-voice { background-color: #8800CC; color: #FFFFFF; }
+        .btn-volunteer { background-color: #CC0000; color: #FFFFFF; }
+        
+        #status-box {
+            background-color: #111111;
+            border: 4px solid #FFFF00;
+            border-radius: 15px;
+            padding: 15px;
+            font-size: 1.5rem;
+            color: #00FF00;
+            margin-top: 15px;
+            min-height: 90px;
+            text-align: center;
         }
+        input[type="file"] { display: none; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>تطبيق أبصار</h1>
-        <p class="subtitle">المساعد الذكي البصري</p>
+        <h1>تطبيق بصير</h1>
     </header>
 
-    <main>
-        <!-- زر فتح الكاميرا -->
-        <button class="btn-large btn-cam" id="captureBtn" aria-label="اضغط للتعرف على الأشياء بالطلب">
-            📷 التقط صورة للتعرف
+    <!-- التحكم في سرعة الصوت -->
+    <div class="speed-control">
+        <label for="speedRange">سرعة الصوت:</label>
+        <input type="range" id="speedRange" min="0.5" max="1.5" step="0.1" value="0.9" aria-label="التحكم في سرعة نطق الصوت">
+    </div>
+
+    <main class="grid-container" role="main">
+        <!-- قراءة المستندات OCR -->
+        <button class="btn-large btn-ocr" id="ocrBtn" aria-label="اقرأ النص والمستندات">
+            📖 قراءة النص (OCR)
         </button>
 
-        <input type="file" id="fileInput" accept="image/*" capture="environment">
-
-        <!-- زر إعادة النطق -->
-        <button class="btn-large btn-speak" id="repeatBtn" aria-label="إعادة نطق الوصف السابق">
-            🔊 إعادة نطق الوصف
+        <!-- التعرف على الأشياء -->
+        <button class="btn-large btn-object" id="objectBtn" aria-label="التعرف على الأشياء والأشخاص">
+            👁️ التعرف على الأشياء
         </button>
 
-        <!-- مربع النتيجة النصية للمكفوفين -->
-        <div id="status-box" aria-live="polite">
-            مرحباً بك في أبصار. اضغط على الزر الأخضر لالتقاط صورة.
-        </div>
+        <!-- التعرف على العملة المصرية -->
+        <button class="btn-large btn-money" id="moneyBtn" aria-label="التعرف على العملات المصرية">
+            💰 التعرف على العملة
+        </button>
+
+        <!-- الأوامر الصوتية -->
+        <button class="btn-large btn-voice" id="voiceCmdBtn" aria-label="تفعيل الأوامر الصوتية">
+            🎙️ امر صوتي
+        </button>
+
+        <!-- طلب مساعدة بشرية -->
+        <button class="btn-large btn-volunteer" id="volunteerBtn" aria-label="طلب مساعدة من متطوع">
+            🧑‍🤝‍🧑 طلب متطوع
+        </button>
     </main>
+
+    <!-- مدخل الكاميرا الخفي -->
+    <input type="file" id="cameraInput" accept="image/*" capture="environment">
+
+    <!-- شاشة إظهار النتائج للـ TalkBack -->
+    <div id="status-box" aria-live="assertive" role="status">
+        مرحباً بك في تطبيق بصير. اختر إحدى الخدمات أو اضغط على الأمر الصوتي.
+    </div>
 
     <script src="app.js"></script>
 </body>
