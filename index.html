@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تطبيق بصير - المراحل من 1 إلى 5</title>
+    <title>تطبيق بصير - المراحل من 1 إلى 6</title>
     <style>
         * {
             box-sizing: border-box;
@@ -46,9 +46,9 @@
         .screen.active { display: flex; flex-direction: column; gap: 15px; flex-grow: 1; }
 
         .speed-box {
-            background: #111;
+            background: #111111;
             padding: 10px;
-            border: 2px solid #FFF;
+            border: 2px solid #FFFFFF;
             border-radius: 10px;
             display: flex;
             justify-content: space-between;
@@ -135,6 +135,7 @@
             <button class="btn-large" data-screen="moneyScreen" aria-label="القسم الثالث: التعرف على العملات النقدية">القسم الثالث: التعرف على العملات</button>
             <button class="btn-large" data-screen="humanHelpScreen" aria-label="القسم الرابع: مساعدة بشرية والطوارئ">القسم الرابع: مساعدة بشرية وطوارئ</button>
             <button class="btn-large" data-screen="navScreen" aria-label="القسم الخامس: الملاحة والاتجاهات">القسم الخامس: الملاحة والاتجاهات</button>
+            <button class="btn-large" data-screen="libraryScreen" aria-label="القسم السادس: المكتبة الصوتية">القسم السادس: المكتبة الصوتية</button>
         </div>
     </main>
 
@@ -175,6 +176,15 @@
         <button id="whereAmIBtn" class="action-btn btn-blue" aria-label="معرفة اسم المكان والموقع الحالي">أين أنا الآن؟</button>
     </section>
 
+    <!-- 6. شاشة المكتبة الصوتية (الجديدة) -->
+    <section id="libraryScreen" class="screen">
+        <h2>قسم المكتبة الصوتية</h2>
+        <p style="font-size: 1.2rem;">استمع للتعليمات والإرشادات الصوتية الخاصة بالتطبيق.</p>
+        <button id="playManualBtn" class="action-btn btn-green" aria-label="تشغيل الدليل الصوتي الشامل للتطبيق">تشغيل الدليل الصوتي</button>
+        <button id="playTipsBtn" class="action-btn btn-blue" aria-label="تشغيل النصائح والاستخدام الصوتي">نصائح الاستخدام التفصيلية</button>
+        <button id="stopAudioBtn" class="action-btn btn-red" aria-label="إيقاف القراءة الصوتية الحالية">إيقاف الصوت فوراً</button>
+    </section>
+
     <!-- مدخلات الكاميرا الخفية -->
     <input type="file" id="ocrCameraInput" accept="image/*" capture="environment">
     <input type="file" id="objectCameraInput" accept="image/*" capture="environment">
@@ -182,7 +192,7 @@
 
     <!-- صندوق الإشعارات والقراءة -->
     <div id="status-box" aria-live="assertive" role="status">
-        مرحباً بك في تطبيق بصير. تم تحميل المراحل الخمسة بنجاح.
+        مرحباً بك في تطبيق بصير. تم تحميل المراحل الست بنجاح.
     </div>
 
     <script src="app.js"></script>
