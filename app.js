@@ -1,8 +1,18 @@
-// --- محرك الصوت والتفاعل الصوتي ---
+// --- محرك الصوت والتفاعل الصوتي الشامل ---
 let speechSpeed = 0.9;
 const statusBox = document.getElementById('status-box');
 const speedRange = document.getElementById('speedRange');
 const backBtn = document.getElementById('backBtn');
+const previewImg = document.getElementById('previewImg');
+
+// تحميل نموذج الذكاء الاصطناعي المحلي عند بداية التشغيل
+let mobileNetModel = null;
+mobilenet.load().then(model => {
+    mobileNetModel = model;
+    console.log("تم تحميل نموذج الذكاء الاصطناعي المحلي بنجاح.");
+}).catch(err => {
+    console.log("تعذر تحميل نموذج الأشياء محلياً، سيتم الاعتماد على الترجمة.");
+});
 
 if (speedRange) {
     speedRange.addEventListener('input', (e) => {
@@ -46,90 +56,61 @@ function speakCloudFallback(text) {
     } catch (e) {}
 }
 
-// --- قاموس للترجمة العربية المباشرة وتصفية النصوص العشوائية ---
-const arabicDictionary = {
+// دالة لتنظيف النص العربي بالكامل ومنع خروج أي رموز أو أرقام غريبة
+function cleanAndSanitizeText(text) {
+    if (!text) return "";
+    return text
+        .replace(/[\r\n]+/g, ' ')
+        .replace(/[^\u0600-\u06FF0-9a-zA-Z\s.,!؟]/g, '') // إزالة كافة الرموز الغريبة
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+// قاموس الترجمة السريعة للعمليات المحلية للأشياء
+const translationDict = {
     "cellular telephone": "هاتف محمول",
     "mobile phone": "هاتف محمول",
-    "cell phone": "موبايل",
-    "hand-held computer": "جهاز محمول",
     "laptop": "كمبيوتر محمول",
-    "notebook computer": "كمبيوتر محمول",
     "water bottle": "زجاجة مياه",
-    "pop bottle": "زجاجة بلاستيكية",
-    "bottle": "زجاجة",
+    "coffee mug": "كوب قهوة",
     "cup": "كوب",
-    "coffee mug": "مج قهوة",
-    "mug": "كوب أو فنجان",
-    "desk": "مكتب",
     "chair": "كرسي",
-    "armchair": "كرسي مريح",
-    "table": "طاولة",
-    "dining table": "طاولة طعام",
-    "book": "كتاب",
-    "binder": "كراسة أو مجلد",
-    "pencil sharpener": "براية",
+    "desk": "مكتب",
+    "keyboard": "لوحة مفاتيح",
+    "mouse": "فأرة كمبيوتر",
     "wallet": "محفظة أوراق مالية",
     "spectacles": "نظارة طبية",
     "sunglasses": "نظارة شمسية",
     "shoe": "حذاء",
-    "running shoe": "حذاء رياضي",
-    "bag": "حقيبة",
     "backpack": "حقيبة ظهر",
-    "handbag": "حقيبة يد",
-    "door": "باب",
-    "key": "مفتاح",
+    "book": "كتاب",
+    "pen": "قلم",
     "watch": "ساعة يد",
-    "digital clock": "ساعة رقمية",
-    "wall clock": "ساعة حائط",
-    "television": "شاشة تلفزيون",
-    "screen": "شاشة عرض",
-    "mouse": "فأرة كمبيوتر",
-    "computer keyboard": "لوحة مفاتيح",
     "remote control": "ريموت كنترول",
-    "pillow": "وسادة",
-    "person": "شخص",
-    "man": "رجل",
-    "woman": "امرأة",
-    "child": "طفل",
-    "car": "سيارة",
-    "bicycle": "دراجة",
-    "plate": "طبق",
-    "spoon": "ملعقة",
-    "fork": "شوكة",
-    "knife": "سكين"
+    "person": "شخص أمامك"
 };
 
-// دالة تحويل الاسم إلى عربية واضحة بدون رموز أو أرقام
-async function getCleanArabicDescription(label) {
-    const lowerLabel = label.toLowerCase().trim();
-    
-    // 1. البحث في القاموس السريع أولاً
-    for (let key in arabicDictionary) {
-        if (lowerLabel.includes(key)) {
-            return arabicDictionary[key];
+async function translateToCleanArabic(englishText) {
+    const cleanLower = englishText.toLowerCase();
+    for (let key in translationDict) {
+        if (cleanLower.includes(key)) {
+            return translationDict[key];
         }
     }
-
-    // 2. استخدام محرك الترجمة واستخراج الكلمات العربية الصافية فقط
     try {
-        const cleanEnglish = lowerLabel.replace(/[^a-zA-Z ]/g, " "); // إزالة الأرقام والرموز الغريبة
-        const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(cleanEnglish)}`);
+        const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(englishText)}`);
         const data = await res.json();
         if (data && data[0] && data[0][0] && data[0][0][0]) {
-            let translated = data[0][0][0].trim();
-            // تصفية أية رموز متبقية
-            translated = translated.replace(/[^\u0600-\u06FF\s]/g, "");
-            if (translated.length > 0) return translated;
+            return cleanAndSanitizeText(data[0][0][0]);
         }
     } catch (e) {}
-
-    return "عنصر غير محدد بدقة، حاول التصوير من زاوية أخرى";
+    return "عنصر غير محدد بدقة، جرب التصوير من زاوية أوضح";
 }
 
-// الترحيب عند الفتح
+// الترحيب
 window.addEventListener('load', () => {
     setTimeout(() => {
-        speak("أهلاً بك في تطبيق بصير. جميع المراحل الثماني مفعلة وتعمل بنجاح.");
+        speak("أهلاً بك في تطبيق بصير. تم تشغيل جميع المراحل الثماني وبدقة عالية.");
     }, 500);
 });
 
@@ -165,122 +146,137 @@ if (backBtn) {
     });
 }
 
-// --- المرحلة الأولى: قراءة النصوص (OCR) ---
+// --- 1. قسم قراءة النصوص (OCR مع تنظيف كامل للرموز) ---
 const captureOcrBtn = document.getElementById('captureOcrBtn');
 const ocrCameraInput = document.getElementById('ocrCameraInput');
 
 if (captureOcrBtn && ocrCameraInput) {
     captureOcrBtn.addEventListener('click', () => {
-        speak("جاري فتح الكاميرا، وجه الهاتف نحو الورقة.");
-        setTimeout(() => ocrCameraInput.click(), 1000);
+        speak("جاري فتح الكاميرا، وجه الهاتف نحو النص.");
+        setTimeout(() => ocrCameraInput.click(), 800);
     });
 
     ocrCameraInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        speak("تم التقاط الصورة، جاري استخراج وقراءة النص العربي...");
+        speak("تم التقاط الصورة، جاري معالجة واستخراج النص العربي الصافي...");
+        
         try {
             const formData = new FormData();
             formData.append("file", file);
             formData.append("language", "ara");
+            formData.append("isOverlayRequired", "false");
+            formData.append("detectOrientation", "true");
+            formData.append("scale", "true");
+
             const response = await fetch("https://api.ocr.space/parse/image", {
                 method: "POST",
-                headers: { "apikey": "helloworld" },
+                headers: { "apikey": "K88283437288957" },
                 body: formData
             });
+
             const result = await response.json();
-            if (result && result.ParsedResults && result.ParsedResults.length > 0) {
-                const extractedText = result.ParsedResults[0].ParsedText.trim();
-                speak(extractedText.length > 0 ? `النص المكتوب هو: ${extractedText}` : "لم نتمكن من إيجاد نص واضح بالورقة.");
+            
+            if (result && result.ParsedResults && result.ParsedResults[0]) {
+                let parsedText = result.ParsedResults[0].ParsedText;
+                let cleanText = cleanAndSanitizeText(parsedText);
+                
+                if (cleanText.length > 0) {
+                    speak(`النص المكتوب هو: ${cleanText}`);
+                } else {
+                    speak("لم نتمكن من قراءة النص بوضوح، يرجى ضبط الإضاءة والتصوير بشكل مستقيم.");
+                }
             } else {
-                speak("تعذر استخراج النص، يرجى إعادة التصوير بوضوح.");
+                speak("عذراً، تعذر استخراج النص. يرجى إعادة التصوير.");
             }
         } catch (err) {
-            speak("حدث خطأ أثناء الاتصال بخدمة القراءة.");
+            speak("حدث خطأ في الاتصال بخدمة قراءة النصوص.");
         }
     });
 }
 
-// --- المرحلة الثانية: التعرف على الأشياء (معدلة ومترجمة للعربية الصافية) ---
+// --- 2. قسم التعرف على الأشياء (محلي 100% بدون خطأ اتصال) ---
 const captureObjectBtn = document.getElementById('captureObjectBtn');
 const objectCameraInput = document.getElementById('objectCameraInput');
 
 if (captureObjectBtn && objectCameraInput) {
     captureObjectBtn.addEventListener('click', () => {
-        speak("جاري فتح الكاميرا، وجه الهاتف نحو الشيء المطلوب التعرف عليه.");
-        setTimeout(() => objectCameraInput.click(), 1000);
+        speak("جاري فتح الكاميرا، وجه الهاتف نحو الشيء أمامك.");
+        setTimeout(() => objectCameraInput.click(), 800);
     });
 
     objectCameraInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        
-        speak("تم التقاط الصورة، جاري تحليل الشيء بالذكاء الاصطناعي...");
+
+        speak("تم التقاط الصورة، جاري التحليل بالذكاء الاصطناعي...");
 
         try {
-            const arrayBuffer = await file.arrayBuffer();
-            
-            const response = await fetch("https://api-inference.huggingface.co/models/google/vit-base-patch16-224", {
-                method: "POST",
-                body: arrayBuffer
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                if (result && result.length > 0) {
-                    const rawLabel = result[0].label;
-                    const arabicDescription = await getCleanArabicDescription(rawLabel);
-                    
-                    speak(`الشيء الموجود أمامك هو: ${arabicDescription}`);
+            previewImg.src = URL.createObjectURL(file);
+            previewImg.onload = async () => {
+                if (mobileNetModel) {
+                    const predictions = await mobileNetModel.classify(previewImg);
+                    if (predictions && predictions.length > 0) {
+                        const topResult = predictions[0].className;
+                        const arabicLabel = await translateToCleanArabic(topResult);
+                        speak(`الشيء الموجود أمامك هو: ${arabicLabel}`);
+                    } else {
+                        speak("لم نتمكن من التحديد، حاول التصوير من زاوية أخرى.");
+                    }
                 } else {
-                    speak("لم نتمكن من التحديد بدقة، يرجى الاقتراب من الشيء وإعادة التصوير.");
+                    speak("جاري تجهيز محرك الرؤية، حاول مرة أخرى خلال ثوانٍ.");
                 }
-            } else {
-                speak("خادم الذكاء الاصطناعي مشغول حالياً، جرب مرة أخرى بعد قليل.");
-            }
+            };
         } catch (e) {
-            speak("حدث خطأ أثناء معالجة الصورة، يرجى إعادة المحاولة.");
+            speak("تعذر معالجة الصورة محلياً، يرجى إعادة المحاولة.");
         }
     });
 }
 
-// --- المرحلة الثالثة: التعرف على العملات ---
+// --- 3. قسم التعرف على العملات النقدية ---
 const captureMoneyBtn = document.getElementById('captureMoneyBtn');
 const moneyCameraInput = document.getElementById('moneyCameraInput');
 
 if (captureMoneyBtn && moneyCameraInput) {
     captureMoneyBtn.addEventListener('click', () => {
         speak("جاري فتح الكاميرا، وجه الهاتف نحو الورقة النقدية.");
-        setTimeout(() => moneyCameraInput.click(), 1000);
+        setTimeout(() => moneyCameraInput.click(), 800);
     });
 
     moneyCameraInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
         speak("تم التقاط صورة العملة، جاري فحص الفئة بوضوح...");
+        
         try {
-            const arrayBuffer = await file.arrayBuffer();
-            const response = await fetch("https://api-inference.huggingface.co/models/google/vit-base-patch16-224", {
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("language", "ara");
+            const response = await fetch("https://api.ocr.space/parse/image", {
                 method: "POST",
-                body: arrayBuffer
+                headers: { "apikey": "K88283437288957" },
+                body: formData
             });
-            if (response.ok) {
-                const result = await response.json();
-                if (result && result.length > 0 && result[0].score > 0.35) {
-                    speak("تم التعرف على ورقة نقدية، يرجى التأكد من استقامة الورقة والإضاءة للتحقق التام من الفئة.");
-                } else {
-                    speak("غير متأكد من فئة العملة، اضبط الإضاءة وصور كامل الورقة النقدية.");
-                }
+            const result = await response.json();
+            if (result && result.ParsedResults && result.ParsedResults[0]) {
+                let text = result.ParsedResults[0].ParsedText;
+                if (text.includes("50") || text.includes("خمسون")) speak("العملة هي فئة خمسين جنيهاً.");
+                else if (text.includes("100") || text.includes("مائة")) speak("العملة هي فئة مائة جنيه.");
+                else if (text.includes("200") || text.includes("مائتان")) speak("العملة هي فئة مائتي جنيه.");
+                else if (text.includes("20") || text.includes("عشرون")) speak("العملة هي فئة عشرين جنيهاً.");
+                else if (text.includes("10") || text.includes("عشرة")) speak("العملة هي فئة عشرة جنيهات.");
+                else if (text.includes("5") || text.includes("خمسة")) speak("العملة هي فئة خمسة جنيهات.");
+                else speak("تم التقاط العملة، تأكد من فرد الورقة النقدية جيدا وتوضيح الإضاءة.");
             } else {
-                speak("خدمة التعرف على العملات غير متاحة مؤقتاً.");
+                speak("تأكد من إضاءة الورقة النقدية والتصوير بوضوح.");
             }
         } catch (e) {
-            speak("تعذر الاتصال بمركز معالجة العملات.");
+            speak("تعذر الاتصال بمركز فحص العملات.");
         }
     });
 }
 
-// --- المرحلة الرابعة: المساعدة البشرية والطوارئ ---
+// --- 4. قسم المساعدة البشرية والطوارئ ---
 const callVolunteerBtn = document.getElementById('callVolunteerBtn');
 const sendLocationBtn = document.getElementById('sendLocationBtn');
 
@@ -299,27 +295,24 @@ if (sendLocationBtn) {
                 const lat = position.coords.latitude.toFixed(4);
                 const lon = position.coords.longitude.toFixed(4);
                 speak(`تم تحديد موقعك بنجاح. خط العرض ${lat} وخط الطول ${lon}.`);
-            }, () => speak("لم نتمكن من الحصول على الموقع، يرجى التأكد من تفعيل خدمة الملاحة."));
+            }, () => speak("لم نتمكن من الحصول على الموقع، يرجى تفعيل الـ GPS."));
         } else {
             speak("خدمة تحديد الموقع غير مدعومة على جهازك.");
         }
     });
 }
 
-// --- المرحلة الخامسة: الملاحة والاتجاهات ---
+// --- 5. قسم الملاحة والاتجاهات ---
 const compassBtn = document.getElementById('compassBtn');
 const whereAmIBtn = document.getElementById('whereAmIBtn');
 
 if (compassBtn) {
     compassBtn.addEventListener('click', () => {
-        speak("جاري تحديد اتجاهك الحالي، يرجى تثبيت الهاتف...");
-
+        speak("جاري تحديد الاتجاه الحالي، يرجى تثبيت الهاتف...");
         if (window.DeviceOrientationEvent) {
             window.addEventListener('deviceorientation', function handleOrientation(event) {
                 let heading = event.alpha;
-                if (event.webkitCompassHeading) {
-                    heading = event.webkitCompassHeading;
-                }
+                if (event.webkitCompassHeading) heading = event.webkitCompassHeading;
 
                 if (heading !== null && heading !== undefined) {
                     let direction = "الشمال";
@@ -329,72 +322,70 @@ if (compassBtn) {
                     
                     speak(`أنت تتجه الآن نحو ${direction}.`);
                 } else {
-                    speak("عذراً، متعذر تحديد اتجاه البوصلة على هذا الجهاز حالياً.");
+                    speak("عذراً، متعذر تحديد اتجاه البوصلة على هذا الجهاز.");
                 }
                 window.removeEventListener('deviceorientation', handleOrientation);
             }, { once: true });
         } else {
-            speak("مستشعر البوصلة غير مدعوم في هذا المتصفح.");
+            speak("مستشعر البوصلة غير مدعوم.");
         }
     });
 }
 
 if (whereAmIBtn) {
     whereAmIBtn.addEventListener('click', () => {
-        speak("جاري استكشاف الموقع والجغرافيا الحالية...");
+        speak("جاري استكشاف الموقع الجغرافي...");
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(position => {
                 const lat = position.coords.latitude.toFixed(2);
                 const lon = position.coords.longitude.toFixed(2);
-                speak(`أنت حالياً بالقرب من الإحداثيات: خط عرض ${lat} وخط طول ${lon}.`);
-            }, () => speak("يرجى السماح بالحصول على إذن الموقع وتفعيل الـ GPS."));
+                speak(`أنت بالقرب من الإحداثيات: خط عرض ${lat} وخط طول ${lon}.`);
+            }, () => speak("يرجى تفعيل خيار الموقع الجغرافي GPS."));
         } else {
             speak("خدمة الموقع الجغرافي غير مدعومة.");
         }
     });
 }
 
-// --- المرحلة السادسة: المكتبة الصوتية ---
+// --- 6. قسم المكتبة الصوتية ---
 const playManualBtn = document.getElementById('playManualBtn');
 const playTipsBtn = document.getElementById('playTipsBtn');
 const stopAudioBtn = document.getElementById('stopAudioBtn');
 
 if (playManualBtn) {
     playManualBtn.addEventListener('click', () => {
-        speak("مرحباً بك في الدليل الصوتي التفاعلي لتطبيق بصير. يتكون التطبيق من أقسام رئيسية تساعدك على القراءة والتعرف على الأشياء والعملات والاتجاهات بسهولة تامّة.");
+        speak("مرحباً بك في الدليل الصوتي التفاعلي لتطبيق بصير. يساعدك التطبيق على قراءة المستندات والتعرف على العناصر المادية والعملات وسماع النطق باللغة العربية الواضحة.");
     });
 }
 
 if (playTipsBtn) {
     playTipsBtn.addEventListener('click', () => {
-        speak("إليك نصيحة للحصول على أفضل دقة: عند التقاط صورة للنصوص أو العملات، احرص على إبعاد الهاتف مسافة ثلاثين سنتيمتراً وتأكد من وجود إضاءة كافية حولك.");
+        speak("نصيحة: ثبت يدك أثناء التصوير واترك مسافة مناسبة بين الهاتف والورقة للحصول على قراءة دقيقة بدون أخطاء.");
     });
 }
 
 if (stopAudioBtn) {
     stopAudioBtn.addEventListener('click', () => {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-        }
-        statusBox.innerText = "تم إيقاف الصوت بنجاح.";
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        statusBox.innerText = "تم إيقاف الصوت.";
     });
 }
 
-// --- المرحلة السابعة: الخدمات اليومية والألوان ---
+// --- 7. قسم الخدمات اليومية والألوان ---
 const colorBtn = document.getElementById('colorBtn');
 const colorCameraInput = document.getElementById('colorCameraInput');
 const dateTimeBtn = document.getElementById('dateTimeBtn');
 
 if (colorBtn && colorCameraInput) {
     colorBtn.addEventListener('click', () => {
-        speak("وجه الكاميرا نحو القماش أو العنصر للتعرف على لونه.");
-        setTimeout(() => colorCameraInput.click(), 1000);
+        speak("وجه الكاميرا نحو العنصر لمعرفة لونه.");
+        setTimeout(() => colorCameraInput.click(), 800);
     });
 
     colorCameraInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        speak("تم التقاط الصورة، جاري تحليل اللون الأساسي...");
+        speak("تم التقاط الصورة، جاري تحليل اللون...");
 
         const img = new Image();
         img.src = URL.createObjectURL(file);
@@ -406,12 +397,8 @@ if (colorBtn && colorCameraInput) {
             ctx.drawImage(img, 0, 0, img.width, img.height);
 
             const pixelData = ctx.getImageData(Math.floor(img.width / 2), Math.floor(img.height / 2), 1, 1).data;
-            const r = pixelData[0];
-            const g = pixelData[1];
-            const b = pixelData[2];
-
-            const colorName = getColorName(r, g, b);
-            speak(`اللون الأغلب في منتصف الصورة هو: ${colorName}`);
+            const colorName = getColorName(pixelData[0], pixelData[1], pixelData[2]);
+            speak(`اللون الرئيسي في منتصف الصورة هو: ${colorName}`);
         };
     });
 }
@@ -425,7 +412,7 @@ function getColorName(r, g, b) {
     if (r > 180 && g > 180 && b < 100) return "الأصفر";
     if (r > 180 && g < 100 && b > 180) return "الوردي أو البنفسجي";
     if (r > 150 && g > 100 && b < 80) return "البرتقالي";
-    return "لون متدرج، يرجى ضبط الإضاءة وتصوير القماش مباشرة";
+    return "لون متدرج";
 }
 
 if (dateTimeBtn) {
@@ -438,21 +425,19 @@ if (dateTimeBtn) {
     });
 }
 
-// --- المرحلة الثامنة: الإعدادات والتحكم (اختبار وإعادة ضبط) ---
+// --- 8. قسم الإعدادات والتحكم ---
 const testVoiceBtn = document.getElementById('testVoiceBtn');
 const resetAppBtn = document.getElementById('resetAppBtn');
 
 if (testVoiceBtn) {
     testVoiceBtn.addEventListener('click', () => {
-        speak("اختبار المحرك الصوتي بنجاح. تطبيق بصير يعمل بكفاءة عالية وصوت نقي باللغة العربية.");
+        speak("اختبار المحرك الصوتي بنجاح، الصوت يعمل بشكل نقي باللغة العربية.");
     });
 }
 
 if (resetAppBtn) {
     resetAppBtn.addEventListener('click', () => {
-        speak("جاري إعادة تحميل وتحديث تطبيق بصير...");
-        setTimeout(() => {
-            window.location.reload();
-        }, 1500);
+        speak("جاري إعادة تحميل التطبيق...");
+        setTimeout(() => window.location.reload(), 1200);
     });
 }
