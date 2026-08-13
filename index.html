@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تطبيق بصير - النسخة الشاملة والدقيقة (المراحل 1 - 8)</title>
+    <title>تطبيق بصير - النسخة الشاملة كاملة المراحل</title>
+    <!-- تحميل مكتبة الذكاء الاصطناعي المحلية للتعرف على الأشياء مباشرة بدون سيرفرات خارجية -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -66,8 +69,8 @@
         }
         .btn-large {
             width: 100%;
-            padding: 20px;
-            font-size: 1.4rem;
+            padding: 18px;
+            font-size: 1.3rem;
             font-weight: bold;
             border: 3px solid #FFFFFF;
             border-radius: 15px;
@@ -103,7 +106,7 @@
             border: 3px solid #FFFF00;
             border-radius: 10px;
             padding: 15px;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             color: #00FF00;
             margin-top: 15px;
             text-align: center;
@@ -113,6 +116,7 @@
         }
         
         input[type="file"] { display: none; }
+        img#previewImg { display: none; }
     </style>
 </head>
 <body>
@@ -145,7 +149,7 @@
     <!-- 1. شاشة قراءة النصوص -->
     <section id="ocrScreen" class="screen">
         <h2>قسم قراءة النصوص</h2>
-        <p style="font-size: 1.2rem;">وجه الكاميرا نحو الورقة أو الكارت وقوم بالتصوير.</p>
+        <p style="font-size: 1.2rem;">وجه الكاميرا نحو المستند أو الكارت وقوم بالتصوير.</p>
         <button id="captureOcrBtn" class="action-btn btn-blue" aria-label="التقاط صورة للورقة وقراءة النص">التقاط وقراءة النص</button>
     </section>
 
@@ -153,7 +157,7 @@
     <section id="objectScreen" class="screen">
         <h2>قسم التعرف على الأشياء</h2>
         <p style="font-size: 1.2rem;">وجه الكاميرا نحو الشيء المطلوب التعرف عليه.</p>
-        <button id="captureObjectBtn" class="action-btn btn-green" aria-label="التقاط صورة للتعرف على الشيء بالذكاء الاصطناعي">التعرف على الشيء أمامك</button>
+        <button id="captureObjectBtn" class="action-btn btn-green" aria-label="التقاط صورة للتعرف على الشيء بالذكاء الاصطناعي المحلي">التعرف على الشيء أمامك</button>
     </section>
 
     <!-- 3. شاشة التعرف على العملات -->
@@ -204,11 +208,12 @@
         <button id="resetAppBtn" class="action-btn btn-red" aria-label="إعادة تحميل وتحديث التطبيق">إعادة تحميل التطبيق</button>
     </section>
 
-    <!-- مدخلات الكاميرا الخفية -->
+    <!-- مدخلات الكاميرا وصورة المعالجة الخفية -->
     <input type="file" id="ocrCameraInput" accept="image/*" capture="environment">
     <input type="file" id="objectCameraInput" accept="image/*" capture="environment">
     <input type="file" id="moneyCameraInput" accept="image/*" capture="environment">
     <input type="file" id="colorCameraInput" accept="image/*" capture="environment">
+    <img id="previewImg" alt="preview">
 
     <!-- صندوق الإشعارات والقراءة -->
     <div id="status-box" aria-live="assertive" role="status">
