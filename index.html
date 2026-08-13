@@ -83,16 +83,18 @@
         }
 
         .action-btn {
-            background-color: #0055FF;
-            color: #FFFFFF;
-            padding: 20px;
+            padding: 22px;
             font-size: 1.8rem;
+            font-weight: bold;
             border-radius: 15px;
             border: 3px solid #FFFFFF;
             cursor: pointer;
             width: 100%;
             margin-top: 15px;
         }
+        .btn-blue { background-color: #0055FF; color: #FFFFFF; }
+        .btn-green { background-color: #008000; color: #FFFFFF; }
+        .btn-yellow { background-color: #D4A000; color: #000000; }
 
         #status-box {
             background-color: #111111;
@@ -137,24 +139,38 @@
         </div>
     </main>
 
-    <!-- شاشة قراءة النصوص OCR (المرحلة الثانية) -->
+    <!-- 1. شاشة قراءة النصوص OCR -->
     <section id="ocrScreen" class="screen">
         <h2>قسم قراءة النصوص</h2>
-        <p style="font-size: 1.3rem;">وجه كاميرا الموبايل نحو الورقة أو الكتاب، ثم اضغط على زر التقاط واقرأ النص بالأسفل.</p>
-        <button id="captureOcrBtn" class="action-btn" aria-label="التقاط صورة للورقة وقراءة النص">📸 التقاط وقراءة النص</button>
+        <p style="font-size: 1.3rem;">وجه الكاميرا نحو الورقة ثم اضغط على الزر بالأسفل.</p>
+        <button id="captureOcrBtn" class="action-btn btn-blue" aria-label="التقاط صورة للورقة وقراءة النص">📸 التقاط وقراءة النص</button>
     </section>
 
-    <!-- باقي الشاشات للمراحل القادمة -->
-    <section id="objectScreen" class="screen"><h2>قسم التعرف على الأشياء</h2></section>
-    <section id="moneyScreen" class="screen"><h2>قسم العملات</h2></section>
+    <!-- 2. شاشة التعرف على الأشياء -->
+    <section id="objectScreen" class="screen">
+        <h2>قسم التعرف على الأشياء</h2>
+        <p style="font-size: 1.3rem;">وجه الكاميرا نحو الشيك أو العنصر الذي تريد التعرف عليه.</p>
+        <button id="captureObjectBtn" class="action-btn btn-green" aria-label="التقاط صورة للتعرف على الشيء">👁️ التعرف على الشيء أمامك</button>
+    </section>
+
+    <!-- 3. شاشة التعرف على العملات -->
+    <section id="moneyScreen" class="screen">
+        <h2>قسم التعرف على العملات</h2>
+        <p style="font-size: 1.3rem;">وجه الكاميرا بوضوح نحو الورقة النقدية المصرية.</p>
+        <button id="captureMoneyBtn" class="action-btn btn-yellow" aria-label="التقاط صورة للتعرف على العملة النقدية">💰 التعرف على العملة</button>
+    </section>
+
+    <!-- الشاشات القادمة -->
     <section id="humanHelpScreen" class="screen"><h2>قسم المساعدة البشرية</h2></section>
     <section id="navScreen" class="screen"><h2>قسم الملاحة</h2></section>
     <section id="libraryScreen" class="screen"><h2>المكتبة الصوتية</h2></section>
     <section id="dailyScreen" class="screen"><h2>الخدمات اليومية</h2></section>
     <section id="settingsScreen" class="screen"><h2>الإعدادات</h2></section>
 
-    <!-- مدخل الكاميرا الخفي -->
+    <!-- مدخلات الكاميرا الخفية لكل وظيفة -->
     <input type="file" id="ocrCameraInput" accept="image/*" capture="environment">
+    <input type="file" id="objectCameraInput" accept="image/*" capture="environment">
+    <input type="file" id="moneyCameraInput" accept="image/*" capture="environment">
 
     <!-- صندوق الإشعارات والقراءة -->
     <div id="status-box" aria-live="assertive" role="status">
