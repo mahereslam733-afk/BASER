@@ -32,7 +32,6 @@
             color: #FFFF00;
             font-size: 2.2rem;
         }
-        /* زر الرجوع والمساعدة الثابتين */
         .top-btn {
             background: #333333;
             color: #FFFF00;
@@ -43,11 +42,9 @@
             font-weight: bold;
             cursor: pointer;
         }
-        /* الشاشات الفرعية تُخفى افتراضياً */
         .screen { display: none; }
         .screen.active { display: flex; flex-direction: column; gap: 15px; flex-grow: 1; }
 
-        /* التحكم في سرعة الصوت */
         .speed-box {
             background: #111;
             padding: 10px;
@@ -61,7 +58,6 @@
         .speed-box label { font-size: 1.3rem; color: #FFFF00; }
         .speed-box input { width: 50%; height: 25px; }
 
-        /* شبكة الأزرار الكبيرة 8 وظائف */
         .grid-container {
             display: grid;
             grid-template-columns: 1fr;
@@ -86,6 +82,18 @@
             outline: none;
         }
 
+        .action-btn {
+            background-color: #0055FF;
+            color: #FFFFFF;
+            padding: 20px;
+            font-size: 1.8rem;
+            border-radius: 15px;
+            border: 3px solid #FFFFFF;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+        }
+
         #status-box {
             background-color: #111111;
             border: 3px solid #FFFF00;
@@ -95,8 +103,11 @@
             color: #00FF00;
             margin-top: 15px;
             text-align: center;
-            min-height: 60px;
+            min-height: 80px;
+            line-height: 1.4;
         }
+        
+        input[type="file"] { display: none; }
     </style>
 </head>
 <body>
@@ -107,13 +118,12 @@
         <button id="helpBtn" class="top-btn" aria-label="مساعدة واستعراض">❓ تعليمات</button>
     </header>
 
-    <!-- شاشة التحكم في الصوت -->
     <div class="speed-box">
         <label for="speedRange">سرعة القراءة الصوتية:</label>
         <input type="range" id="speedRange" min="0.5" max="1.5" step="0.1" value="0.9" aria-label="تغيير سرعة الصوت">
     </div>
 
-    <!-- الشاشة الرئيسية (8 أزرار) -->
+    <!-- الشاشة الرئيسية -->
     <main id="homeScreen" class="screen active">
         <div class="grid-container" role="region" aria-label="القائمة الرئيسية">
             <button class="btn-large" data-screen="ocrScreen" aria-label="1. قراءة النصوص والمستندات">📖 1. قراءة النصوص</button>
@@ -127,19 +137,15 @@
         </div>
     </main>
 
-    <!-- شاشة فرعية تجريبية (قراءة النصوص) -->
+    <!-- شاشة قراءة النصوص OCR (المرحلة الثانية) -->
     <section id="ocrScreen" class="screen">
         <h2>قسم قراءة النصوص</h2>
-        <p style="font-size: 1.3rem;">هذه الشاشة مخصصة لقراءة النصوص. سيتم ربط الكاميرا هنا في المرحلة الثانية.</p>
+        <p style="font-size: 1.3rem;">وجه كاميرا الموبايل نحو الورقة أو الكتاب، ثم اضغط على زر التقاط واقرأ النص بالأسفل.</p>
+        <button id="captureOcrBtn" class="action-btn" aria-label="التقاط صورة للورقة وقراءة النص">📸 التقاط وقراءة النص</button>
     </section>
 
-    <!-- شاشة فرعية تجريبية (التعرف على الأشياء) -->
-    <section id="objectScreen" class="screen">
-        <h2>قسم التعرف على الأشياء</h2>
-        <p style="font-size: 1.3rem;">سيتم ربط نموذج الذكاء الاصطناعي هنا في المرحلة الثالثة.</p>
-    </section>
-
-    <!-- باقي الشاشات الفرعية بنفس الهيكل البسيط... -->
+    <!-- باقي الشاشات للمراحل القادمة -->
+    <section id="objectScreen" class="screen"><h2>قسم التعرف على الأشياء</h2></section>
     <section id="moneyScreen" class="screen"><h2>قسم العملات</h2></section>
     <section id="humanHelpScreen" class="screen"><h2>قسم المساعدة البشرية</h2></section>
     <section id="navScreen" class="screen"><h2>قسم الملاحة</h2></section>
@@ -147,7 +153,10 @@
     <section id="dailyScreen" class="screen"><h2>الخدمات اليومية</h2></section>
     <section id="settingsScreen" class="screen"><h2>الإعدادات</h2></section>
 
-    <!-- صندوق الإشعارات الصوتي والمكتوب -->
+    <!-- مدخل الكاميرا الخفي -->
+    <input type="file" id="ocrCameraInput" accept="image/*" capture="environment">
+
+    <!-- صندوق الإشعارات والقراءة -->
     <div id="status-box" aria-live="assertive" role="status">
         مرحباً بك في تطبيق بصير. الشاشة الرئيسية معروضة الآن.
     </div>
