@@ -1,4 +1,4 @@
-// --- محرك الصوت العربي ---
+// --- محرك الصوت والتفاعل الصوتي ---
 let speechSpeed = 0.9;
 const statusBox = document.getElementById('status-box');
 const speedRange = document.getElementById('speedRange');
@@ -46,22 +46,20 @@ function speakCloudFallback(text) {
     } catch (e) {}
 }
 
+// الترحيب عند الفتح
 window.addEventListener('load', () => {
     setTimeout(() => {
-        speak("أهلاً بك في تطبيق بصير. أنت الآن في الشاشة الرئيسية.");
+        speak("أهلاً بك في تطبيق بصير. المراحل الخمسة مفعلة وجاهزة للاستخدام.");
     }, 500);
 });
 
-// --- إدارة التنقل بين الشاشات ---
+// --- التنقل بين الشاشات ---
 const homeScreen = document.getElementById('homeScreen');
 const allScreens = document.querySelectorAll('.screen');
 const navButtons = document.querySelectorAll('.btn-large');
 
 navButtons.forEach(button => {
-    button.addEventListener('focus', () => {
-        speak(button.getAttribute('aria-label'));
-    });
-
+    button.addEventListener('focus', () => speak(button.getAttribute('aria-label')));
     button.addEventListener('click', () => {
         const targetScreenId = button.getAttribute('data-screen');
         openScreen(targetScreenId, button.innerText);
@@ -87,7 +85,7 @@ if (backBtn) {
     });
 }
 
-// --- 1. قراءة النصوص OCR ---
+// --- المرحلة الأولى: قراءة النصوص (OCR) ---
 const captureOcrBtn = document.getElementById('captureOcrBtn');
 const ocrCameraInput = document.getElementById('ocrCameraInput');
 
@@ -100,19 +98,16 @@ if (captureOcrBtn && ocrCameraInput) {
     ocrCameraInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
         speak("تم التقاط الصورة، جاري استخراج وقراءة النص...");
         try {
             const formData = new FormData();
             formData.append("file", file);
             formData.append("language", "ara");
-
             const response = await fetch("https://api.ocr.space/parse/image", {
                 method: "POST",
                 headers: { "apikey": "helloworld" },
                 body: formData
             });
-
             const result = await response.json();
             if (result && result.ParsedResults && result.ParsedResults.length > 0) {
                 const extractedText = result.ParsedResults[0].ParsedText.trim();
@@ -126,7 +121,7 @@ if (captureOcrBtn && ocrCameraInput) {
     });
 }
 
-// --- 2. التعرف على الأشياء ---
+// --- المرحلة الثانية: التعرف على الأشياء ---
 const captureObjectBtn = document.getElementById('captureObjectBtn');
 const objectCameraInput = document.getElementById('objectCameraInput');
 
@@ -139,7 +134,6 @@ if (captureObjectBtn && objectCameraInput) {
     objectCameraInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
         speak("تم التقاط الصورة، جاري تحليل الشيء أمامك...");
         try {
             const reader = new FileReader();
@@ -148,7 +142,6 @@ if (captureObjectBtn && objectCameraInput) {
                     method: "POST",
                     body: reader.result
                 });
-
                 if (response.ok) {
                     const result = await response.json();
                     if (result && result.length > 0) {
@@ -167,20 +160,19 @@ if (captureObjectBtn && objectCameraInput) {
     });
 }
 
-// --- 3. التعرف على العملة المصرية ---
+// --- المرحلة الثالثة: التعرف على العملات ---
 const captureMoneyBtn = document.getElementById('captureMoneyBtn');
 const moneyCameraInput = document.getElementById('moneyCameraInput');
 
 if (captureMoneyBtn && moneyCameraInput) {
     captureMoneyBtn.addEventListener('click', () => {
-        speak("جاري فتح الكاميرا، وجه الهاتف نحو الورقة النقدية المصرية.");
+        speak("جاري فتح الكاميرا، وجه الهاتف نحو الورقة النقدية.");
         setTimeout(() => moneyCameraInput.click(), 1000);
     });
 
     moneyCameraInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
         speak("تم التقاط صورة العملة، جاري فحص الفئة بوضوح...");
         try {
             const reader = new FileReader();
@@ -189,7 +181,6 @@ if (captureMoneyBtn && moneyCameraInput) {
                     method: "POST",
                     body: reader.result
                 });
-
                 if (response.ok) {
                     const result = await response.json();
                     if (result && result.length > 0 && result[0].score > 0.4) {
@@ -208,36 +199,76 @@ if (captureMoneyBtn && moneyCameraInput) {
     });
 }
 
-// --- 4. المساعدة البشرية والطوارئ (المرحلة الرابعة) ---
+// --- المرحلة الرابعة: المساعدة البشرية والطوارئ ---
 const callVolunteerBtn = document.getElementById('callVolunteerBtn');
 const sendLocationBtn = document.getElementById('sendLocationBtn');
 
 if (callVolunteerBtn) {
     callVolunteerBtn.addEventListener('click', () => {
         speak("جاري الاتصال بالمساعد المباشر الآن.");
-        setTimeout(() => {
-            // فتح واجهة الاتصال الهاتفي بالرقم المحدد للأنظمة والطوارئ
-            window.location.href = "tel:122";
-        }, 1200);
+        setTimeout(() => { window.location.href = "tel:122"; }, 1200);
     });
 }
 
 if (sendLocationBtn) {
     sendLocationBtn.addEventListener('click', () => {
         speak("جاري تحديد موقعك الجغرافي عبر الأقمار الصناعية...");
-
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition((position) => {
                 const lat = position.coords.latitude.toFixed(4);
                 const lon = position.coords.longitude.toFixed(4);
-                const mapsUrl = `https://maps.google.com/?q=${lat},${lon}`;
-                
-                speak(`تم تحديد موقعك بنجاح. خط العرض ${lat} وخط الطول ${lon}. يمكنك مشاركة رابط الخرائط مع المتطوع.`);
-            }, (error) => {
-                speak("لم نتمكن من الحصول على الموقع، يرجى التأكد من تفعيل خدمة الـ GPS في الهاتف.");
-            });
+                speak(`تم تحديد موقعك بنجاح. خط العرض ${lat} وخط الطول ${lon}.`);
+            }, () => speak("لم نتمكن من الحصول على الموقع، يرجى التأكد من تفعيل خدمة الملاحة."));
         } else {
             speak("خدمة تحديد الموقع غير مدعومة على جهازك.");
+        }
+    });
+}
+
+// --- المرحلة الخامسة: الملاحة والاتجاهات (كاملة) ---
+const compassBtn = document.getElementById('compassBtn');
+const whereAmIBtn = document.getElementById('whereAmIBtn');
+
+if (compassBtn) {
+    compassBtn.addEventListener('click', () => {
+        speak("جاري تحديد اتجاهك الحالي، يرجى تثبيت الهاتف...");
+
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', function handleOrientation(event) {
+                let heading = event.alpha;
+                if (event.webkitCompassHeading) {
+                    heading = event.webkitCompassHeading;
+                }
+
+                if (heading !== null && heading !== undefined) {
+                    let direction = "الشمال";
+                    if (heading > 45 && heading <= 135) direction = "الشرق";
+                    else if (heading > 135 && heading <= 225) direction = "الجنوب";
+                    else if (heading > 225 && heading <= 315) direction = "الغرب";
+                    
+                    speak(`أنت تتجه الآن نحو ${direction}.`);
+                } else {
+                    speak("عذراً، متعذر تحديد اتجاه البوصلة على هذا الجهاز حالياً.");
+                }
+                window.removeEventListener('deviceorientation', handleOrientation);
+            }, { once: true });
+        } else {
+            speak("مستشعر البوصلة غير مدعوم في هذا المتصفح.");
+        }
+    });
+}
+
+if (whereAmIBtn) {
+    whereAmIBtn.addEventListener('click', () => {
+        speak("جاري استكشاف الموقع والجغرافيا الحالية...");
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const lat = position.coords.latitude.toFixed(2);
+                const lon = position.coords.longitude.toFixed(2);
+                speak(`أنت حالياً بالقرب من الإحداثيات: خط عرض ${lat} وخط طول ${lon}.`);
+            }, () => speak("يرجى السماح بالحصول على إذن الموقع وتفعيل الـ GPS."));
+        } else {
+            speak("خدمة الموقع الجغرافي غير مدعومة.");
         }
     });
 }
