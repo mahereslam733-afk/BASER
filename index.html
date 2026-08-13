@@ -1,25 +1,329 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق إبصار</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>تطبيق إبصار</h1>
-            <p>المساعد الذكي للمكفوفين وضعاف البصر</p>
-        </header>
 
-        <main>
-            <button id="speakBtn" class="main-btn">اضغط هنا للنطق وسماع التوجيهات</button>
-            <div id="output" class="output-box">في انتظار المصر المسموع...</div>
-        </main>
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="theme-color"
+    content="#123"
+  >
+
+  <title>بصير - مساعد المكفوفين</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- مكتبة قراءة النصوص -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
+  </script>
+</head>
+
+<body>
+
+  <!-- =====================
+       رأس التطبيق
+  ====================== -->
+
+  <header class="app-header">
+
+    <div class="logo">
+      👨‍🦯
     </div>
 
-    <script src="app.js"></script>
-    <script src="sw.js"></script>
+    <div>
+      <h1>بصير</h1>
+      <p>مساعدك الذكي للمكفوفين</p>
+    </div>
+
+    <button
+      id="speakTitle"
+      class="icon-button"
+      aria-label="نطق اسم التطبيق">
+      🔊
+    </button>
+
+  </header>
+
+
+  <!-- =====================
+       رسالة الحالة
+  ====================== -->
+
+  <main>
+
+    <section class="welcome">
+
+      <h2>
+        مرحبًا بك في بصير
+      </h2>
+
+      <p id="statusText">
+        اختر الخدمة التي تريد استخدامها
+      </p>
+
+      <p
+        id="heard"
+        class="heard">
+      </p>
+
+    </section>
+
+
+    <!-- =====================
+         الخدمات الرئيسية
+    ====================== -->
+
+    <section class="features">
+
+      <button
+        class="feature"
+        data-action="read">
+
+        <span class="feature-icon">
+          📖
+        </span>
+
+        <span>
+          قراءة النصوص
+        </span>
+
+      </button>
+
+
+      <button
+        class="feature"
+        data-action="objects">
+
+        <span class="feature-icon">
+          👁️
+        </span>
+
+        <span>
+          التعرف على الأشياء
+        </span>
+
+      </button>
+
+
+      <button
+        class="feature"
+        data-action="currency">
+
+        <span class="feature-icon">
+          💵
+        </span>
+
+        <span>
+          التعرف على العملات
+        </span>
+
+      </button>
+
+
+      <button
+        class="feature"
+        data-action="volunteer">
+
+        <span class="feature-icon">
+          👤
+        </span>
+
+        <span>
+          مساعدة بشرية
+        </span>
+
+      </button>
+
+
+      <button
+        class="feature"
+        data-action="navigate">
+
+        <span class="feature-icon">
+          🗺️
+        </span>
+
+        <span>
+          الملاحة والتوجيه
+        </span>
+
+      </button>
+
+
+      <button
+        class="feature"
+        data-action="audio">
+
+        <span class="feature-icon">
+          🎧
+        </span>
+
+        <span>
+          المحتوى الصوتي
+        </span>
+
+      </button>
+
+
+      <button
+        class="feature"
+        data-action="daily">
+
+        <span class="feature-icon">
+          📱
+        </span>
+
+        <span>
+          الخدمات اليومية
+        </span>
+
+      </button>
+
+
+      <button
+        class="feature"
+        data-action="offline">
+
+        <span class="feature-icon">
+          📴
+        </span>
+
+        <span>
+          الاستخدام بدون إنترنت
+        </span>
+
+      </button>
+
+    </section>
+
+
+    <!-- =====================
+         الأوامر الصوتية
+    ====================== -->
+
+    <section class="voice-section">
+
+      <button
+        id="voiceBtn"
+        class="voice-button">
+
+        🎙️
+
+        <span>
+          تحدث مع بصير
+        </span>
+
+      </button>
+
+      <p>
+        يمكنك قول:
+        «اقرأ النص»
+        أو
+        «تعرف على الشيء»
+        أو
+        «تعرف على العملة»
+      </p>
+
+    </section>
+
+
+    <!-- =====================
+         المساعدة
+    ====================== -->
+
+    <section class="bottom-actions">
+
+      <button id="helpBtn">
+        ❓ مساعدة
+      </button>
+
+      <button
+        id="installBtn"
+        hidden>
+
+        📲 تثبيت بصير
+
+      </button>
+
+    </section>
+
+  </main>
+
+
+  <!-- =====================
+       نافذة الكاميرا
+  ====================== -->
+
+  <section
+    id="cameraPanel"
+    class="camera-panel"
+    hidden>
+
+    <div class="camera-box">
+
+      <h2>
+        الكاميرا
+      </h2>
+
+      <video
+        id="camera"
+        autoplay
+        playsinline>
+      </video>
+
+      <canvas
+        id="canvas"
+        hidden>
+      </canvas>
+
+      <div class="camera-buttons">
+
+        <button
+          id="capture"
+          class="capture-button">
+
+          📸 التقاط الصورة
+
+        </button>
+
+        <button
+          id="closeCamera"
+          class="close-button">
+
+          ✖ إغلاق
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================
+       اختيار صورة من الهاتف
+  ====================== -->
+
+  <input
+    id="fileInput"
+    type="file"
+    accept="image/*"
+    hidden>
+
+
+  <!-- =====================
+       JavaScript
+  ====================== -->
+
+  <script src="app.js"></script>
+
 </body>
-</html>
+
+    </html>
