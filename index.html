@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تطبيق بصير - المراحل من 1 إلى 7</title>
+    <title>تطبيق بصير - النسخة الكاملة (المراحل 1 - 8)</title>
     <style>
         * {
             box-sizing: border-box;
@@ -121,7 +121,7 @@
         <h1>تطبيق بصير</h1>
     </header>
 
-    <!-- التحكم بسرعة الصوت -->
+    <!-- شريط التحكم بسرعة الصوت -->
     <div class="speed-box">
         <label for="speedRange">سرعة الصوت:</label>
         <input type="range" id="speedRange" min="0.5" max="1.5" step="0.1" value="0.9" aria-label="تغيير سرعة الصوت">
@@ -137,6 +137,7 @@
             <button class="btn-large" data-screen="navScreen" aria-label="القسم الخامس: الملاحة والاتجاهات">القسم الخامس: الملاحة والاتجاهات</button>
             <button class="btn-large" data-screen="libraryScreen" aria-label="القسم السادس: المكتبة الصوتية">القسم السادس: المكتبة الصوتية</button>
             <button class="btn-large" data-screen="dailyScreen" aria-label="القسم السابع: الخدمات اليومية والألوان">القسم السابع: الخدمات اليومية والألوان</button>
+            <button class="btn-large" data-screen="settingsScreen" aria-label="القسم الثامن: إعدادات التطبيق">القسم الثامن: إعدادات التطبيق</button>
         </div>
     </main>
 
@@ -186,12 +187,20 @@
         <button id="stopAudioBtn" class="action-btn btn-red" aria-label="إيقاف القراءة الصوتية الحالية">إيقاف الصوت فوراً</button>
     </section>
 
-    <!-- 7. شاشة الخدمات اليومية والألوان (الجديدة) -->
+    <!-- 7. شاشة الخدمات اليومية والألوان -->
     <section id="dailyScreen" class="screen">
         <h2>قسم الخدمات اليومية والألوان</h2>
         <p style="font-size: 1.2rem;">التعرف على ألوان الملابس، ومعرفة الوقت والتاريخ الحالي.</p>
         <button id="colorBtn" class="action-btn btn-yellow" aria-label="التقاط صورة للتعرف على لون الشيء أو القماش">التعرف على اللون</button>
         <button id="dateTimeBtn" class="action-btn btn-blue" aria-label="قراءة الوقت والتاريخ الحالي">معرفة الوقت والتاريخ</button>
+    </section>
+
+    <!-- 8. شاشة الإعدادات المتقدمة (الجديدة) -->
+    <section id="settingsScreen" class="screen">
+        <h2>قسم الإعدادات والتحكم</h2>
+        <p style="font-size: 1.2rem;">التحكم في التطبيق وإعادة الضبط الاختبارية.</p>
+        <button id="testVoiceBtn" class="action-btn btn-blue" aria-label="اختبار جودة المحرك الصوتي لتطبيق بصير">اختبار المحرك الصوتي</button>
+        <button id="resetAppBtn" class="action-btn btn-red" aria-label="إعادة تعيين وإعادة تحميل التطبيق">إعادة تحميل التطبيق</button>
     </section>
 
     <!-- مدخلات الكاميرا الخفية -->
@@ -202,10 +211,10 @@
 
     <!-- صندوق الإشعارات والقراءة -->
     <div id="status-box" aria-live="assertive" role="status">
-        مرحباً بك في تطبيق بصير. تم تحميل المراحل السبع بنجاح.
+        مرحباً بك في تطبيق بصير. اكتملت المراحل الثمانية بنجاح!
     </div>
 
-    <!-- لوحة قماشية خفية لمعالجة الألوان -->
+    <!-- لوحة خفية لمعالجة الألوان -->
     <canvas id="colorCanvas" style="display:none;"></canvas>
 
     <script src="app.js"></script>
