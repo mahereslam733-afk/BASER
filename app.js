@@ -7,8 +7,8 @@ const video = $("camera");
 const canvas = $("canvas");
 
 let stream = null;
+let currentMode = "read";
 let deferredPrompt = null;
-let currentMode = null;
 
 /* =========================
    النطق العربي
@@ -26,27 +26,23 @@ function speak(text) {
 
   const voices = speechSynthesis.getVoices();
 
-  // البحث عن صوت عربي حقيقي في الجهاز
   const arabicVoice =
     voices.find(v => v.lang === "ar-EG") ||
     voices.find(v => v.lang.startsWith("ar"));
 
-  const u = new SpeechSynthesisUtterance(text);
+  const voice = new SpeechSynthesisUtterance(text);
 
-  u.lang = arabicVoice ? arabicVoice.lang : "ar-EG";
-  u.voice = arabicVoice || null;
-  u.rate = 0.85;
-  u.pitch = 1;
-  u.volume = 1;
+  voice.lang = arabicVoice ? arabicVoice.lang : "ar-EG";
+  if (arabicVoice) voice.voice = arabicVoice;
 
-  speechSynthesis.speak(u);
+  voice.rate = 0.8;
+  voice.pitch = 1;
+  voice.volume = 1;
+
+  speechSynthesis.speak(voice);
 
   if (heard) heard.textContent = text;
 }
-
-speechSynthesis?.addEventListener?.("voiceschanged", () => {
-  // تحميل الأصوات العربية عند توفرها
-});
 
 /* =========================
    الحالة
@@ -58,58 +54,34 @@ function status(text) {
 }
 
 /* =========================
-   عنوان التطبيق
-========================= */
-
-if ($("speakTitle")) {
-  $("speakTitle").onclick = () =>
-    speak("بصير، مساعدك الذكي اليومي للمكفوفين");
-}
-
-/* =========================
    الكاميرا
 ========================= */
 
-async function openCamera(mode = "read") {
-  currentMode = mode;
+async function openCamera(mode) {
+  currentMode = mode || "read";
 
   if (panel) panel.hidden = false;
 
   try {
     stream = await navigator.mediaDevices.getUserMedia({
       video: {
-        facingMode: {
-          ideal: "environment"
-        }
+        facingMode: { ideal: "environment" }
       },
       audio: false
     });
 
-    if (video) {
-      video.srcObject = stream;
+    video.srcObject = stream;
+
+    if (currentMode === "read") {
+      speak("الكاميرا جاهزة. وجهها إلى النص ثم اضغط التقاط.");
+    } else if (currentMode === "objects") {
+      speak("وجه الكاميرا إلى الشيء ثم اضغط التقاط.");
+    } else if (currentMode === "currency") {
+      speak("وجه الكاميرا إلى العملة ثم اضغط التقاط.");
     }
-
-    let message = "الكاميرا جاهزة.";
-
-    if (mode === "read") {
-      message += " وجه الكاميرا إلى النص أو المستند.";
-    }
-
-    if (mode === "objects") {
-      message += " وجه الكاميرا إلى الشيء الذي تريد التعرف عليه.";
-    }
-
-    if (mode === "currency") {
-      message += " وجه الكاميرا إلى العملة بوضوح.";
-    }
-
-    status(message);
 
   } catch (error) {
-
-    status(
-      "تعذر فتح الكاميرا. يمكنك اختيار صورة من الهاتف."
-    );
+    speak("تعذر فتح الكاميرا. يمكنك اختيار صورة من الهاتف.");
 
     if ($("fileInput")) {
       $("fileInput").click();
@@ -124,87 +96,15 @@ function closeCamera() {
 
   stream = null;
 
-  if (video) {
-    video.srcObject = null;
-  }
-
-  if (panel) {
-    panel.hidden = true;
-  }
-
-  currentMode = null;
-}
-
-/* =========================
-   قراءة النصوص
-========================= */
-
-async function readImage(file) {
-
-  if (!file) return;
-
-  status("جاري تحليل الصورة، انتظر قليلًا.");
-
-  try {
-
-    if (typeof Tesseract === "undefined") {
-      speak(
-        "محرك قراءة النصوص غير متاح حاليًا. تأكد من اتصال التطبيق بالمكتبة."
-      );
-      return;
-    }
-
-    const result = await Tesseract.recognize(
-      file,
-      "ara+eng",
-      {
-        logger: message => {
-
-          if (
-            message.status === "recognizing text" &&
-            statusText
-          ) {
-            const percent =
-              Math.round((message.progress || 0) * 100);
-
-            statusText.textContent =
-              `جاري قراءة النص ${percent} بالمئة`;
-          }
-        }
-      }
-    );
-
-    let text =
-      (result?.data?.text || "")
-        .replace(/\s+/g, " ")
-        .trim();
-
-    if (!text) {
-      speak("لم أجد نصًا واضحًا في الصورة.");
-      return;
-    }
-
-    // تنظيف بعض الرموز الغريبة
-    text = cleanArabicText(text);
-
-    speak("النص المقروء هو: " + text);
-
-  } catch (error) {
-
-    console.error(error);
-
-    speak(
-      "حدث خطأ أثناء قراءة الصورة. حاول التقاط صورة أوضح."
-    );
-  }
+  if (video) video.srcObject = null;
+  if (panel) panel.hidden = true;
 }
 
 /* =========================
    تنظيف النص
 ========================= */
 
-function cleanArabicText(text) {
-
+function cleanText(text) {
   return text
     .replace(/[^\u0600-\u06FFa-zA-Z0-9٠-٩.,!?؟،؛:()\-\s]/g, " ")
     .replace(/\s+/g, " ")
@@ -212,7 +112,74 @@ function cleanArabicText(text) {
 }
 
 /* =========================
-   التقاط صورة
+   قراءة النص العربي
+========================= */
+
+async function readImage(file) {
+  if (!file) return;
+
+  statusText.textContent = "جاري قراءة النص...";
+
+  try {
+
+    if (typeof Tesseract === "undefined") {
+      speak("محرك قراءة النصوص غير متاح.");
+      return;
+    }
+
+    /*
+      نستخدم العربية فقط حتى لا يحاول المحرك
+      تفسير النص العربي كحروف إنجليزية.
+    */
+
+    const result = await Tesseract.recognize(
+      file,
+      "ara",
+      {
+        logger: data => {
+
+          if (
+            data.status === "recognizing text" &&
+            statusText
+          ) {
+            const percent =
+              Math.round((data.progress || 0) * 100);
+
+            statusText.textContent =
+              "جاري قراءة النص " + percent + " بالمئة";
+          }
+        }
+      }
+    );
+
+    let text =
+      result &&
+      result.data &&
+      result.data.text
+        ? result.data.text
+        : "";
+
+    text = cleanText(text);
+
+    if (!text) {
+      speak("لم أجد نصًا عربيًا واضحًا في الصورة.");
+      return;
+    }
+
+    speak("النص المقروء: " + text);
+
+  } catch (error) {
+
+    console.error(error);
+
+    speak(
+      "حدث خطأ أثناء قراءة النص. حاول تصوير الورقة بصورة أوضح."
+    );
+  }
+}
+
+/* =========================
+   التقاط الصورة
 ========================= */
 
 if ($("capture")) {
@@ -267,7 +234,8 @@ if ($("fileInput")) {
 
   $("fileInput").onchange = event => {
 
-    const file = event.target.files?.[0];
+    const file = event.target.files &&
+                 event.target.files[0];
 
     if (!file) return;
 
@@ -291,18 +259,17 @@ if ($("fileInput")) {
 
 async function recognizeObjects(file) {
 
-  status(
-    "تم التقاط الصورة. جاري التعرف على الشيء."
+  speak(
+    "جاري تحليل الصورة."
   );
 
   /*
-   * ملاحظة:
-   * هنا يجب ربط نموذج ذكاء اصطناعي حقيقي.
-   * الكود القديم لم يكن ينفذ التعرف فعليًا.
-   */
+    سيتم ربط هذه الوظيفة لاحقًا
+    بمحرك ذكاء اصطناعي حقيقي.
+  */
 
   speak(
-    "وظيفة التعرف على الأشياء جاهزة للربط بمحرك الذكاء الاصطناعي. لم يتم التعرف على شيء لأن نموذج التعرف غير مربوط بالتطبيق حتى الآن."
+    "التعرف على الأشياء يحتاج إلى ربط نموذج ذكاء اصطناعي بالتطبيق."
   );
 }
 
@@ -312,16 +279,17 @@ async function recognizeObjects(file) {
 
 async function recognizeCurrency(file) {
 
-  status(
-    "تم التقاط صورة العملة. جاري تحليلها."
+  speak(
+    "جاري تحليل صورة العملة."
   );
 
   /*
-   * لا ندعي معرفة العملة بدون نموذج حقيقي.
-   */
+    سيتم ربط هذه الوظيفة لاحقًا
+    بنموذج التعرف على العملات المصرية.
+  */
 
   speak(
-    "وظيفة التعرف على العملات جاهزة للربط بمحرك ذكاء اصطناعي للتعرف على العملات المصرية."
+    "التعرف على العملات يحتاج إلى ربط نموذج ذكاء اصطناعي بالتطبيق."
   );
 }
 
@@ -349,13 +317,13 @@ function action(name) {
   if (name === "volunteer") {
 
     const ok = confirm(
-      "سيتم فتح واتساب لطلب مساعدة بشرية. هل تريد المتابعة؟"
+      "هل تريد طلب مساعدة بشرية؟"
     );
 
     if (ok) {
 
       const message =
-        "مرحبًا، أحتاج إلى مساعدة بصرية من متطوع عبر تطبيق بصير.";
+        "مرحبًا، أحتاج إلى مساعدة بصرية من خلال تطبيق بصير.";
 
       window.open(
         "https://wa.me/?text=" +
@@ -370,11 +338,7 @@ function action(name) {
   if (name === "navigate") {
 
     if (!navigator.geolocation) {
-
-      speak(
-        "الملاحة غير مدعومة على هذا الجهاز."
-      );
-
+      speak("الملاحة غير مدعومة على هذا الجهاز.");
       return;
     }
 
@@ -384,26 +348,28 @@ function action(name) {
 
       position => {
 
-        const latitude =
+        const lat =
           position.coords.latitude;
 
-        const longitude =
+        const lng =
           position.coords.longitude;
 
         const url =
-          `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
+          "https://www.google.com/maps/dir/?api=1&destination=" +
+          lat +
+          "," +
+          lng;
 
         window.open(url, "_blank");
 
         speak(
-          "تم فتح خرائط جوجل. اختر وجهتك للحصول على التوجيه."
+          "تم فتح الخرائط. اختر وجهتك للحصول على التوجيه."
         );
       },
 
       () => {
-
         speak(
-          "لم أستطع الوصول إلى موقعك. فعّل إذن الموقع من إعدادات الهاتف."
+          "لم أستطع الوصول إلى موقعك. فعّل إذن الموقع."
         );
       }
     );
@@ -412,29 +378,23 @@ function action(name) {
   }
 
   if (name === "audio") {
-
     speak(
-      "قسم المحتوى الصوتي يتيح إضافة الكتب والمقالات والمحتوى العربي."
+      "قسم المحتوى الصوتي للمكفوفين."
     );
-
     return;
   }
 
   if (name === "daily") {
-
     speak(
-      "الخدمات اليومية تشمل الاتصال والرسائل والطقس والمواعيد والتنبيهات."
+      "الخدمات اليومية تشمل الاتصال والرسائل والطقس والمواعيد."
     );
-
     return;
   }
 
   if (name === "offline") {
-
     speak(
-      "بعض وظائف التطبيق يمكن أن تعمل بدون إنترنت، أما التعرف المتقدم بالذكاء الاصطناعي فيحتاج إلى نموذج محلي أو اتصال بالإنترنت."
+      "بعض وظائف بصير يمكن أن تعمل بدون إنترنت."
     );
-
     return;
   }
 }
@@ -448,16 +408,13 @@ document
   .forEach(button => {
 
     button.onclick = () => {
-
-      const actionName =
-        button.dataset.action;
-
-      action(actionName);
+      action(button.dataset.action);
     };
+
   });
 
 /* =========================
-   زر المساعدة
+   المساعدة
 ========================= */
 
 if ($("helpBtn")) {
@@ -465,42 +422,41 @@ if ($("helpBtn")) {
   $("helpBtn").onclick = () => {
 
     speak(
-      "بصير مساعد ذكي للمكفوفين. يمكنك قراءة النصوص، التعرف على الأشياء والعملات، طلب مساعدة بشرية، استخدام الملاحة، والاستماع إلى المحتوى الصوتي."
+      "بصير يساعدك في قراءة النصوص والتعرف البصري والملاحة وطلب المساعدة البشرية."
     );
+
   };
 }
 
 /* =========================
-   الأوامر الصوتية
+   الأوامر الصوتية بالعربي
 ========================= */
 
 if ($("voiceBtn")) {
 
   $("voiceBtn").onclick = () => {
 
-    const SpeechRecognition =
+    const Recognition =
       window.SpeechRecognition ||
       window.webkitSpeechRecognition;
 
-    if (!SpeechRecognition) {
+    if (!Recognition) {
 
       speak(
-        "التعرف على الكلام غير مدعوم في هذا المتصفح."
+        "التعرف على الصوت غير مدعوم في المتصفح."
       );
 
       return;
     }
 
     const recognition =
-      new SpeechRecognition();
+      new Recognition();
 
     recognition.lang = "ar-EG";
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
-    speak(
-      "تفضل، بصير يستمع إليك."
-    );
+    speak("تفضل، أنا أستمع إليك.");
 
     try {
       recognition.start();
@@ -511,7 +467,8 @@ if ($("voiceBtn")) {
     recognition.onresult = event => {
 
       const command =
-        event.results[0][0].transcript
+        event.results[0][0]
+          .transcript
           .trim();
 
       if (heard) {
@@ -526,7 +483,7 @@ if ($("voiceBtn")) {
       }
 
       else if (
-        /شيء|أشياء|جسم|تعرف على|صورة/.test(command)
+        /شيء|أشياء|جسم|صورة|تعرف/.test(command)
       ) {
         action("objects");
       }
@@ -538,20 +495,20 @@ if ($("voiceBtn")) {
       }
 
       else if (
-        /متطوع|مساعدة بشرية|ساعدني/.test(command)
+        /متطوع|مساعدة|ساعدني/.test(command)
       ) {
         action("volunteer");
       }
 
       else if (
-        /ملاحة|طريق|اتجاه|مكان|خريطة/.test(command)
+        /ملاحة|طريق|اتجاه|خريطة|مكان/.test(command)
       ) {
         action("navigate");
       }
 
       else {
         speak(
-          "لم أفهم الأمر. يمكنك قول: اقرأ النص، تعرف على الشيء، تعرف على العملة، اطلب متطوع، أو افتح الملاحة."
+          "لم أفهم الأمر. قل اقرأ النص أو تعرف على الشيء أو تعرف على العملة أو افتح الملاحة."
         );
       }
     };
@@ -589,7 +546,7 @@ if ($("installBtn")) {
 
     if (!deferredPrompt) {
       speak(
-        "التطبيق مثبت بالفعل أو التثبيت غير متاح حاليًا."
+        "التثبيت غير متاح حاليًا."
       );
       return;
     }
@@ -603,7 +560,7 @@ if ($("installBtn")) {
 }
 
 /* =========================
-   Service Worker
+   تشغيل التطبيق
 ========================= */
 
 if ("serviceWorker" in navigator) {
@@ -611,16 +568,9 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker
     .register("sw.js")
     .catch(error => {
-      console.log(
-        "Service Worker:",
-        error
-      );
+      console.log(error);
     });
 }
-
-/* =========================
-   رسالة البداية
-========================= */
 
 window.addEventListener(
   "load",
@@ -632,6 +582,7 @@ window.addEventListener(
         "مرحبًا بك في بصير، مساعدك الذكي للمكفوفين."
       );
 
-    }, 800);
+    }, 1000);
+
   }
 );
