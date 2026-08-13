@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تطبيق بصير - المراحل من 1 إلى 6</title>
+    <title>تطبيق بصير - المراحل من 1 إلى 7</title>
     <style>
         * {
             box-sizing: border-box;
@@ -136,6 +136,7 @@
             <button class="btn-large" data-screen="humanHelpScreen" aria-label="القسم الرابع: مساعدة بشرية والطوارئ">القسم الرابع: مساعدة بشرية وطوارئ</button>
             <button class="btn-large" data-screen="navScreen" aria-label="القسم الخامس: الملاحة والاتجاهات">القسم الخامس: الملاحة والاتجاهات</button>
             <button class="btn-large" data-screen="libraryScreen" aria-label="القسم السادس: المكتبة الصوتية">القسم السادس: المكتبة الصوتية</button>
+            <button class="btn-large" data-screen="dailyScreen" aria-label="القسم السابع: الخدمات اليومية والألوان">القسم السابع: الخدمات اليومية والألوان</button>
         </div>
     </main>
 
@@ -176,7 +177,7 @@
         <button id="whereAmIBtn" class="action-btn btn-blue" aria-label="معرفة اسم المكان والموقع الحالي">أين أنا الآن؟</button>
     </section>
 
-    <!-- 6. شاشة المكتبة الصوتية (الجديدة) -->
+    <!-- 6. شاشة المكتبة الصوتية -->
     <section id="libraryScreen" class="screen">
         <h2>قسم المكتبة الصوتية</h2>
         <p style="font-size: 1.2rem;">استمع للتعليمات والإرشادات الصوتية الخاصة بالتطبيق.</p>
@@ -185,15 +186,27 @@
         <button id="stopAudioBtn" class="action-btn btn-red" aria-label="إيقاف القراءة الصوتية الحالية">إيقاف الصوت فوراً</button>
     </section>
 
+    <!-- 7. شاشة الخدمات اليومية والألوان (الجديدة) -->
+    <section id="dailyScreen" class="screen">
+        <h2>قسم الخدمات اليومية والألوان</h2>
+        <p style="font-size: 1.2rem;">التعرف على ألوان الملابس، ومعرفة الوقت والتاريخ الحالي.</p>
+        <button id="colorBtn" class="action-btn btn-yellow" aria-label="التقاط صورة للتعرف على لون الشيء أو القماش">التعرف على اللون</button>
+        <button id="dateTimeBtn" class="action-btn btn-blue" aria-label="قراءة الوقت والتاريخ الحالي">معرفة الوقت والتاريخ</button>
+    </section>
+
     <!-- مدخلات الكاميرا الخفية -->
     <input type="file" id="ocrCameraInput" accept="image/*" capture="environment">
     <input type="file" id="objectCameraInput" accept="image/*" capture="environment">
     <input type="file" id="moneyCameraInput" accept="image/*" capture="environment">
+    <input type="file" id="colorCameraInput" accept="image/*" capture="environment">
 
     <!-- صندوق الإشعارات والقراءة -->
     <div id="status-box" aria-live="assertive" role="status">
-        مرحباً بك في تطبيق بصير. تم تحميل المراحل الست بنجاح.
+        مرحباً بك في تطبيق بصير. تم تحميل المراحل السبع بنجاح.
     </div>
+
+    <!-- لوحة قماشية خفية لمعالجة الألوان -->
+    <canvas id="colorCanvas" style="display:none;"></canvas>
 
     <script src="app.js"></script>
 </body>
