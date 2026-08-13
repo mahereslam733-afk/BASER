@@ -1,14 +1,13 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const btn = document.getElementById('speak');
+document.getElementById('speak').addEventListener('click', function() {
+    // إيقاف أي صوت شغال حالياً
+    window.speechSynthesis.cancel();
     
-    if(btn) {
-        btn.addEventListener('click', function() {
-            // نغير النص هنا براحتك
-            let text = "أهلاً بك في تطبيق أبصار، أنا هنا لمساعدتك";
-            
-            let utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'ar-SA'; 
-            window.speechSynthesis.speak(utterance);
-        });
-    }
+    // تعريف النص
+    const utterance = new SpeechSynthesisUtterance("أهلاً بك في تطبيق أبصار، أنا أعمل الآن بالعربية");
+    
+    // ضبط اللغة
+    utterance.lang = 'ar-SA';
+    
+    // النطق
+    window.speechSynthesis.speak(utterance);
 });
