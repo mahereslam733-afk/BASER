@@ -90,11 +90,12 @@
             border: 3px solid #FFFFFF;
             cursor: pointer;
             width: 100%;
-            margin-top: 15px;
+            margin-top: 10px;
         }
         .btn-blue { background-color: #0055FF; color: #FFFFFF; }
         .btn-green { background-color: #008000; color: #FFFFFF; }
         .btn-yellow { background-color: #D4A000; color: #000000; }
+        .btn-red { background-color: #CC0000; color: #FFFFFF; }
 
         #status-box {
             background-color: #111111;
@@ -149,25 +150,32 @@
     <!-- 2. شاشة التعرف على الأشياء -->
     <section id="objectScreen" class="screen">
         <h2>قسم التعرف على الأشياء</h2>
-        <p style="font-size: 1.3rem;">وجه الكاميرا نحو الشيك أو العنصر الذي تريد التعرف عليه.</p>
+        <p style="font-size: 1.3rem;">وجه الكاميرا نحو الشيء المطلوب التعرف عليه.</p>
         <button id="captureObjectBtn" class="action-btn btn-green" aria-label="التقاط صورة للتعرف على الشيء">👁️ التعرف على الشيء أمامك</button>
     </section>
 
     <!-- 3. شاشة التعرف على العملات -->
     <section id="moneyScreen" class="screen">
         <h2>قسم التعرف على العملات</h2>
-        <p style="font-size: 1.3rem;">وجه الكاميرا بوضوح نحو الورقة النقدية المصرية.</p>
+        <p style="font-size: 1.3rem;">وجه الكاميرا نحو الورقة النقدية المصرية.</p>
         <button id="captureMoneyBtn" class="action-btn btn-yellow" aria-label="التقاط صورة للتعرف على العملة النقدية">💰 التعرف على العملة</button>
     </section>
 
-    <!-- الشاشات القادمة -->
-    <section id="humanHelpScreen" class="screen"><h2>قسم المساعدة البشرية</h2></section>
+    <!-- 4. شاشة المساعدة البشرية (المرحلة الرابعة) -->
+    <section id="humanHelpScreen" class="screen">
+        <h2>قسم المساعدة البشرية والطوارئ</h2>
+        <p style="font-size: 1.3rem;">يمكنك الاتصال بمتطوع أو إرسال موقعك الحالي فوراً عند الحاجة.</p>
+        <button id="callVolunteerBtn" class="action-btn btn-red" aria-label="اتصال مباشر بالمساعد أو المتطوع">📞 الاتصال بالمساعد المباشر</button>
+        <button id="sendLocationBtn" class="action-btn btn-blue" aria-label="تحديد ومشاركة موقعي الجغرافي للطوارئ">📍 تحديد موقعي الجغرافي (GPS)</button>
+    </section>
+
+    <!-- باقي الشاشات -->
     <section id="navScreen" class="screen"><h2>قسم الملاحة</h2></section>
     <section id="libraryScreen" class="screen"><h2>المكتبة الصوتية</h2></section>
     <section id="dailyScreen" class="screen"><h2>الخدمات اليومية</h2></section>
     <section id="settingsScreen" class="screen"><h2>الإعدادات</h2></section>
 
-    <!-- مدخلات الكاميرا الخفية لكل وظيفة -->
+    <!-- مدخلات الكاميرا الخفية -->
     <input type="file" id="ocrCameraInput" accept="image/*" capture="environment">
     <input type="file" id="objectCameraInput" accept="image/*" capture="environment">
     <input type="file" id="moneyCameraInput" accept="image/*" capture="environment">
