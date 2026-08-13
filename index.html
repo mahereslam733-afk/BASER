@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تطبيق بصير - المساعد الذكي</title>
+    <title>تطبيق بصير للمكفوفين</title>
     <style>
         * {
             box-sizing: border-box;
@@ -24,117 +24,132 @@
             padding: 10px 0;
             border-bottom: 4px solid #FFFF00;
             margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         h1 {
             color: #FFFF00;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
         }
+        /* زر الرجوع والمساعدة الثابتين */
+        .top-btn {
+            background: #333333;
+            color: #FFFF00;
+            border: 2px solid #FFFF00;
+            padding: 8px 15px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        /* الشاشات الفرعية تُخفى افتراضياً */
+        .screen { display: none; }
+        .screen.active { display: flex; flex-direction: column; gap: 15px; flex-grow: 1; }
+
         /* التحكم في سرعة الصوت */
-        .speed-control {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .speed-box {
             background: #111;
             padding: 10px;
             border: 2px solid #FFF;
             border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 15px;
         }
-        .speed-control label {
-            font-size: 1.3rem;
-            color: #FFFF00;
-            font-weight: bold;
-        }
-        .speed-control input {
-            width: 50%;
-            height: 25px;
-        }
-        /* شبكة الأزرار الكبيرة للمكفوفين */
+        .speed-box label { font-size: 1.3rem; color: #FFFF00; }
+        .speed-box input { width: 50%; height: 25px; }
+
+        /* شبكة الأزرار الكبيرة 8 وظائف */
         .grid-container {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 15px;
+            gap: 12px;
             flex-grow: 1;
         }
         .btn-large {
             width: 100%;
             padding: 20px;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: bold;
-            border: 4px solid #FFFFFF;
+            border: 3px solid #FFFFFF;
             border-radius: 15px;
             cursor: pointer;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            text-align: right;
+            background-color: #111111;
+            color: #FFFFFF;
         }
-        .btn-ocr { background-color: #0055FF; color: #FFFFFF; }
-        .btn-object { background-color: #008000; color: #FFFFFF; }
-        .btn-money { background-color: #CC8800; color: #FFFFFF; }
-        .btn-voice { background-color: #8800CC; color: #FFFFFF; }
-        .btn-volunteer { background-color: #CC0000; color: #FFFFFF; }
-        
+        .btn-large:focus, .btn-large:active {
+            background-color: #FFFF00;
+            color: #000000;
+            outline: none;
+        }
+
         #status-box {
             background-color: #111111;
-            border: 4px solid #FFFF00;
-            border-radius: 15px;
-            padding: 15px;
-            font-size: 1.5rem;
+            border: 3px solid #FFFF00;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 1.4rem;
             color: #00FF00;
             margin-top: 15px;
-            min-height: 90px;
             text-align: center;
+            min-height: 60px;
         }
-        input[type="file"] { display: none; }
     </style>
 </head>
 <body>
 
     <header>
+        <button id="backBtn" class="top-btn" aria-label="رجوع للشاشة الرئيسية" style="visibility: hidden;">⬅️ رجوع</button>
         <h1>تطبيق بصير</h1>
+        <button id="helpBtn" class="top-btn" aria-label="مساعدة واستعراض">❓ تعليمات</button>
     </header>
 
-    <!-- التحكم في سرعة الصوت -->
-    <div class="speed-control">
-        <label for="speedRange">سرعة الصوت:</label>
-        <input type="range" id="speedRange" min="0.5" max="1.5" step="0.1" value="0.9" aria-label="التحكم في سرعة نطق الصوت">
+    <!-- شاشة التحكم في الصوت -->
+    <div class="speed-box">
+        <label for="speedRange">سرعة القراءة الصوتية:</label>
+        <input type="range" id="speedRange" min="0.5" max="1.5" step="0.1" value="0.9" aria-label="تغيير سرعة الصوت">
     </div>
 
-    <main class="grid-container" role="main">
-        <!-- قراءة المستندات OCR -->
-        <button class="btn-large btn-ocr" id="ocrBtn" aria-label="اقرأ النص والمستندات">
-            📖 قراءة النص (OCR)
-        </button>
-
-        <!-- التعرف على الأشياء -->
-        <button class="btn-large btn-object" id="objectBtn" aria-label="التعرف على الأشياء والأشخاص">
-            👁️ التعرف على الأشياء
-        </button>
-
-        <!-- التعرف على العملة المصرية -->
-        <button class="btn-large btn-money" id="moneyBtn" aria-label="التعرف على العملات المصرية">
-            💰 التعرف على العملة
-        </button>
-
-        <!-- الأوامر الصوتية -->
-        <button class="btn-large btn-voice" id="voiceCmdBtn" aria-label="تفعيل الأوامر الصوتية">
-            🎙️ امر صوتي
-        </button>
-
-        <!-- طلب مساعدة بشرية -->
-        <button class="btn-large btn-volunteer" id="volunteerBtn" aria-label="طلب مساعدة من متطوع">
-            🧑‍🤝‍🧑 طلب متطوع
-        </button>
+    <!-- الشاشة الرئيسية (8 أزرار) -->
+    <main id="homeScreen" class="screen active">
+        <div class="grid-container" role="region" aria-label="القائمة الرئيسية">
+            <button class="btn-large" data-screen="ocrScreen" aria-label="1. قراءة النصوص والمستندات">📖 1. قراءة النصوص</button>
+            <button class="btn-large" data-screen="objectScreen" aria-label="2. التعرف على الأشياء والصور">👁️ 2. التعرف على الأشياء</button>
+            <button class="btn-large" data-screen="moneyScreen" aria-label="3. التعرف على العملات">💰 3. التعرف على العملات</button>
+            <button class="btn-large" data-screen="humanHelpScreen" aria-label="4. مساعدة بشرية ومتطوع">👨‍🦯 4. مساعدة بشرية</button>
+            <button class="btn-large" data-screen="navScreen" aria-label="5. الملاحة والتوجيه">🧭 5. الملاحة والاتجاهات</button>
+            <button class="btn-large" data-screen="libraryScreen" aria-label="6. المكتبة والمحتوى الصوتي">📚 6. المكتبة الصوتية</button>
+            <button class="btn-large" data-screen="dailyScreen" aria-label="7. الخدمات اليومية والألوان">🏠 7. الخدمات اليومية</button>
+            <button class="btn-large" data-screen="settingsScreen" aria-label="8. الإعدادات والتحكم">⚙️ 8. الإعدادات</button>
+        </div>
     </main>
 
-    <!-- مدخل الكاميرا الخفي -->
-    <input type="file" id="cameraInput" accept="image/*" capture="environment">
+    <!-- شاشة فرعية تجريبية (قراءة النصوص) -->
+    <section id="ocrScreen" class="screen">
+        <h2>قسم قراءة النصوص</h2>
+        <p style="font-size: 1.3rem;">هذه الشاشة مخصصة لقراءة النصوص. سيتم ربط الكاميرا هنا في المرحلة الثانية.</p>
+    </section>
 
-    <!-- شاشة إظهار النتائج للـ TalkBack -->
+    <!-- شاشة فرعية تجريبية (التعرف على الأشياء) -->
+    <section id="objectScreen" class="screen">
+        <h2>قسم التعرف على الأشياء</h2>
+        <p style="font-size: 1.3rem;">سيتم ربط نموذج الذكاء الاصطناعي هنا في المرحلة الثالثة.</p>
+    </section>
+
+    <!-- باقي الشاشات الفرعية بنفس الهيكل البسيط... -->
+    <section id="moneyScreen" class="screen"><h2>قسم العملات</h2></section>
+    <section id="humanHelpScreen" class="screen"><h2>قسم المساعدة البشرية</h2></section>
+    <section id="navScreen" class="screen"><h2>قسم الملاحة</h2></section>
+    <section id="libraryScreen" class="screen"><h2>المكتبة الصوتية</h2></section>
+    <section id="dailyScreen" class="screen"><h2>الخدمات اليومية</h2></section>
+    <section id="settingsScreen" class="screen"><h2>الإعدادات</h2></section>
+
+    <!-- صندوق الإشعارات الصوتي والمكتوب -->
     <div id="status-box" aria-live="assertive" role="status">
-        مرحباً بك في تطبيق بصير. اختر إحدى الخدمات أو اضغط على الأمر الصوتي.
+        مرحباً بك في تطبيق بصير. الشاشة الرئيسية معروضة الآن.
     </div>
 
     <script src="app.js"></script>
