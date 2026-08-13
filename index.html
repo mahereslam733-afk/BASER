@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تطبيق بصير للمكفوفين</title>
+    <title>تطبيق بصير - المراحل من 1 إلى 5</title>
     <style>
         * {
             box-sizing: border-box;
@@ -30,14 +30,14 @@
         }
         h1 {
             color: #FFFF00;
-            font-size: 2.2rem;
+            font-size: 2rem;
         }
         .top-btn {
             background: #333333;
             color: #FFFF00;
             border: 2px solid #FFFF00;
             padding: 8px 15px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
@@ -55,7 +55,7 @@
             align-items: center;
             margin-bottom: 15px;
         }
-        .speed-box label { font-size: 1.3rem; color: #FFFF00; }
+        .speed-box label { font-size: 1.2rem; color: #FFFF00; }
         .speed-box input { width: 50%; height: 25px; }
 
         .grid-container {
@@ -67,7 +67,7 @@
         .btn-large {
             width: 100%;
             padding: 20px;
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: bold;
             border: 3px solid #FFFFFF;
             border-radius: 15px;
@@ -84,7 +84,7 @@
 
         .action-btn {
             padding: 22px;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: bold;
             border-radius: 15px;
             border: 3px solid #FFFFFF;
@@ -96,17 +96,18 @@
         .btn-green { background-color: #008000; color: #FFFFFF; }
         .btn-yellow { background-color: #D4A000; color: #000000; }
         .btn-red { background-color: #CC0000; color: #FFFFFF; }
+        .btn-purple { background-color: #800080; color: #FFFFFF; }
 
         #status-box {
             background-color: #111111;
             border: 3px solid #FFFF00;
             border-radius: 10px;
             padding: 12px;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             color: #00FF00;
             margin-top: 15px;
             text-align: center;
-            min-height: 80px;
+            min-height: 70px;
             line-height: 1.4;
         }
         
@@ -116,64 +117,63 @@
 <body>
 
     <header>
-        <button id="backBtn" class="top-btn" aria-label="رجوع للشاشة الرئيسية" style="visibility: hidden;">⬅️ رجوع</button>
+        <button id="backBtn" class="top-btn" aria-label="رجوع للشاشة الرئيسية" style="visibility: hidden;">رجوع للخلف</button>
         <h1>تطبيق بصير</h1>
-        <button id="helpBtn" class="top-btn" aria-label="مساعدة واستعراض">❓ تعليمات</button>
     </header>
 
+    <!-- التحكم بسرعة الصوت -->
     <div class="speed-box">
-        <label for="speedRange">سرعة القراءة الصوتية:</label>
+        <label for="speedRange">سرعة الصوت:</label>
         <input type="range" id="speedRange" min="0.5" max="1.5" step="0.1" value="0.9" aria-label="تغيير سرعة الصوت">
     </div>
 
     <!-- الشاشة الرئيسية -->
     <main id="homeScreen" class="screen active">
-        <div class="grid-container" role="region" aria-label="القائمة الرئيسية">
-            <button class="btn-large" data-screen="ocrScreen" aria-label="1. قراءة النصوص والمستندات">📖 1. قراءة النصوص</button>
-            <button class="btn-large" data-screen="objectScreen" aria-label="2. التعرف على الأشياء والصور">👁️ 2. التعرف على الأشياء</button>
-            <button class="btn-large" data-screen="moneyScreen" aria-label="3. التعرف على العملات">💰 3. التعرف على العملات</button>
-            <button class="btn-large" data-screen="humanHelpScreen" aria-label="4. مساعدة بشرية ومتطوع">👨‍🦯 4. مساعدة بشرية</button>
-            <button class="btn-large" data-screen="navScreen" aria-label="5. الملاحة والتوجيه">🧭 5. الملاحة والاتجاهات</button>
-            <button class="btn-large" data-screen="libraryScreen" aria-label="6. المكتبة والمحتوى الصوتي">📚 6. المكتبة الصوتية</button>
-            <button class="btn-large" data-screen="dailyScreen" aria-label="7. الخدمات اليومية والألوان">🏠 7. الخدمات اليومية</button>
-            <button class="btn-large" data-screen="settingsScreen" aria-label="8. الإعدادات والتحكم">⚙️ 8. الإعدادات</button>
+        <div class="grid-container">
+            <button class="btn-large" data-screen="ocrScreen" aria-label="القسم الأول: قراءة النصوص والمستندات">القسم الأول: قراءة النصوص</button>
+            <button class="btn-large" data-screen="objectScreen" aria-label="القسم الثاني: التعرف على الأشياء والصور">القسم الثاني: التعرف على الأشياء</button>
+            <button class="btn-large" data-screen="moneyScreen" aria-label="القسم الثالث: التعرف على العملات النقدية">القسم الثالث: التعرف على العملات</button>
+            <button class="btn-large" data-screen="humanHelpScreen" aria-label="القسم الرابع: مساعدة بشرية والطوارئ">القسم الرابع: مساعدة بشرية وطوارئ</button>
+            <button class="btn-large" data-screen="navScreen" aria-label="القسم الخامس: الملاحة والاتجاهات">القسم الخامس: الملاحة والاتجاهات</button>
         </div>
     </main>
 
-    <!-- 1. شاشة قراءة النصوص OCR -->
+    <!-- 1. شاشة قراءة النصوص -->
     <section id="ocrScreen" class="screen">
         <h2>قسم قراءة النصوص</h2>
-        <p style="font-size: 1.3rem;">وجه الكاميرا نحو الورقة ثم اضغط على الزر بالأسفل.</p>
-        <button id="captureOcrBtn" class="action-btn btn-blue" aria-label="التقاط صورة للورقة وقراءة النص">📸 التقاط وقراءة النص</button>
+        <p style="font-size: 1.2rem;">وجه الكاميرا نحو الورقة ثم اضغط على الزر بالأسفل.</p>
+        <button id="captureOcrBtn" class="action-btn btn-blue" aria-label="التقاط صورة للورقة وقراءة النص">التقاط وقراءة النص</button>
     </section>
 
     <!-- 2. شاشة التعرف على الأشياء -->
     <section id="objectScreen" class="screen">
         <h2>قسم التعرف على الأشياء</h2>
-        <p style="font-size: 1.3rem;">وجه الكاميرا نحو الشيء المطلوب التعرف عليه.</p>
-        <button id="captureObjectBtn" class="action-btn btn-green" aria-label="التقاط صورة للتعرف على الشيء">👁️ التعرف على الشيء أمامك</button>
+        <p style="font-size: 1.2rem;">وجه الكاميرا نحو الشيء المطلوب التعرف عليه.</p>
+        <button id="captureObjectBtn" class="action-btn btn-green" aria-label="التقاط صورة للتعرف على الشيء">التعرف على الشيء أمامك</button>
     </section>
 
     <!-- 3. شاشة التعرف على العملات -->
     <section id="moneyScreen" class="screen">
         <h2>قسم التعرف على العملات</h2>
-        <p style="font-size: 1.3rem;">وجه الكاميرا نحو الورقة النقدية المصرية.</p>
-        <button id="captureMoneyBtn" class="action-btn btn-yellow" aria-label="التقاط صورة للتعرف على العملة النقدية">💰 التعرف على العملة</button>
+        <p style="font-size: 1.2rem;">وجه الكاميرا نحو الورقة النقدية.</p>
+        <button id="captureMoneyBtn" class="action-btn btn-yellow" aria-label="التقاط صورة للتعرف على العملة النقدية">التعرف على العملة</button>
     </section>
 
-    <!-- 4. شاشة المساعدة البشرية (المرحلة الرابعة) -->
+    <!-- 4. شاشة المساعدة البشرية -->
     <section id="humanHelpScreen" class="screen">
         <h2>قسم المساعدة البشرية والطوارئ</h2>
-        <p style="font-size: 1.3rem;">يمكنك الاتصال بمتطوع أو إرسال موقعك الحالي فوراً عند الحاجة.</p>
-        <button id="callVolunteerBtn" class="action-btn btn-red" aria-label="اتصال مباشر بالمساعد أو المتطوع">📞 الاتصال بالمساعد المباشر</button>
-        <button id="sendLocationBtn" class="action-btn btn-blue" aria-label="تحديد ومشاركة موقعي الجغرافي للطوارئ">📍 تحديد موقعي الجغرافي (GPS)</button>
+        <p style="font-size: 1.2rem;">يمكنك الاتصال بطوارئ المساعد المباشر أو مشاركة موقعك.</p>
+        <button id="callVolunteerBtn" class="action-btn btn-red" aria-label="اتصال مباشر بالمساعد أو المتطوع">الاتصال بالمساعد المباشر</button>
+        <button id="sendLocationBtn" class="action-btn btn-blue" aria-label="تحديد ومشاركة موقعي الجغرافي للطوارئ">تحديد موقعي الجغرافي</button>
     </section>
 
-    <!-- باقي الشاشات -->
-    <section id="navScreen" class="screen"><h2>قسم الملاحة</h2></section>
-    <section id="libraryScreen" class="screen"><h2>المكتبة الصوتية</h2></section>
-    <section id="dailyScreen" class="screen"><h2>الخدمات اليومية</h2></section>
-    <section id="settingsScreen" class="screen"><h2>الإعدادات</h2></section>
+    <!-- 5. شاشة الملاحة والاتجاهات -->
+    <section id="navScreen" class="screen">
+        <h2>قسم الملاحة والاتجاهات</h2>
+        <p style="font-size: 1.2rem;">استخدم البوصلة لمعرفة اتجاهك أو تحديد مكانك.</p>
+        <button id="compassBtn" class="action-btn btn-purple" aria-label="تحديد اتجاه البوصلة الحالي">تحديد اتجاه البوصلة</button>
+        <button id="whereAmIBtn" class="action-btn btn-blue" aria-label="معرفة اسم المكان والموقع الحالي">أين أنا الآن؟</button>
+    </section>
 
     <!-- مدخلات الكاميرا الخفية -->
     <input type="file" id="ocrCameraInput" accept="image/*" capture="environment">
@@ -182,7 +182,7 @@
 
     <!-- صندوق الإشعارات والقراءة -->
     <div id="status-box" aria-live="assertive" role="status">
-        مرحباً بك في تطبيق بصير. الشاشة الرئيسية معروضة الآن.
+        مرحباً بك في تطبيق بصير. تم تحميل المراحل الخمسة بنجاح.
     </div>
 
     <script src="app.js"></script>
