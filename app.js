@@ -46,10 +46,22 @@ function speakCloudFallback(text) {
     } catch (e) {}
 }
 
+// دالة مساعدة لترجمة النصوص الناتجة من الذكاء الاصطناعي إلى العربية
+async function translateToArabic(englishText) {
+    try {
+        const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(englishText)}`);
+        const data = await res.json();
+        if (data && data[0] && data[0][0] && data[0][0][0]) {
+            return data[0][0][0];
+        }
+    } catch (e) {}
+    return englishText;
+}
+
 // الترحيب عند الفتح
 window.addEventListener('load', () => {
     setTimeout(() => {
-        speak("أهلاً بك في تطبيق بصير. المراحل السبع مفعلة وجاهزة للاستخدام.");
+        speak("أهلاً بك في تطبيق بصير. اكتملت المراحل الثمانية بنجاح وهي جاهزة للاستخدام.");
     }, 500);
 });
 
@@ -121,7 +133,7 @@ if (captureOcrBtn && ocrCameraInput) {
     });
 }
 
-// --- المرحلة الثانية: التعرف على الأشياء ---
+// --- المرحلة الثانية: التعرف على الأشياء (مع الترجمة للعربية) ---
 const captureObjectBtn = document.getElementById('captureObjectBtn');
 const objectCameraInput = document.getElementById('objectCameraInput');
 
@@ -134,7 +146,7 @@ if (captureObjectBtn && objectCameraInput) {
     objectCameraInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        speak("تم التقاط الصورة، جاري تحليل الشيء أمامك...");
+        speak("تم التقاط الصورة، جاري تحليل الشيء بالذكاء الاصطناعي...");
         try {
             const reader = new FileReader();
             reader.onload = async function() {
@@ -145,12 +157,14 @@ if (captureObjectBtn && objectCameraInput) {
                 if (response.ok) {
                     const result = await response.json();
                     if (result && result.length > 0) {
-                        speak(`تم التعرف على العنصر أمامك: ${result[0].label}`);
+                        const rawLabel = result[0].label;
+                        const translatedLabel = await translateToArabic(rawLabel);
+                        speak(`تم التعرف على العنصر أمامك: ${translatedLabel}`);
                     } else {
                         speak("لم نتمكن من التعرف على الشيء بدقة.");
                     }
                 } else {
-                    speak("السيرفر مشغول حالياً.");
+                    speak("السيرفر مشغول حالياً، يرجى المحاولة لاحقاً.");
                 }
             };
             reader.readAsArrayBuffer(file);
@@ -299,7 +313,7 @@ if (stopAudioBtn) {
     });
 }
 
-// --- المرحلة السابعة: الخدمات اليومية والألوان (كاملة) ---
+// --- المرحلة السابعة: الخدمات اليومية والألوان ---
 const colorBtn = document.getElementById('colorBtn');
 const colorCameraInput = document.getElementById('colorCameraInput');
 const dateTimeBtn = document.getElementById('dateTimeBtn');
@@ -324,7 +338,6 @@ if (colorBtn && colorCameraInput) {
             canvas.height = img.height;
             ctx.drawImage(img, 0, 0, img.width, img.height);
 
-            // أخذ عينة من مركز الصورة
             const pixelData = ctx.getImageData(Math.floor(img.width / 2), Math.floor(img.height / 2), 1, 1).data;
             const r = pixelData[0];
             const g = pixelData[1];
@@ -336,7 +349,6 @@ if (colorBtn && colorCameraInput) {
     });
 }
 
-// دالة تحليل قيم RGB ومعرفة اسم اللون باللغة العربية
 function getColorName(r, g, b) {
     if (r < 50 && g < 50 && b < 50) return "الأسود";
     if (r > 200 && g > 200 && b > 200) return "الأبيض";
@@ -349,7 +361,6 @@ function getColorName(r, g, b) {
     return "لون متدرج، يرجى ضبط الإضاءة وتصوير القماش مباشرة";
 }
 
-// معرفة الوقت والتاريخ
 if (dateTimeBtn) {
     dateTimeBtn.addEventListener('click', () => {
         const now = new Date();
@@ -357,5 +368,24 @@ if (dateTimeBtn) {
         const dateStr = now.toLocaleDateString('ar-EG', options);
         const timeStr = now.toLocaleTimeString('ar-EG');
         speak(`اليوم هو ${dateStr}، والساعة الآن هي ${timeStr}.`);
+    });
+}
+
+// --- المرحلة الثامنة: الإعدادات والتحكم (كاملة) ---
+const testVoiceBtn = document.getElementById('testVoiceBtn');
+const resetAppBtn = document.getElementById('resetAppBtn');
+
+if (testVoiceBtn) {
+    testVoiceBtn.addEventListener('click', () => {
+        speak("اختبار المحرك الصوتي بنجاح. تطبيق بصير يعمل بكفاءة عالية وصوت نقي باللغة العربية.");
+    });
+}
+
+if (resetAppBtn) {
+    resetAppBtn.addEventListener('click', () => {
+        speak("جاري إعادة تحميل تطبيق بصير...");
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
     });
 }
