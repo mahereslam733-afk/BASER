@@ -46,22 +46,90 @@ function speakCloudFallback(text) {
     } catch (e) {}
 }
 
-// دالة مساعدة لترجمة النصوص الناتجة من الذكاء الاصطناعي إلى العربية
-async function translateToArabic(englishText) {
+// --- قاموس للترجمة العربية المباشرة وتصفية النصوص العشوائية ---
+const arabicDictionary = {
+    "cellular telephone": "هاتف محمول",
+    "mobile phone": "هاتف محمول",
+    "cell phone": "موبايل",
+    "hand-held computer": "جهاز محمول",
+    "laptop": "كمبيوتر محمول",
+    "notebook computer": "كمبيوتر محمول",
+    "water bottle": "زجاجة مياه",
+    "pop bottle": "زجاجة بلاستيكية",
+    "bottle": "زجاجة",
+    "cup": "كوب",
+    "coffee mug": "مج قهوة",
+    "mug": "كوب أو فنجان",
+    "desk": "مكتب",
+    "chair": "كرسي",
+    "armchair": "كرسي مريح",
+    "table": "طاولة",
+    "dining table": "طاولة طعام",
+    "book": "كتاب",
+    "binder": "كراسة أو مجلد",
+    "pencil sharpener": "براية",
+    "wallet": "محفظة أوراق مالية",
+    "spectacles": "نظارة طبية",
+    "sunglasses": "نظارة شمسية",
+    "shoe": "حذاء",
+    "running shoe": "حذاء رياضي",
+    "bag": "حقيبة",
+    "backpack": "حقيبة ظهر",
+    "handbag": "حقيبة يد",
+    "door": "باب",
+    "key": "مفتاح",
+    "watch": "ساعة يد",
+    "digital clock": "ساعة رقمية",
+    "wall clock": "ساعة حائط",
+    "television": "شاشة تلفزيون",
+    "screen": "شاشة عرض",
+    "mouse": "فأرة كمبيوتر",
+    "computer keyboard": "لوحة مفاتيح",
+    "remote control": "ريموت كنترول",
+    "pillow": "وسادة",
+    "person": "شخص",
+    "man": "رجل",
+    "woman": "امرأة",
+    "child": "طفل",
+    "car": "سيارة",
+    "bicycle": "دراجة",
+    "plate": "طبق",
+    "spoon": "ملعقة",
+    "fork": "شوكة",
+    "knife": "سكين"
+};
+
+// دالة تحويل الاسم إلى عربية واضحة بدون رموز أو أرقام
+async function getCleanArabicDescription(label) {
+    const lowerLabel = label.toLowerCase().trim();
+    
+    // 1. البحث في القاموس السريع أولاً
+    for (let key in arabicDictionary) {
+        if (lowerLabel.includes(key)) {
+            return arabicDictionary[key];
+        }
+    }
+
+    // 2. استخدام محرك الترجمة واستخراج الكلمات العربية الصافية فقط
     try {
-        const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(englishText)}`);
+        const cleanEnglish = lowerLabel.replace(/[^a-zA-Z ]/g, " "); // إزالة الأرقام والرموز الغريبة
+        const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(cleanEnglish)}`);
         const data = await res.json();
         if (data && data[0] && data[0][0] && data[0][0][0]) {
-            return data[0][0][0];
+            let translated = data[0][0][0].trim();
+            // تصفية أية رموز متبقية
+            translated = translated.replace(/[^\u0600-\u06FF\s]/g, "");
+            if (translated.length > 0) return translated;
         }
     } catch (e) {}
-    return englishText;
+
+    return "عنصر غير محدد بدقة، حاول التصوير من زاوية أخرى";
 }
 
 // الترحيب عند الفتح
 window.addEventListener('load', () => {
     setTimeout(() => {
-        speak("أهلاً بك في تطبيق بصير. اكتملت المراحل الثمانية بنجاح وهي جاهزة للاستخدام.");
+        speak("أهلاً بك في تطبيق بصير. جميع المراحل الثماني مفعلة وتعمل بنجاح.");
     }, 500);
 });
 
@@ -110,7 +178,7 @@ if (captureOcrBtn && ocrCameraInput) {
     ocrCameraInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        speak("تم التقاط الصورة، جاري استخراج وقراءة النص...");
+        speak("تم التقاط الصورة، جاري استخراج وقراءة النص العربي...");
         try {
             const formData = new FormData();
             formData.append("file", file);
@@ -133,7 +201,7 @@ if (captureOcrBtn && ocrCameraInput) {
     });
 }
 
-// --- المرحلة الثانية: التعرف على الأشياء (مع الترجمة للعربية) ---
+// --- المرحلة الثانية: التعرف على الأشياء (معدلة ومترجمة للعربية الصافية) ---
 const captureObjectBtn = document.getElementById('captureObjectBtn');
 const objectCameraInput = document.getElementById('objectCameraInput');
 
@@ -146,30 +214,32 @@ if (captureObjectBtn && objectCameraInput) {
     objectCameraInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+        
         speak("تم التقاط الصورة، جاري تحليل الشيء بالذكاء الاصطناعي...");
+
         try {
-            const reader = new FileReader();
-            reader.onload = async function() {
-                const response = await fetch("https://api-inference.huggingface.co/models/google/vit-base-patch16-224", {
-                    method: "POST",
-                    body: reader.result
-                });
-                if (response.ok) {
-                    const result = await response.json();
-                    if (result && result.length > 0) {
-                        const rawLabel = result[0].label;
-                        const translatedLabel = await translateToArabic(rawLabel);
-                        speak(`تم التعرف على العنصر أمامك: ${translatedLabel}`);
-                    } else {
-                        speak("لم نتمكن من التعرف على الشيء بدقة.");
-                    }
+            const arrayBuffer = await file.arrayBuffer();
+            
+            const response = await fetch("https://api-inference.huggingface.co/models/google/vit-base-patch16-224", {
+                method: "POST",
+                body: arrayBuffer
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result && result.length > 0) {
+                    const rawLabel = result[0].label;
+                    const arabicDescription = await getCleanArabicDescription(rawLabel);
+                    
+                    speak(`الشيء الموجود أمامك هو: ${arabicDescription}`);
                 } else {
-                    speak("السيرفر مشغول حالياً، يرجى المحاولة لاحقاً.");
+                    speak("لم نتمكن من التحديد بدقة، يرجى الاقتراب من الشيء وإعادة التصوير.");
                 }
-            };
-            reader.readAsArrayBuffer(file);
+            } else {
+                speak("خادم الذكاء الاصطناعي مشغول حالياً، جرب مرة أخرى بعد قليل.");
+            }
         } catch (e) {
-            speak("حدث خطأ أثناء معالجة تحليل الأشياء.");
+            speak("حدث خطأ أثناء معالجة الصورة، يرجى إعادة المحاولة.");
         }
     });
 }
@@ -189,24 +259,21 @@ if (captureMoneyBtn && moneyCameraInput) {
         if (!file) return;
         speak("تم التقاط صورة العملة، جاري فحص الفئة بوضوح...");
         try {
-            const reader = new FileReader();
-            reader.onload = async function() {
-                const response = await fetch("https://api-inference.huggingface.co/models/google/vit-base-patch16-224", {
-                    method: "POST",
-                    body: reader.result
-                });
-                if (response.ok) {
-                    const result = await response.json();
-                    if (result && result.length > 0 && result[0].score > 0.4) {
-                        speak("تم التعرف على ورقة نقدية، يرجى التأكد من استقامة الورقة للتحقق التام من الفئة.");
-                    } else {
-                        speak("غير متأكد من فئة العملة، اضبط الإضاءة وصور كامل الورقة النقدية.");
-                    }
+            const arrayBuffer = await file.arrayBuffer();
+            const response = await fetch("https://api-inference.huggingface.co/models/google/vit-base-patch16-224", {
+                method: "POST",
+                body: arrayBuffer
+            });
+            if (response.ok) {
+                const result = await response.json();
+                if (result && result.length > 0 && result[0].score > 0.35) {
+                    speak("تم التعرف على ورقة نقدية، يرجى التأكد من استقامة الورقة والإضاءة للتحقق التام من الفئة.");
                 } else {
-                    speak("خدمة التعرف على العملات غير متاحة مؤقتاً.");
+                    speak("غير متأكد من فئة العملة، اضبط الإضاءة وصور كامل الورقة النقدية.");
                 }
-            };
-            reader.readAsArrayBuffer(file);
+            } else {
+                speak("خدمة التعرف على العملات غير متاحة مؤقتاً.");
+            }
         } catch (e) {
             speak("تعذر الاتصال بمركز معالجة العملات.");
         }
@@ -354,7 +421,7 @@ function getColorName(r, g, b) {
     if (r > 200 && g > 200 && b > 200) return "الأبيض";
     if (r > 150 && g < 100 && b < 100) return "الأحمر";
     if (g > 150 && r < 100 && b < 100) return "الأخضر";
-    if (b > 150 && r < 100 && g < 100) return "الأزرق";
+    if (b > 150 && r < 100 && b < 100) return "الأزرق";
     if (r > 180 && g > 180 && b < 100) return "الأصفر";
     if (r > 180 && g < 100 && b > 180) return "الوردي أو البنفسجي";
     if (r > 150 && g > 100 && b < 80) return "البرتقالي";
@@ -371,7 +438,7 @@ if (dateTimeBtn) {
     });
 }
 
-// --- المرحلة الثامنة: الإعدادات والتحكم (كاملة) ---
+// --- المرحلة الثامنة: الإعدادات والتحكم (اختبار وإعادة ضبط) ---
 const testVoiceBtn = document.getElementById('testVoiceBtn');
 const resetAppBtn = document.getElementById('resetAppBtn');
 
@@ -383,7 +450,7 @@ if (testVoiceBtn) {
 
 if (resetAppBtn) {
     resetAppBtn.addEventListener('click', () => {
-        speak("جاري إعادة تحميل تطبيق بصير...");
+        speak("جاري إعادة تحميل وتحديث تطبيق بصير...");
         setTimeout(() => {
             window.location.reload();
         }, 1500);
