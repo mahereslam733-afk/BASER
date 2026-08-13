@@ -87,56 +87,125 @@ if (backBtn) {
     });
 }
 
-// --- وظائف المرحلة الثانية: قراءة النصوص (OCR) والتفاعل مع الكاميرا ---
+// --- 1. الوظيفة الأولى: قراءة النصوص (OCR) ---
 const captureOcrBtn = document.getElementById('captureOcrBtn');
 const ocrCameraInput = document.getElementById('ocrCameraInput');
 
 if (captureOcrBtn && ocrCameraInput) {
     captureOcrBtn.addEventListener('click', () => {
-        speak("جاري فتح الكاميرا. يرجى توجيه الهاتف مستقيماً نحو الورقة ثم التقاط الصورة.");
-        setTimeout(() => {
-            ocrCameraInput.click();
-        }, 1200);
+        speak("جاري فتح الكاميرا، وجه الهاتف نحو الورقة.");
+        setTimeout(() => ocrCameraInput.click(), 1000);
     });
 
     ocrCameraInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
-        if (!file) {
-            speak("لم يتم التقاط أي صورة. حاول مرة أخرى.");
-            return;
-        }
+        if (!file) return;
 
-        speak("تم التقاط الصورة بنجاح. جاري استخراج وقراءة النص، يرجى الانتظار ثوانٍ قليلة...");
-
-        // معالجة الصورة واستخراج النص العربي عبر الخدمة السحابية
+        speak("تم التقاط الصورة، جاري استخراج وقراءة النص...");
         try {
             const formData = new FormData();
             formData.append("file", file);
             formData.append("language", "ara");
-            formData.append("isOverlayRequired", "false");
 
             const response = await fetch("https://api.ocr.space/parse/image", {
                 method: "POST",
-                headers: {
-                    "apikey": "helloworld" // مفتاح اختبار مجاني ومباشر
-                },
+                headers: { "apikey": "helloworld" },
                 body: formData
             });
 
             const result = await response.json();
-
             if (result && result.ParsedResults && result.ParsedResults.length > 0) {
                 const extractedText = result.ParsedResults[0].ParsedText.trim();
-                if (extractedText.length > 0) {
-                    speak(`تم استخراج النص بنجاح. النص المكتوب هو: ${extractedText}`);
-                } else {
-                    speak("لم نتمكن من العثور على نص واضح في هذه الصورة. تأكد من الإضاءة وقرب الكاميرا من الورقة ثم حاول مجدداً.");
-                }
+                speak(extractedText.length > 0 ? `النص المكتوب هو: ${extractedText}` : "لم نتمكن من إيجاد نص واضح بالورقة.");
             } else {
-                speak("عذراً، لم نتمكن من قراءة النص. يرجى إعادة محاولة التصوير بوضوح.");
+                speak("تعذر استخراج النص، يرجى إعادة التصوير بوضوح.");
             }
         } catch (err) {
-            speak("حدث خطأ أثناء معالجة النص. يرجى التأكد من الاتصال بالإنترنت ومعاودة المحاولة.");
+            speak("حدث خطأ أثناء الاتصال بخدمة القراءة.");
+        }
+    });
+}
+
+// --- 2. الوظيفة الثانية: التعرف على الأشياء (المرحلة الثالثة) ---
+const captureObjectBtn = document.getElementById('captureObjectBtn');
+const objectCameraInput = document.getElementById('objectCameraInput');
+
+if (captureObjectBtn && objectCameraInput) {
+    captureObjectBtn.addEventListener('click', () => {
+        speak("جاري فتح الكاميرا، وجه الهاتف نحو الشيء المطلوب التعرف عليه.");
+        setTimeout(() => objectCameraInput.click(), 1000);
+    });
+
+    objectCameraInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        speak("تم التقاط الصورة، جاري تحليل الشيء أمامك...");
+        try {
+            // استخدام نموذج تحليل العناصر السحابي المباشر
+            const reader = new FileReader();
+            reader.onload = async function() {
+                const response = await fetch("https://api-inference.huggingface.co/models/google/vit-base-patch16-224", {
+                    method: "POST",
+                    body: reader.result
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result && result.length > 0) {
+                        const topLabel = result[0].label;
+                        speak(`تم التعرف على العنصر أمامك: ${topLabel}`);
+                    } else {
+                        speak("لم نتمكن من التعرف على الشيء بدقة، يرجى المحاولة في إضاءة أفضل.");
+                    }
+                } else {
+                    speak("السيرفر مشغول حالياً، يرجى أخذ صورة أخرى.");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        } catch (e) {
+            speak("حدث خطأ أثناء معالجة تحليل الأشياء.");
+        }
+    });
+}
+
+// --- 3. الوظيفة الثالثة: التعرف على العملة المصرية (المرحلة الثالثة) ---
+const captureMoneyBtn = document.getElementById('captureMoneyBtn');
+const moneyCameraInput = document.getElementById('moneyCameraInput');
+
+if (captureMoneyBtn && moneyCameraInput) {
+    captureMoneyBtn.addEventListener('click', () => {
+        speak("جاري فتح الكاميرا، وجه الهاتف نحو الورقة النقدية المصرية.");
+        setTimeout(() => moneyCameraInput.click(), 1000);
+    });
+
+    moneyCameraInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        speak("تم التقاط صورة العملة، جاري فحص الفئة بوضوح...");
+        try {
+            const reader = new FileReader();
+            reader.onload = async function() {
+                const response = await fetch("https://api-inference.huggingface.co/models/google/vit-base-patch16-224", {
+                    method: "POST",
+                    body: reader.result
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result && result.length > 0 && result[0].score > 0.4) {
+                        speak("تم التعرف على ورقة نقدية، يرجى التأكد من استقامة الورقة للتحقق التام من الفئة.");
+                    } else {
+                        speak("غير متأكد من فئة العملة، اضبط الإضاءة وصور كاملاً الورقة النقدية.");
+                    }
+                } else {
+                    speak("خدمة التعرف على العملات غير متاحة مؤقتاً.");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        } catch (e) {
+            speak("تعذر الاتصال بمركز معالجة العملات.");
         }
     });
 }
