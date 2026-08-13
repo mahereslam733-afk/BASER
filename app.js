@@ -1,73 +1,145 @@
 // ======================================================
 // تطبيق بصير - app.js
-// النسخة الشاملة
+// النسخة الكاملة
 // ======================================================
 
 
-// ------------------------------------------------------
-// محرك الصوت والتفاعل الصوتي
-// ------------------------------------------------------
+// ======================================================
+// 1 - محرك الصوت العربي
+// ======================================================
 
 let speechSpeed = 0.9;
 
-const statusBox = document.getElementById('status-box');
-const speedRange = document.getElementById('speedRange');
-const backBtn = document.getElementById('backBtn');
+const statusBox = document.getElementById("status-box");
+const speedRange = document.getElementById("speedRange");
+const backBtn = document.getElementById("backBtn");
 
-if (speedRange) {
-
-    speedRange.addEventListener('input', (e) => {
-
-        speechSpeed = parseFloat(e.target.value);
-
-        speak(
-            `تم تغيير السرعة إلى ${Math.round(speechSpeed * 100)} بالمائة`
-        );
-
-    });
-}
+let arabicVoice = null;
 
 
-function speak(text) {
+// ------------------------------------------------------
+// تحميل الأصوات العربية
+// ------------------------------------------------------
 
-    if (!text) return;
+function loadArabicVoice() {
 
-    if (statusBox) {
-        statusBox.innerText = text;
-    }
-
-    if ('speechSynthesis' in window) {
-
-        window.speechSynthesis.cancel();
-
-        const utterance =
-            new SpeechSynthesisUtterance(text);
-
-        utterance.rate = speechSpeed;
-        utterance.lang = 'ar-EG';
-
-        const voices =
-            window.speechSynthesis.getVoices();
-
-        const arabicVoice =
-            voices.find(v =>
-                v.lang &&
-                v.lang.toLowerCase().startsWith('ar')
-            );
-
-        if (arabicVoice) {
-            utterance.voice = arabicVoice;
-            utterance.lang = arabicVoice.lang;
-        }
-
-        window.speechSynthesis.speak(utterance);
-
+    if (!("speechSynthesis" in window)) {
         return;
     }
 
-    speakCloudFallback(text);
+    const voices = window.speechSynthesis.getVoices();
+
+    if (!voices || voices.length === 0) {
+        return;
+    }
+
+    arabicVoice = voices.find(function (voice) {
+
+        return voice.lang &&
+            voice.lang.toLowerCase().startsWith("ar");
+
+    });
+
 }
 
+
+// تحميل الأصوات عند توفرها
+if ("speechSynthesis" in window) {
+
+    loadArabicVoice();
+
+    window.speechSynthesis.onvoiceschanged = function () {
+
+        loadArabicVoice();
+
+    };
+
+}
+
+
+// ------------------------------------------------------
+// النطق
+// ------------------------------------------------------
+
+function speak(text) {
+
+    if (!text) {
+        return;
+    }
+
+    text = String(text);
+
+    if (statusBox) {
+
+        statusBox.innerText = text;
+
+    }
+
+
+    // إذا كان Speech Synthesis موجودًا
+    if ("speechSynthesis" in window) {
+
+        try {
+
+            window.speechSynthesis.cancel();
+
+            loadArabicVoice();
+
+            const utterance =
+                new SpeechSynthesisUtterance(text);
+
+            utterance.rate = speechSpeed;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+
+            // إجبار اللغة العربية
+            utterance.lang = "ar-EG";
+
+            if (arabicVoice) {
+
+                utterance.voice = arabicVoice;
+                utterance.lang = arabicVoice.lang;
+
+            }
+
+
+            utterance.onerror = function (event) {
+
+                console.log(
+                    "Speech error:",
+                    event.error
+                );
+
+            };
+
+
+            window.speechSynthesis.speak(
+                utterance
+            );
+
+            return;
+
+        } catch (error) {
+
+            console.log(
+                "Speech synthesis error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    // حل بديل
+    speakCloudFallback(text);
+
+}
+
+
+// ------------------------------------------------------
+// صوت احتياطي
+// ------------------------------------------------------
 
 function speakCloudFallback(text) {
 
@@ -77,348 +149,589 @@ function speakCloudFallback(text) {
             encodeURIComponent(text);
 
         const audioUrl =
-            `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=ar&client=tw-ob`;
+            "https://translate.google.com/translate_tts" +
+            "?ie=UTF-8" +
+            "&q=" +
+            encodedText +
+            "&tl=ar" +
+            "&client=tw-ob";
 
         const audio =
             new Audio(audioUrl);
 
+        audio.volume = 1;
         audio.playbackRate = speechSpeed;
 
-        audio.play().catch(() => {});
+        audio.play().catch(function (error) {
 
-    } catch (e) {}
+            console.log(
+                "Cloud audio error:",
+                error
+            );
+
+        });
+
+    } catch (error) {
+
+        console.log(
+            "Cloud speech error:",
+            error
+        );
+
+    }
+
 }
 
 
 // ------------------------------------------------------
-// قاموس التعرف على الأشياء
+// سرعة الصوت
 // ------------------------------------------------------
+
+if (speedRange) {
+
+    speedRange.addEventListener(
+        "input",
+        function (event) {
+
+            speechSpeed =
+                parseFloat(event.target.value);
+
+            speak(
+                "تم تغيير سرعة الصوت إلى " +
+                Math.round(
+                    speechSpeed * 100
+                ) +
+                " بالمائة"
+            );
+
+        }
+    );
+
+}
+
+
+// ======================================================
+// 2 - تشغيل الصوت بعد أول تفاعل
+// ======================================================
+
+document.addEventListener(
+    "click",
+    function firstUserInteraction() {
+
+        loadArabicVoice();
+
+        document.removeEventListener(
+            "click",
+            firstUserInteraction
+        );
+
+    },
+    { once: true }
+);
+
+
+// ======================================================
+// 3 - قاموس التعرف على الأشياء
+// ======================================================
 
 const objectArabicNames = {
 
     person: "شخص",
+
     bicycle: "دراجة",
+
     car: "سيارة",
+
     motorcycle: "دراجة نارية",
+
     airplane: "طائرة",
+
     bus: "حافلة",
+
     train: "قطار",
+
     truck: "شاحنة",
+
     boat: "قارب",
 
     traffic_light: "إشارة مرور",
+
     fire_hydrant: "حنفية إطفاء",
+
     stop_sign: "علامة توقف",
+
     parking_meter: "عداد انتظار السيارات",
+
     bench: "مقعد",
 
     bird: "طائر",
+
     cat: "قطة",
+
     dog: "كلب",
+
     horse: "حصان",
+
     sheep: "خروف",
+
     cow: "بقرة",
+
     elephant: "فيل",
+
     bear: "دب",
+
     zebra: "حمار وحشي",
+
     giraffe: "زرافة",
 
     backpack: "حقيبة ظهر",
+
     umbrella: "مظلة",
+
     handbag: "حقيبة يد",
+
     tie: "ربطة عنق",
+
     suitcase: "حقيبة سفر",
 
     frisbee: "قرص طائر",
+
     skis: "زلاجات",
+
     snowboard: "لوح تزلج",
+
     sports_ball: "كرة",
+
     kite: "طائرة ورقية",
+
     baseball_bat: "مضرب بيسبول",
+
     baseball_glove: "قفاز رياضي",
+
     skateboard: "لوح تزلج",
+
     surfboard: "لوح ركوب الأمواج",
+
     tennis_racket: "مضرب تنس",
 
     bottle: "زجاجة",
+
     wine_glass: "كأس",
+
     cup: "كوب",
+
     fork: "شوكة",
+
     knife: "سكين",
+
     spoon: "ملعقة",
+
     bowl: "وعاء",
 
     banana: "موزة",
+
     apple: "تفاحة",
+
     sandwich: "شطيرة",
+
     orange: "برتقالة",
+
     broccoli: "بروكلي",
+
     carrot: "جزرة",
+
     hot_dog: "ساندويتش",
+
     pizza: "بيتزا",
+
     donut: "دونات",
+
     cake: "كعكة",
 
     chair: "كرسي",
+
     couch: "أريكة",
+
     potted_plant: "نبات في أصيص",
+
     bed: "سرير",
+
     dining_table: "طاولة طعام",
+
     toilet: "مرحاض",
 
     tv: "شاشة تلفزيون",
+
     laptop: "كمبيوتر محمول",
+
     mouse: "فأرة كمبيوتر",
+
     remote: "جهاز تحكم عن بعد",
+
     keyboard: "لوحة مفاتيح",
+
     cell_phone: "هاتف محمول",
 
     microwave: "ميكروويف",
+
     oven: "فرن",
+
     toaster: "محمصة",
+
     sink: "حوض",
+
     refrigerator: "ثلاجة",
 
     book: "كتاب",
+
     clock: "ساعة",
+
     vase: "مزهرية",
+
     scissors: "مقص",
+
     teddy_bear: "دبدوب",
+
     hair_drier: "مجفف شعر",
+
     toothbrush: "فرشاة أسنان"
+
 };
 
 
 function translateObjectName(name) {
 
-    if (objectArabicNames[name]) {
-        return objectArabicNames[name];
+    if (
+        objectArabicNames[
+            name
+        ]
+    ) {
+
+        return objectArabicNames[
+            name
+        ];
+
     }
 
     return String(name)
         .replace(/_/g, " ");
+
 }
 
 
-// ------------------------------------------------------
-// الترحيب
-// ------------------------------------------------------
+// ======================================================
+// 4 - الترحيب
+// ======================================================
 
-window.addEventListener('load', () => {
+window.addEventListener(
+    "load",
+    function () {
 
-    setTimeout(() => {
+        setTimeout(
+            function () {
 
-        speak(
-            "أهلاً بك في تطبيق بصير. جميع المراحل الثماني مفعلة."
+                // لا نحاول تشغيل الكلام تلقائيًا
+                // حتى لا يمنعه Chrome
+
+                if (statusBox) {
+
+                    statusBox.innerText =
+                        "أهلاً بك في تطبيق بصير. اختر القسم الذي تريد استخدامه.";
+
+                }
+
+            },
+            500
         );
 
-    }, 700);
+    }
+);
 
-});
 
-
-// ------------------------------------------------------
-// التنقل بين الشاشات
-// ------------------------------------------------------
+// ======================================================
+// 5 - التنقل بين الشاشات
+// ======================================================
 
 const homeScreen =
-    document.getElementById('homeScreen');
+    document.getElementById("homeScreen");
 
 const allScreens =
-    document.querySelectorAll('.screen');
+    document.querySelectorAll(".screen");
 
 const navButtons =
-    document.querySelectorAll('.btn-large');
+    document.querySelectorAll(".btn-large");
 
 
-navButtons.forEach(button => {
+navButtons.forEach(
+    function (button) {
 
-    button.addEventListener('focus', () => {
+        button.addEventListener(
+            "focus",
+            function () {
 
-        const label =
-            button.getAttribute('aria-label');
+                const label =
+                    button.getAttribute(
+                        "aria-label"
+                    );
 
-        if (label) {
-            speak(label);
-        }
+                if (label) {
 
-    });
+                    speak(label);
 
+                }
 
-    button.addEventListener('click', () => {
-
-        const targetScreenId =
-            button.getAttribute('data-screen');
-
-        openScreen(
-            targetScreenId,
-            button.innerText
+            }
         );
 
-    });
 
-});
+        button.addEventListener(
+            "click",
+            function () {
+
+                const targetScreenId =
+                    button.getAttribute(
+                        "data-screen"
+                    );
+
+                openScreen(
+                    targetScreenId,
+                    button.innerText
+                );
+
+            }
+        );
+
+    }
+);
 
 
-function openScreen(screenId, screenName) {
+// ------------------------------------------------------
+// فتح الشاشة
+// ------------------------------------------------------
 
-    allScreens.forEach(s =>
-        s.classList.remove('active')
+function openScreen(
+    screenId,
+    screenName
+) {
+
+    allScreens.forEach(
+        function (screen) {
+
+            screen.classList.remove(
+                "active"
+            );
+
+        }
     );
 
+
     const targetScreen =
-        document.getElementById(screenId);
+        document.getElementById(
+            screenId
+        );
+
 
     if (targetScreen) {
 
-        targetScreen.classList.add('active');
+        targetScreen.classList.add(
+            "active"
+        );
+
 
         if (backBtn) {
-            backBtn.style.visibility = 'visible';
+
+            backBtn.style.visibility =
+                "visible";
+
         }
 
-        speak(`تم فتح ${screenName}.`);
+
+        speak(
+            "تم فتح " +
+            screenName
+        );
+
     }
+
 }
 
+
+// ------------------------------------------------------
+// زر الرجوع
+// ------------------------------------------------------
 
 if (backBtn) {
 
-    backBtn.addEventListener('click', () => {
+    backBtn.addEventListener(
+        "click",
+        function () {
 
-        allScreens.forEach(s =>
-            s.classList.remove('active')
-        );
+            allScreens.forEach(
+                function (screen) {
 
-        if (homeScreen) {
-            homeScreen.classList.add('active');
+                    screen.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+            if (homeScreen) {
+
+                homeScreen.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            backBtn.style.visibility =
+                "hidden";
+
+
+            speak(
+                "عدت إلى الشاشة الرئيسية"
+            );
+
         }
-
-        backBtn.style.visibility = 'hidden';
-
-        speak("عدت إلى الشاشة الرئيسية.");
-
-    });
+    );
 
 }
 
 
 // ======================================================
-// المرحلة الأولى: قراءة النصوص OCR
+// 6 - قراءة النصوص OCR
 // ======================================================
 
 const captureOcrBtn =
-    document.getElementById('captureOcrBtn');
+    document.getElementById(
+        "captureOcrBtn"
+    );
 
 const ocrCameraInput =
-    document.getElementById('ocrCameraInput');
+    document.getElementById(
+        "ocrCameraInput"
+    );
 
 
-if (captureOcrBtn && ocrCameraInput) {
+if (
+    captureOcrBtn &&
+    ocrCameraInput
+) {
 
-    captureOcrBtn.addEventListener('click', () => {
+    captureOcrBtn.addEventListener(
+        "click",
+        function () {
 
-        speak(
-            "جاري فتح الكاميرا. وجه الهاتف نحو الورقة واجعل النص واضحاً."
-        );
+            speak(
+                "جاري فتح الكاميرا. وجه الهاتف نحو الورقة واجعل النص واضحاً."
+            );
 
-        setTimeout(() => {
 
-            ocrCameraInput.click();
+            setTimeout(
+                function () {
 
-        }, 700);
+                    ocrCameraInput.click();
 
-    });
+                },
+                500
+            );
+
+        }
+    );
 
 
     ocrCameraInput.addEventListener(
-        'change',
-        async (e) => {
+        "change",
+        async function (event) {
 
             const file =
-                e.target.files[0];
+                event.target.files[0];
+
 
             if (!file) {
 
-                speak("لم يتم اختيار صورة.");
+                speak(
+                    "لم يتم اختيار صورة."
+                );
 
                 return;
+
             }
 
 
             speak(
-                "تم التقاط الصورة. جاري قراءة النص العربي، انتظر قليلاً."
+                "تم التقاط الصورة. جاري قراءة النص العربي. انتظر قليلاً."
             );
 
 
             try {
 
-                if (typeof Tesseract === 'undefined') {
+                if (
+                    typeof Tesseract ===
+                    "undefined"
+                ) {
 
                     speak(
-                        "محرك قراءة النصوص غير متاح. تأكد من اتصال الإنترنت."
+                        "محرك قراءة النصوص غير محمل. تأكد من إضافة مكتبة Tesseract في ملف التطبيق."
                     );
 
                     return;
+
                 }
 
 
                 const result =
                     await Tesseract.recognize(
                         file,
-                        'ara',
+                        "ara",
                         {
-                            logger: function(info) {
 
-                                if (
-                                    info.status ===
-                                    'recognizing text'
-                                ) {
+                            logger:
+                                function (info) {
 
-                                    const progress =
-                                        Math.round(
-                                            (info.progress || 0) * 100
-                                        );
+                                    if (
+                                        info.status ===
+                                        "recognizing text"
+                                    ) {
 
-                                    if (progress >= 30 &&
-                                        progress < 50) {
+                                        const progress =
+                                            Math.round(
+                                                (info.progress || 0) *
+                                                100
+                                            );
+
 
                                         if (
-                                            !window.ocrProgress30
+                                            progress >= 20 &&
+                                            progress < 40
                                         ) {
-
-                                            window.ocrProgress30 =
-                                                true;
 
                                             speak(
                                                 "جاري تحليل النص."
                                             );
-                                        }
-                                    }
 
-                                    if (progress >= 70 &&
-                                        progress < 90) {
+                                        }
+
 
                                         if (
-                                            !window.ocrProgress70
+                                            progress >= 60 &&
+                                            progress < 80
                                         ) {
-
-                                            window.ocrProgress70 =
-                                                true;
 
                                             speak(
                                                 "جاري استخراج الكلمات."
                                             );
+
                                         }
+
                                     }
+
                                 }
-                            }
+
                         }
                     );
-
-
-                window.ocrProgress30 = false;
-                window.ocrProgress70 = false;
 
 
                 let extractedText =
@@ -435,10 +748,14 @@ if (captureOcrBtn && ocrCameraInput) {
                         .trim();
 
 
-                if (extractedText.length > 2) {
+                if (
+                    extractedText.length >
+                    2
+                ) {
 
                     speak(
-                        `النص المكتوب هو: ${extractedText}`
+                        "النص المكتوب هو: " +
+                        extractedText
                     );
 
                 } else {
@@ -452,70 +769,100 @@ if (captureOcrBtn && ocrCameraInput) {
             } catch (error) {
 
                 console.error(
-                    "OCR Error:",
+                    "OCR ERROR:",
                     error
                 );
 
+
                 speak(
-                    "حدث خطأ أثناء قراءة النص. تأكد من اتصال الإنترنت ثم حاول مرة أخرى."
+                    "حدث خطأ أثناء قراءة النص. حاول تصوير الورقة مرة أخرى بإضاءة جيدة."
                 );
 
             }
 
-            // السماح باختيار نفس الصورة مرة أخرى
-            ocrCameraInput.value = "";
+
+            ocrCameraInput.value =
+                "";
 
         }
     );
+
 }
 
 
 // ======================================================
-// المرحلة الثانية: التعرف على الأشياء
-// باستخدام COCO-SSD
+// 7 - التعرف على الأشياء COCO SSD
 // ======================================================
 
 const captureObjectBtn =
-    document.getElementById('captureObjectBtn');
+    document.getElementById(
+        "captureObjectBtn"
+    );
 
 const objectCameraInput =
-    document.getElementById('objectCameraInput');
+    document.getElementById(
+        "objectCameraInput"
+    );
 
 
 let objectModel = null;
-let objectModelLoading = false;
 
+let objectModelLoading =
+    false;
+
+
+// ------------------------------------------------------
+// تحميل نموذج التعرف
+// ------------------------------------------------------
 
 async function loadObjectModel() {
 
     if (objectModel) {
+
         return objectModel;
+
     }
 
 
-    if (typeof cocoSsd === 'undefined') {
+    if (
+        typeof cocoSsd ===
+        "undefined"
+    ) {
 
         throw new Error(
-            "مكتبة التعرف على الأشياء غير محملة."
+            "COCO SSD library not loaded"
         );
+
     }
 
 
     if (objectModelLoading) {
 
-        while (objectModelLoading) {
+        while (
+            objectModelLoading
+        ) {
 
             await new Promise(
-                resolve =>
-                    setTimeout(resolve, 300)
+                function (resolve) {
+
+                    setTimeout(
+                        resolve,
+                        300
+                    );
+
+                }
             );
+
         }
 
+
         return objectModel;
+
     }
 
 
-    objectModelLoading = true;
+    objectModelLoading =
+        true;
 
 
     try {
@@ -529,7 +876,8 @@ async function loadObjectModel() {
             await cocoSsd.load();
 
 
-        objectModelLoading = false;
+        objectModelLoading =
+            false;
 
 
         speak(
@@ -541,50 +889,68 @@ async function loadObjectModel() {
 
     } catch (error) {
 
-        objectModelLoading = false;
+        objectModelLoading =
+            false;
 
         console.error(
-            "Model loading error:",
+            "MODEL ERROR:",
             error
         );
 
         throw error;
+
     }
+
 }
 
 
-if (captureObjectBtn && objectCameraInput) {
+// ------------------------------------------------------
+// زر التعرف
+// ------------------------------------------------------
+
+if (
+    captureObjectBtn &&
+    objectCameraInput
+) {
 
     captureObjectBtn.addEventListener(
-        'click',
-        () => {
+        "click",
+        function () {
 
             speak(
                 "جاري فتح الكاميرا. وجه الهاتف نحو الشيء الذي تريد التعرف عليه."
             );
 
-            setTimeout(() => {
 
-                objectCameraInput.click();
+            setTimeout(
+                function () {
 
-            }, 700);
+                    objectCameraInput.click();
+
+                },
+                500
+            );
 
         }
     );
 
 
     objectCameraInput.addEventListener(
-        'change',
-        async (e) => {
+        "change",
+        async function (event) {
 
             const file =
-                e.target.files[0];
+                event.target.files[0];
+
 
             if (!file) {
 
-                speak("لم يتم اختيار صورة.");
+                speak(
+                    "لم يتم اختيار صورة."
+                );
 
                 return;
+
             }
 
 
@@ -604,7 +970,7 @@ if (captureObjectBtn && objectCameraInput) {
 
 
                 image.onload =
-                    async () => {
+                    async function () {
 
                         try {
 
@@ -622,7 +988,8 @@ if (captureObjectBtn && objectCameraInput) {
 
                             if (
                                 !predictions ||
-                                predictions.length === 0
+                                predictions.length ===
+                                0
                             ) {
 
                                 speak(
@@ -630,12 +997,19 @@ if (captureObjectBtn && objectCameraInput) {
                                 );
 
                                 return;
+
                             }
 
 
                             predictions.sort(
-                                (a, b) =>
-                                    b.score - a.score
+                                function (a, b) {
+
+                                    return (
+                                        b.score -
+                                        a.score
+                                    );
+
+                                }
                             );
 
 
@@ -645,7 +1019,8 @@ if (captureObjectBtn && objectCameraInput) {
 
                             const confidence =
                                 Math.round(
-                                    best.score * 100
+                                    best.score *
+                                    100
                                 );
 
 
@@ -655,25 +1030,33 @@ if (captureObjectBtn && objectCameraInput) {
                                 );
 
 
-                            if (confidence >= 35) {
+                            if (
+                                confidence >=
+                                35
+                            ) {
 
                                 speak(
-                                    `أمامك ${arabicName}. نسبة الثقة حوالي ${confidence} بالمائة.`
+                                    "أمامك " +
+                                    arabicName +
+                                    ". نسبة الثقة حوالي " +
+                                    confidence +
+                                    " بالمائة."
                                 );
 
                             } else {
 
                                 speak(
-                                    `يبدو أن الشيء الموجود أمامك هو ${arabicName}، لكن درجة التعرف منخفضة. حاول التصوير من زاوية أخرى.`
+                                    "يبدو أن الشيء الموجود أمامك هو " +
+                                    arabicName +
+                                    "، لكن درجة التعرف منخفضة."
                                 );
 
                             }
 
-
                         } catch (error) {
 
                             console.error(
-                                "Object detection error:",
+                                "DETECTION ERROR:",
                                 error
                             );
 
@@ -687,80 +1070,101 @@ if (captureObjectBtn && objectCameraInput) {
                     };
 
 
-                image.onerror = () => {
+                image.onerror =
+                    function () {
 
-                    speak(
-                        "تعذر فتح الصورة. حاول التقاط صورة جديدة."
-                    );
+                        speak(
+                            "تعذر فتح الصورة. حاول التقاط صورة جديدة."
+                        );
 
-                };
+                    };
 
 
                 image.src =
-                    URL.createObjectURL(file);
+                    URL.createObjectURL(
+                        file
+                    );
 
 
             } catch (error) {
 
                 console.error(
-                    "Object recognition error:",
+                    "OBJECT ERROR:",
                     error
                 );
 
 
                 speak(
-                    "تعذر تشغيل محرك التعرف على الأشياء. تأكد من اتصال الإنترنت ثم حاول مرة أخرى."
+                    "تعذر تشغيل محرك التعرف على الأشياء. تأكد من اتصال الإنترنت."
                 );
 
             }
 
 
-            objectCameraInput.value = "";
+            objectCameraInput.value =
+                "";
 
         }
     );
+
 }
 
 
 // ======================================================
-// المرحلة الثالثة: التعرف على العملات
+// 8 - التعرف على العملات
 // ======================================================
 
 const captureMoneyBtn =
-    document.getElementById('captureMoneyBtn');
+    document.getElementById(
+        "captureMoneyBtn"
+    );
 
 const moneyCameraInput =
-    document.getElementById('moneyCameraInput');
+    document.getElementById(
+        "moneyCameraInput"
+    );
 
 
-if (captureMoneyBtn && moneyCameraInput) {
+if (
+    captureMoneyBtn &&
+    moneyCameraInput
+) {
 
     captureMoneyBtn.addEventListener(
-        'click',
-        () => {
+        "click",
+        function () {
 
             speak(
                 "جاري فتح الكاميرا. وجه الهاتف نحو الورقة النقدية."
             );
 
-            setTimeout(() => {
 
-                moneyCameraInput.click();
+            setTimeout(
+                function () {
 
-            }, 800);
+                    moneyCameraInput.click();
+
+                },
+                500
+            );
 
         }
     );
 
 
     moneyCameraInput.addEventListener(
-        'change',
-        async (e) => {
+        "change",
+        function (event) {
 
             const file =
-                e.target.files[0];
+                event.target.files[0];
 
-            if (!file) return;
+
+            if (!file) {
+
+                return;
+
+            }
 
 
             speak(
@@ -768,26 +1172,22 @@ if (captureMoneyBtn && moneyCameraInput) {
             );
 
 
-            try {
-
-                // ملاحظة:
-                // النموذج العام لا يستطيع تحديد فئة العملة المصرية بدقة.
-                // لذلك لا ندعي نتيجة غير مؤكدة.
-
-                const image =
-                    new Image();
+            const image =
+                new Image();
 
 
-                image.onload = () => {
+            image.onload =
+                function () {
 
                     speak(
-                        "تم التقاط ورقة نقدية. تحديد فئة العملة المصرية بدقة يحتاج إلى نموذج متخصص للعملات. تأكد من قيمة الورقة قبل استخدامها."
+                        "تم التقاط الورقة النقدية. تحديد فئة العملة المصرية بدقة يحتاج إلى نموذج متخصص. يرجى التأكد من قيمة الورقة قبل استخدامها."
                     );
 
                 };
 
 
-                image.onerror = () => {
+            image.onerror =
+                function () {
 
                     speak(
                         "تعذر قراءة صورة العملة."
@@ -796,79 +1196,82 @@ if (captureMoneyBtn && moneyCameraInput) {
                 };
 
 
-                image.src =
-                    URL.createObjectURL(file);
-
-
-            } catch (error) {
-
-                console.error(
-                    "Money error:",
-                    error
+            image.src =
+                URL.createObjectURL(
+                    file
                 );
 
-                speak(
-                    "تعذر معالجة صورة العملة."
-                );
-            }
 
-
-            moneyCameraInput.value = "";
+            moneyCameraInput.value =
+                "";
 
         }
     );
+
 }
 
 
 // ======================================================
-// المرحلة الرابعة: المساعدة البشرية والطوارئ
+// 9 - المساعدة والطوارئ
 // ======================================================
 
 const callVolunteerBtn =
-    document.getElementById('callVolunteerBtn');
+    document.getElementById(
+        "callVolunteerBtn"
+    );
 
 const sendLocationBtn =
-    document.getElementById('sendLocationBtn');
+    document.getElementById(
+        "sendLocationBtn"
+    );
 
 
 if (callVolunteerBtn) {
 
     callVolunteerBtn.addEventListener(
-        'click',
-        () => {
+        "click",
+        function () {
 
             speak(
                 "جاري الاتصال بالمساعد المباشر الآن."
             );
 
-            setTimeout(() => {
 
-                window.location.href =
-                    "tel:122";
+            setTimeout(
+                function () {
 
-            }, 1200);
+                    window.location.href =
+                        "tel:122";
+
+                },
+                1200
+            );
 
         }
     );
+
 }
 
 
 if (sendLocationBtn) {
 
     sendLocationBtn.addEventListener(
-        'click',
-        () => {
+        "click",
+        function () {
 
             speak(
                 "جاري تحديد موقعك الجغرافي."
             );
 
 
-            if ("geolocation" in navigator) {
+            if (
+                "geolocation" in
+                navigator
+            ) {
 
                 navigator.geolocation.getCurrentPosition(
 
-                    (position) => {
+                    function (position) {
 
                         const lat =
                             position.coords.latitude
@@ -880,12 +1283,15 @@ if (sendLocationBtn) {
 
 
                         speak(
-                            `تم تحديد موقعك بنجاح. خط العرض ${lat} وخط الطول ${lon}.`
+                            "تم تحديد موقعك بنجاح. خط العرض " +
+                            lat +
+                            " وخط الطول " +
+                            lon
                         );
 
                     },
 
-                    () => {
+                    function () {
 
                         speak(
                             "لم نتمكن من الحصول على الموقع. يرجى السماح بالوصول إلى الموقع."
@@ -905,35 +1311,42 @@ if (sendLocationBtn) {
 
         }
     );
+
 }
 
 
 // ======================================================
-// المرحلة الخامسة: الملاحة والاتجاهات
+// 10 - الملاحة والبوصلة
 // ======================================================
 
 const compassBtn =
-    document.getElementById('compassBtn');
+    document.getElementById(
+        "compassBtn"
+    );
 
 const whereAmIBtn =
-    document.getElementById('whereAmIBtn');
+    document.getElementById(
+        "whereAmIBtn"
+    );
 
 
 if (compassBtn) {
 
     compassBtn.addEventListener(
-        'click',
-        () => {
+        "click",
+        function () {
 
             speak(
                 "جاري تحديد اتجاهك الحالي. يرجى تثبيت الهاتف."
             );
 
 
-            if (window.DeviceOrientationEvent) {
+            if (
+                window.DeviceOrientationEvent
+            ) {
 
                 const handleOrientation =
-                    function(event) {
+                    function (event) {
 
                         let heading =
                             event.alpha;
@@ -946,12 +1359,15 @@ if (compassBtn) {
 
                             heading =
                                 event.webkitCompassHeading;
+
                         }
 
 
                         if (
-                            heading !== null &&
-                            heading !== undefined
+                            heading !==
+                                null &&
+                            heading !==
+                                undefined
                         ) {
 
                             let direction =
@@ -981,11 +1397,13 @@ if (compassBtn) {
 
                                 direction =
                                     "الغرب";
+
                             }
 
 
                             speak(
-                                `أنت تتجه الآن نحو ${direction}.`
+                                "أنت تتجه الآن نحو " +
+                                direction
                             );
 
                         } else {
@@ -998,7 +1416,7 @@ if (compassBtn) {
 
 
                         window.removeEventListener(
-                            'deviceorientation',
+                            "deviceorientation",
                             handleOrientation
                         );
 
@@ -1006,13 +1424,12 @@ if (compassBtn) {
 
 
                 window.addEventListener(
-                    'deviceorientation',
+                    "deviceorientation",
                     handleOrientation,
                     {
                         once: true
                     }
                 );
-
 
             } else {
 
@@ -1024,25 +1441,29 @@ if (compassBtn) {
 
         }
     );
+
 }
 
 
 if (whereAmIBtn) {
 
     whereAmIBtn.addEventListener(
-        'click',
-        () => {
+        "click",
+        function () {
 
             speak(
                 "جاري استكشاف الموقع الحالي."
             );
 
 
-            if ("geolocation" in navigator) {
+            if (
+                "geolocation" in
+                navigator
+            ) {
 
                 navigator.geolocation.getCurrentPosition(
 
-                    position => {
+                    function (position) {
 
                         const lat =
                             position.coords.latitude
@@ -1054,12 +1475,15 @@ if (whereAmIBtn) {
 
 
                         speak(
-                            `أنت حالياً بالقرب من الإحداثيات. خط العرض ${lat} وخط الطول ${lon}.`
+                            "أنت حالياً بالقرب من الإحداثيات. خط العرض " +
+                            lat +
+                            " وخط الطول " +
+                            lon
                         );
 
                     },
 
-                    () => {
+                    function () {
 
                         speak(
                             "يرجى السماح بالحصول على إذن الموقع وتفعيل نظام تحديد المواقع."
@@ -1079,64 +1503,77 @@ if (whereAmIBtn) {
 
         }
     );
+
 }
 
 
 // ======================================================
-// المرحلة السادسة: المكتبة الصوتية
+// 11 - المكتبة الصوتية
 // ======================================================
 
 const playManualBtn =
-    document.getElementById('playManualBtn');
+    document.getElementById(
+        "playManualBtn"
+    );
 
 const playTipsBtn =
-    document.getElementById('playTipsBtn');
+    document.getElementById(
+        "playTipsBtn"
+    );
 
 const stopAudioBtn =
-    document.getElementById('stopAudioBtn');
+    document.getElementById(
+        "stopAudioBtn"
+    );
 
 
 if (playManualBtn) {
 
     playManualBtn.addEventListener(
-        'click',
-        () => {
+        "click",
+        function () {
 
             speak(
-                "مرحباً بك في الدليل الصوتي التفاعلي لتطبيق بصير. يتكون التطبيق من أقسام رئيسية تساعدك على القراءة والتعرف على الأشياء والعملات والاتجاهات بسهولة."
+                "مرحباً بك في الدليل الصوتي التفاعلي لتطبيق بصير. يساعدك التطبيق على قراءة النصوص والتعرف على الأشياء والعملات واستخدام الاتجاهات والخدمات اليومية."
             );
 
         }
     );
+
 }
 
 
 if (playTipsBtn) {
 
     playTipsBtn.addEventListener(
-        'click',
-        () => {
+        "click",
+        function () {
 
             speak(
-                "للحصول على أفضل دقة عند تصوير النصوص أو الأشياء، احرص على وجود إضاءة كافية، وثبت الهاتف، واجعل الشيء داخل الصورة بالكامل."
+                "للحصول على أفضل دقة عند تصوير النصوص أو الأشياء، احرص على وجود إضاءة كافية وثبت الهاتف واجعل الشيء داخل الصورة بالكامل."
             );
 
         }
     );
+
 }
 
 
 if (stopAudioBtn) {
 
     stopAudioBtn.addEventListener(
-        'click',
-        () => {
+        "click",
+        function () {
 
-            if ('speechSynthesis' in window) {
+            if (
+                "speechSynthesis" in
+                window
+            ) {
 
                 window.speechSynthesis.cancel();
 
             }
+
 
             if (statusBox) {
 
@@ -1147,51 +1584,70 @@ if (stopAudioBtn) {
 
         }
     );
+
 }
 
 
 // ======================================================
-// المرحلة السابعة: الخدمات اليومية والألوان
+// 12 - التعرف على الألوان
 // ======================================================
 
 const colorBtn =
-    document.getElementById('colorBtn');
+    document.getElementById(
+        "colorBtn"
+    );
 
 const colorCameraInput =
-    document.getElementById('colorCameraInput');
+    document.getElementById(
+        "colorCameraInput"
+    );
 
 const dateTimeBtn =
-    document.getElementById('dateTimeBtn');
+    document.getElementById(
+        "dateTimeBtn"
+    );
 
 
-if (colorBtn && colorCameraInput) {
+if (
+    colorBtn &&
+    colorCameraInput
+) {
 
     colorBtn.addEventListener(
-        'click',
-        () => {
+        "click",
+        function () {
 
             speak(
-                "وجه الكاميرا نحو القماش أو العنصر للتعرف على لونه."
+                "وجه الكاميرا نحو العنصر للتعرف على لونه."
             );
 
-            setTimeout(() => {
 
-                colorCameraInput.click();
+            setTimeout(
+                function () {
 
-            }, 800);
+                    colorCameraInput.click();
+
+                },
+                500
+            );
 
         }
     );
 
 
     colorCameraInput.addEventListener(
-        'change',
-        (e) => {
+        "change",
+        function (event) {
 
             const file =
-                e.target.files[0];
+                event.target.files[0];
 
-            if (!file) return;
+
+            if (!file) {
+
+                return;
+
+            }
 
 
             speak(
@@ -1203,109 +1659,133 @@ if (colorBtn && colorCameraInput) {
                 new Image();
 
 
-            img.onload = () => {
+            img.onload =
+                function () {
 
-                const canvas =
-                    document.getElementById(
-                        'colorCanvas'
-                    );
-
-                if (!canvas) return;
-
-
-                const ctx =
-                    canvas.getContext('2d');
+                    const canvas =
+                        document.getElementById(
+                            "colorCanvas"
+                        );
 
 
-                canvas.width =
-                    img.width;
+                    if (!canvas) {
 
-                canvas.height =
-                    img.height;
+                        return;
 
-
-                ctx.drawImage(
-                    img,
-                    0,
-                    0,
-                    img.width,
-                    img.height
-                );
+                    }
 
 
-                const x =
-                    Math.floor(
-                        img.width / 2
-                    );
+                    const ctx =
+                        canvas.getContext(
+                            "2d"
+                        );
 
-                const y =
-                    Math.floor(
-                        img.height / 2
+
+                    canvas.width =
+                        img.width;
+
+                    canvas.height =
+                        img.height;
+
+
+                    ctx.drawImage(
+                        img,
+                        0,
+                        0,
+                        img.width,
+                        img.height
                     );
 
 
-                const pixelData =
-                    ctx.getImageData(
-                        x,
-                        y,
-                        1,
-                        1
-                    ).data;
+                    const x =
+                        Math.floor(
+                            img.width / 2
+                        );
+
+                    const y =
+                        Math.floor(
+                            img.height / 2
+                        );
 
 
-                const r =
-                    pixelData[0];
+                    const pixelData =
+                        ctx.getImageData(
+                            x,
+                            y,
+                            1,
+                            1
+                        ).data;
 
-                const g =
-                    pixelData[1];
 
-                const b =
-                    pixelData[2];
+                    const r =
+                        pixelData[0];
+
+                    const g =
+                        pixelData[1];
+
+                    const b =
+                        pixelData[2];
 
 
-                const colorName =
-                    getColorName(
-                        r,
-                        g,
-                        b
+                    const colorName =
+                        getColorName(
+                            r,
+                            g,
+                            b
+                        );
+
+
+                    speak(
+                        "اللون في منتصف الصورة هو: " +
+                        colorName
                     );
 
-
-                speak(
-                    `اللون في منتصف الصورة هو: ${colorName}`
-                );
-
-            };
+                };
 
 
-            img.onerror = () => {
+            img.onerror =
+                function () {
 
-                speak(
-                    "تعذر قراءة الصورة."
-                );
+                    speak(
+                        "تعذر قراءة الصورة."
+                    );
 
-            };
+                };
 
 
             img.src =
-                URL.createObjectURL(file);
+                URL.createObjectURL(
+                    file
+                );
 
 
-            colorCameraInput.value = "";
+            colorCameraInput.value =
+                "";
 
         }
     );
+
 }
 
 
-function getColorName(r, g, b) {
+// ------------------------------------------------------
+// تحديد اللون
+// ------------------------------------------------------
+
+function getColorName(
+    r,
+    g,
+    b
+) {
 
     if (
         r < 50 &&
         g < 50 &&
         b < 50
     ) {
+
         return "الأسود";
+
     }
 
 
@@ -1314,7 +1794,9 @@ function getColorName(r, g, b) {
         g > 200 &&
         b > 200
     ) {
+
         return "الأبيض";
+
     }
 
 
@@ -1323,7 +1805,9 @@ function getColorName(r, g, b) {
         g < 100 &&
         b < 100
     ) {
+
         return "الأحمر";
+
     }
 
 
@@ -1332,7 +1816,9 @@ function getColorName(r, g, b) {
         r < 100 &&
         b < 100
     ) {
+
         return "الأخضر";
+
     }
 
 
@@ -1341,7 +1827,9 @@ function getColorName(r, g, b) {
         r < 100 &&
         g < 100
     ) {
+
         return "الأزرق";
+
     }
 
 
@@ -1350,7 +1838,9 @@ function getColorName(r, g, b) {
         g > 180 &&
         b < 100
     ) {
+
         return "الأصفر";
+
     }
 
 
@@ -1359,7 +1849,9 @@ function getColorName(r, g, b) {
         g < 100 &&
         b > 180
     ) {
+
         return "الوردي أو البنفسجي";
+
     }
 
 
@@ -1368,19 +1860,26 @@ function getColorName(r, g, b) {
         g > 100 &&
         b < 80
     ) {
+
         return "البرتقالي";
+
     }
 
 
-    return "لون متدرج، يرجى ضبط الإضاءة وتصوير العنصر مباشرة";
+    return "لون متدرج. يرجى تحسين الإضاءة.";
+
 }
 
+
+// ======================================================
+// 13 - التاريخ والوقت
+// ======================================================
 
 if (dateTimeBtn) {
 
     dateTimeBtn.addEventListener(
-        'click',
-        () => {
+        "click",
+        function () {
 
             const now =
                 new Date();
@@ -1388,79 +1887,31 @@ if (dateTimeBtn) {
 
             const options = {
 
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
+                weekday: "long",
+
+                year: "numeric",
+
+                month: "long",
+
+                day: "numeric"
 
             };
 
 
             const dateStr =
                 now.toLocaleDateString(
-                    'ar-EG',
+                    "ar-EG",
                     options
                 );
 
 
             const timeStr =
                 now.toLocaleTimeString(
-                    'ar-EG'
+                    "ar-EG"
                 );
 
 
             speak(
-                `اليوم هو ${dateStr}، والساعة الآن هي ${timeStr}.`
-            );
-
-        }
-    );
-}
-
-
-// ======================================================
-// المرحلة الثامنة: الإعدادات والتحكم
-// ======================================================
-
-const testVoiceBtn =
-    document.getElementById('testVoiceBtn');
-
-const resetAppBtn =
-    document.getElementById('resetAppBtn');
-
-
-if (testVoiceBtn) {
-
-    testVoiceBtn.addEventListener(
-        'click',
-        () => {
-
-            speak(
-                "اختبار محرك الصوت بنجاح. تطبيق بصير يعمل بالصوت العربي."
-            );
-
-        }
-    );
-}
-
-
-if (resetAppBtn) {
-
-    resetAppBtn.addEventListener(
-        'click',
-        () => {
-
-            speak(
-                "جاري إعادة تحميل وتحديث تطبيق بصير."
-            );
-
-
-            setTimeout(() => {
-
-                window.location.reload();
-
-            }, 1500);
-
-        }
-    );
-}
+                "اليوم هو " +
+                dateStr +
+                "، وال
