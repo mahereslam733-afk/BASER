@@ -1,3 +1,7 @@
+// ==========================================
+// تطبيق بصير - Baser App Engine (app.js)
+// ==========================================
+
 // --- محرك الصوت والتفاعل الصوتي ---
 let speechSpeed = 0.9;
 const statusBox = document.getElementById('status-box');
@@ -46,89 +50,65 @@ function speakCloudFallback(text) {
     } catch (e) {}
 }
 
-// --- قاموس للترجمة العربية المباشرة وتصفية النصوص العشوائية ---
+// --- قاموس سريع للمصطلحات الشائعة لتسريع الترجمة ---
 const arabicDictionary = {
-    "cellular telephone": "هاتف محمول",
+    "a person": "شخص",
+    "a man": "رجل",
+    "a woman": "امرأة",
+    "a child": "طفل",
+    "cell phone": "هاتف محمول",
     "mobile phone": "هاتف محمول",
-    "cell phone": "موبايل",
-    "hand-held computer": "جهاز محمول",
-    "laptop": "كمبيوتر محمول",
-    "notebook computer": "كمبيوتر محمول",
-    "water bottle": "زجاجة مياه",
-    "pop bottle": "زجاجة بلاستيكية",
-    "bottle": "زجاجة",
-    "cup": "كوب",
-    "coffee mug": "مج قهوة",
-    "mug": "كوب أو فنجان",
-    "desk": "مكتب",
-    "chair": "كرسي",
-    "armchair": "كرسي مريح",
-    "table": "طاولة",
-    "dining table": "طاولة طعام",
-    "book": "كتاب",
-    "binder": "كراسة أو مجلد",
-    "pencil sharpener": "براية",
-    "wallet": "محفظة أوراق مالية",
-    "spectacles": "نظارة طبية",
-    "sunglasses": "نظارة شمسية",
-    "shoe": "حذاء",
-    "running shoe": "حذاء رياضي",
-    "bag": "حقيبة",
-    "backpack": "حقيبة ظهر",
-    "handbag": "حقيبة يد",
-    "door": "باب",
-    "key": "مفتاح",
-    "watch": "ساعة يد",
-    "digital clock": "ساعة رقمية",
-    "wall clock": "ساعة حائط",
-    "television": "شاشة تلفزيون",
-    "screen": "شاشة عرض",
-    "mouse": "فأرة كمبيوتر",
-    "computer keyboard": "لوحة مفاتيح",
-    "remote control": "ريموت كنترول",
-    "pillow": "وسادة",
-    "person": "شخص",
-    "man": "رجل",
-    "woman": "امرأة",
-    "child": "طفل",
-    "car": "سيارة",
-    "bicycle": "دراجة",
-    "plate": "طبق",
-    "spoon": "ملعقة",
-    "fork": "شوكة",
-    "knife": "سكين"
+    "a laptop": "كمبيوتر محمول",
+    "a bottle of water": "زجاجة مياه",
+    "a bottle": "زجاجة",
+    "a cup of coffee": "كوب قهوة",
+    "a cup": "كوب",
+    "a chair": "كرسي",
+    "a table": "طاولة",
+    "a desk": "مكتب",
+    "a book": "كتاب",
+    "a pair of glasses": "نظارة",
+    "a dog": "كلب",
+    "a cat": "قطة",
+    "a car": "سيارة"
 };
 
-// دالة تحويل الاسم إلى عربية واضحة بدون رموز أو أرقام
-async function getCleanArabicDescription(label) {
-    const lowerLabel = label.toLowerCase().trim();
-    
-    // 1. البحث في القاموس السريع أولاً
+// --- دالة ترجمة وتنقية وصف المشهد بالكامل إلى اللغة العربية ---
+async function getCleanArabicDescription(englishText) {
+    if (!englishText) return "لم يتم التعرف على المشهد بدقة.";
+
+    const lowerLabel = englishText.toLowerCase().trim();
+
+    // 1. فحص القاموس السريع أولاً
     for (let key in arabicDictionary) {
-        if (lowerLabel.includes(key)) {
+        if (lowerLabel === key) {
             return arabicDictionary[key];
         }
     }
 
-    // 2. استخدام محرك الترجمة واستخراج الكلمات العربية الصافية فقط
+    // 2. الترجمة عبر محرك جوجل وتصفية الحروف غير العربية
     try {
-        const cleanEnglish = lowerLabel.replace(/[^a-zA-Z ]/g, " ");
+        const cleanEnglish = lowerLabel.replace(/[^a-zA-Z\s]/g, " ").trim();
         const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(cleanEnglish)}`);
         const data = await res.json();
+
         if (data && data[0] && data[0][0] && data[0][0][0]) {
             let translated = data[0][0][0].trim();
-            translated = translated.replace(/[^\u0600-\u06FF\s]/g, "");
+            // استخراج الحروف العربية والمسافات فقط لضمان النطق والكتابة الصريحة
+            translated = translated.replace(/[^\u0600-\u06FF\s]/g, "").trim();
             if (translated.length > 0) return translated;
         }
-    } catch (e) {}
+    } catch (e) {
+        console.error("خطأ الترجمة:", e);
+    }
 
-    return "عنصر غير محدد بدقة، حاول التصوير من زاوية أخرى";
+    return "يوجد عنصر أو مشهد أمامك، يرجى إعادة المحاولة من زاوية أخرى.";
 }
 
-// الترحيب عند الفتح
+// الترحب عند بدء التشغيل
 window.addEventListener('load', () => {
     setTimeout(() => {
-        speak("أهلاً بك في تطبيق بصير. جميع المراحل الثماني مفعلة وتعمل بنجاح.");
+        speak("أهلاً بك في تطبيق بصير. جميع المراحل مفعلة وتعمل بنجاح.");
     }, 500);
 });
 
@@ -164,7 +144,9 @@ if (backBtn) {
     });
 }
 
-// --- المرحلة الأولى: قراءة النصوص (OCR) مع الكتابة على الشاشة ---
+// ==========================================
+// 1. شاشة قراءة النصوص (OCR)
+// ==========================================
 const captureOcrBtn = document.getElementById('captureOcrBtn');
 const ocrCameraInput = document.getElementById('ocrCameraInput');
 const ocrResultDisplay = document.getElementById('ocrResultDisplay');
@@ -172,7 +154,7 @@ const ocrResultDisplay = document.getElementById('ocrResultDisplay');
 if (captureOcrBtn && ocrCameraInput) {
     captureOcrBtn.addEventListener('click', () => {
         speak("جاري فتح الكاميرا، وجه الهاتف نحو الورقة.");
-        setTimeout(() => ocrCameraInput.click(), 1000);
+        setTimeout(() => ocrCameraInput.click(), 800);
     });
 
     ocrCameraInput.addEventListener('change', async (e) => {
@@ -194,9 +176,8 @@ if (captureOcrBtn && ocrCameraInput) {
             const result = await response.json();
             if (result && result.ParsedResults && result.ParsedResults.length > 0) {
                 const extractedText = result.ParsedResults[0].ParsedText.trim();
-                const finalText = extractedText.length > 0 ? extractedText : "لم نتمكن من إيجاد نص واضح بالورقة.";
+                const finalText = extractedText.length > 0 ? extractedText : "لم يتم العثور على نص واضح بالورقة.";
                 
-                // كتابة النص المكتوب على الشاشة
                 if (ocrResultDisplay) ocrResultDisplay.innerText = finalText;
                 speak(`النص المكتوب هو: ${finalText}`);
             } else {
@@ -210,57 +191,72 @@ if (captureOcrBtn && ocrCameraInput) {
     });
 }
 
-// --- المرحلة الثانية: التعرف على الأشياء مع العرض الكتابي بالعربية ---
+// ==========================================
+// 2. شاشة التعرف على الأشياء ووصف المشهد (مُحدثة كلياً)
+// ==========================================
 const captureObjectBtn = document.getElementById('captureObjectBtn');
 const objectCameraInput = document.getElementById('objectCameraInput');
 const objectResultDisplay = document.getElementById('objectResultDisplay');
 
 if (captureObjectBtn && objectCameraInput) {
     captureObjectBtn.addEventListener('click', () => {
-        speak("جاري فتح الكاميرا، وجه الهاتف نحو الشيء المطلوب التعرف عليه.");
-        setTimeout(() => objectCameraInput.click(), 1000);
+        speak("جاري فتح الكاميرا، وجه الهاتف نحو الشيء أو المشهد.");
+        setTimeout(() => objectCameraInput.click(), 800);
     });
 
     objectCameraInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
         
-        if (objectResultDisplay) objectResultDisplay.innerText = "جاري تحليل الشيء بالذكاء الاصطناعي...";
-        speak("تم التقاط الصورة، جاري تحليل الشيء بالذكاء الاصطناعي...");
+        if (objectResultDisplay) objectResultDisplay.innerText = "جاري تحليل المشهد بالذكاء الاصطناعي...";
+        speak("تم التقاط الصورة، جاري تحليل المشهد ووصفه باللغة العربية...");
 
         try {
             const arrayBuffer = await file.arrayBuffer();
             
-            const response = await fetch("https://api-inference.huggingface.co/models/google/vit-base-patch16-224", {
+            // استخدام نموذج BLIP القادر على توليد وصف كامل للمشهد (Image Captioning)
+            const response = await fetch("https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large", {
                 method: "POST",
                 body: arrayBuffer
             });
 
             if (response.ok) {
                 const result = await response.json();
-                if (result && result.length > 0) {
-                    const rawLabel = result[0].label;
-                    const arabicDescription = await getCleanArabicDescription(rawLabel);
+                
+                if (result && result.length > 0 && result[0].generated_text) {
+                    const englishCaption = result[0].generated_text;
                     
-                    // كتابة النتيجة والوصف بالعربية على الشاشة
-                    if (objectResultDisplay) objectResultDisplay.innerText = `الشيء المكتشف: ${arabicDescription}`;
-                    speak(`الشيء الموجود أمامك هو: ${arabicDescription}`);
+                    // ترجمة المشهد إلى اللغة العربية
+                    const arabicDescription = await getCleanArabicDescription(englishCaption);
+                    
+                    // العرض الكتابي المباشر على الشاشة
+                    if (objectResultDisplay) {
+                        objectResultDisplay.innerText = arabicDescription;
+                    }
+                    
+                    // النطق الصوتي العربي المباشر
+                    speak(`وصف المشهد: ${arabicDescription}`);
                 } else {
-                    if (objectResultDisplay) objectResultDisplay.innerText = "لم نتمكن من التحديد بدقة.";
-                    speak("لم نتمكن من التحديد بدقة، يرجى الاقتراب من الشيء وإعادة التصوير.");
+                    const msg = "لم نتمكن من تحليل المشهد بدقة، حاول التصوير من زاوية أفضل.";
+                    if (objectResultDisplay) objectResultDisplay.innerText = msg;
+                    speak(msg);
                 }
             } else {
-                if (objectResultDisplay) objectResultDisplay.innerText = "خادم الذكاء الاصطناعي مشغول حالياً.";
-                speak("خادم الذكاء الاصطناعي مشغول حالياً، جرب مرة أخرى بعد قليل.");
+                const msg = "سيرفر الذكاء الاصطناعي مشغول، يرجى إعادة المحاولة بعد بضع ثوانٍ.";
+                if (objectResultDisplay) objectResultDisplay.innerText = msg;
+                speak(msg);
             }
         } catch (e) {
-            if (objectResultDisplay) objectResultDisplay.innerText = "حدث خطأ أثناء معالجة الصورة.";
-            speak("حدث خطأ أثناء معالجة الصورة، يرجى إعادة المحاولة.");
+            const msg = "حدث خطأ أثناء المعالجة، تأكد من الاتصال بالإنترنت.";
+            if (objectResultDisplay) objectResultDisplay.innerText = msg;
+            speak(msg);
         }
     });
 }
 
-// --- المرحلة الثالثة: التعرف على العملات ---
+// ==========================================
+// 3. شاشة معرفة العملات النقدية
+// ==========================================
 const captureMoneyBtn = document.getElementById('captureMoneyBtn');
 const moneyCameraInput = document.getElementById('moneyCameraInput');
 const moneyResultDisplay = document.getElementById('moneyResultDisplay');
@@ -268,7 +264,7 @@ const moneyResultDisplay = document.getElementById('moneyResultDisplay');
 if (captureMoneyBtn && moneyCameraInput) {
     captureMoneyBtn.addEventListener('click', () => {
         speak("جاري فتح الكاميرا، وجه الهاتف نحو الورقة النقدية.");
-        setTimeout(() => moneyCameraInput.click(), 1000);
+        setTimeout(() => moneyCameraInput.click(), 800);
     });
 
     moneyCameraInput.addEventListener('change', async (e) => {
@@ -286,136 +282,37 @@ if (captureMoneyBtn && moneyCameraInput) {
             });
             if (response.ok) {
                 const result = await response.json();
-                if (result && result.length > 0 && result[0].score > 0.35) {
-                    const msg = "تم التعرف على ورقة نقدية، يرجى التأكد من استقامة الورقة والإضاءة للتحقق التام من الفئة.";
+                if (result && result.length > 0 && result[0].score > 0.30) {
+                    const msg = "تم اكتشاف ورقة مالية، اضبط الاستقامة والإضاءة للتأكد الدقيق من الفئة.";
                     if (moneyResultDisplay) moneyResultDisplay.innerText = msg;
                     speak(msg);
                 } else {
-                    const msg = "غير متأكد من فئة العملة، اضبط الإضاءة وصور كامل الورقة النقدية.";
+                    const msg = "غير متأكد من فئة العملة، يرجى إبعاد الكاميرا مسافة مناسبة والتصوير مجدداً.";
                     if (moneyResultDisplay) moneyResultDisplay.innerText = msg;
                     speak(msg);
                 }
             } else {
-                if (moneyResultDisplay) moneyResultDisplay.innerText = "خدمة العملات غير متاحة مؤقتاً.";
+                if (moneyResultDisplay) moneyResultDisplay.innerText = "خدمة العملات غير متاحة حالياً.";
                 speak("خدمة التعرف على العملات غير متاحة مؤقتاً.");
             }
         } catch (e) {
-            if (moneyResultDisplay) moneyResultDisplay.innerText = "تعذر الاتصال بمركز المعالجة.";
+            if (moneyResultDisplay) moneyResultDisplay.innerText = "تعذر الاتصال بمركز معالجة العملات.";
             speak("تعذر الاتصال بمركز معالجة العملات.");
         }
     });
 }
 
-// --- المرحلة الرابعة: المساعدة البشرية والطوارئ ---
-const callVolunteerBtn = document.getElementById('callVolunteerBtn');
-const sendLocationBtn = document.getElementById('sendLocationBtn');
-
-if (callVolunteerBtn) {
-    callVolunteerBtn.addEventListener('click', () => {
-        speak("جاري الاتصال بالمساعد المباشر الآن.");
-        setTimeout(() => { window.location.href = "tel:122"; }, 1200);
-    });
-}
-
-if (sendLocationBtn) {
-    sendLocationBtn.addEventListener('click', () => {
-        speak("جاري تحديد موقعك الجغرافي عبر الأقمار الصناعية...");
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const lat = position.coords.latitude.toFixed(4);
-                const lon = position.coords.longitude.toFixed(4);
-                speak(`تم تحديد موقعك بنجاح. خط العرض ${lat} وخط الطول ${lon}.`);
-            }, () => speak("لم نتمكن من الحصول على الموقع، يرجى التأكد من تفعيل خدمة الملاحة."));
-        } else {
-            speak("خدمة تحديد الموقع غير مدعومة على جهازك.");
-        }
-    });
-}
-
-// --- المرحلة الخامسة: الملاحة والاتجاهات ---
-const compassBtn = document.getElementById('compassBtn');
-const whereAmIBtn = document.getElementById('whereAmIBtn');
-
-if (compassBtn) {
-    compassBtn.addEventListener('click', () => {
-        speak("جاري تحديد اتجاهك الحالي، يرجى تثبيت الهاتف...");
-
-        if (window.DeviceOrientationEvent) {
-            window.addEventListener('deviceorientation', function handleOrientation(event) {
-                let heading = event.alpha;
-                if (event.webkitCompassHeading) {
-                    heading = event.webkitCompassHeading;
-                }
-
-                if (heading !== null && heading !== undefined) {
-                    let direction = "الشمال";
-                    if (heading > 45 && heading <= 135) direction = "الشرق";
-                    else if (heading > 135 && heading <= 225) direction = "الجنوب";
-                    else if (heading > 225 && heading <= 315) direction = "الغرب";
-                    
-                    speak(`أنت تتجه الآن نحو ${direction}.`);
-                } else {
-                    speak("عذراً، متعذر تحديد اتجاه البوصلة على هذا الجهاز حالياً.");
-                }
-                window.removeEventListener('deviceorientation', handleOrientation);
-            }, { once: true });
-        } else {
-            speak("مستشعر البوصلة غير مدعوم في هذا المتصفح.");
-        }
-    });
-}
-
-if (whereAmIBtn) {
-    whereAmIBtn.addEventListener('click', () => {
-        speak("جاري استكشاف الموقع والجغرافيا الحالية...");
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(position => {
-                const lat = position.coords.latitude.toFixed(2);
-                const lon = position.coords.longitude.toFixed(2);
-                speak(`أنت حالياً بالقرب من الإحداثيات: خط عرض ${lat} وخط طول ${lon}.`);
-            }, () => speak("يرجى السماح بالحصول على إذن الموقع وتفعيل الـ GPS."));
-        } else {
-            speak("خدمة الموقع الجغرافي غير مدعومة.");
-        }
-    });
-}
-
-// --- المرحلة السادسة: المكتبة الصوتية ---
-const playManualBtn = document.getElementById('playManualBtn');
-const playTipsBtn = document.getElementById('playTipsBtn');
-const stopAudioBtn = document.getElementById('stopAudioBtn');
-
-if (playManualBtn) {
-    playManualBtn.addEventListener('click', () => {
-        speak("مرحباً بك في الدليل الصوتي التفاعلي لتطبيق بصير. يتكون التطبيق من أقسام رئيسية تساعدك على القراءة والتعرف على الأشياء والعملات والاتجاهات بسهولة تامّة.");
-    });
-}
-
-if (playTipsBtn) {
-    playTipsBtn.addEventListener('click', () => {
-        speak("إليك نصيحة للحصول على أفضل دقة: عند التقاط صورة للنصوص أو العملات، احرص على إبعاد الهاتف مسافة ثلاثين سنتيمتراً وتأكد من وجود إضاءة كافية حولك.");
-    });
-}
-
-if (stopAudioBtn) {
-    stopAudioBtn.addEventListener('click', () => {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-        }
-        statusBox.innerText = "تم إيقاف الصوت بنجاح.";
-    });
-}
-
-// --- المرحلة السابعة: الألوان ---
+// ==========================================
+// 4. شاشة معرفة الألوان والقماش
+// ==========================================
 const colorBtn = document.getElementById('colorBtn');
 const colorCameraInput = document.getElementById('colorCameraInput');
 const colorResultDisplay = document.getElementById('colorResultDisplay');
-const dateTimeBtn = document.getElementById('dateTimeBtn');
 
 if (colorBtn && colorCameraInput) {
     colorBtn.addEventListener('click', () => {
-        speak("وجه الكاميرا نحو القماش أو العنصر للتعرف على لونه.");
-        setTimeout(() => colorCameraInput.click(), 1000);
+        speak("وجه الكاميرا نحو القماش أو العنصر لمعرفة لونه.");
+        setTimeout(() => colorCameraInput.click(), 800);
     });
 
     colorCameraInput.addEventListener('change', (e) => {
@@ -452,8 +349,121 @@ function getColorName(r, g, b) {
     if (r > 180 && g > 180 && b < 100) return "الأصفر";
     if (r > 180 && g < 100 && b > 180) return "الوردي أو البنفسجي";
     if (r > 150 && g > 100 && b < 80) return "البرتقالي";
-    return "لون متدرج، يرجى ضبط الإضاءة وتصوير القماش مباشرة";
+    return "لون متدرج، يرجى ضبط الإضاءة والتصوير المباشر";
 }
+
+// ==========================================
+// 5. شاشة الملاحة والاتجاهات
+// ==========================================
+const compassBtn = document.getElementById('compassBtn');
+const whereAmIBtn = document.getElementById('whereAmIBtn');
+
+if (compassBtn) {
+    compassBtn.addEventListener('click', () => {
+        speak("جاري تحديد اتجاهك الحالي، يرجى تثبيت الهاتف...");
+
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', function handleOrientation(event) {
+                let heading = event.alpha;
+                if (event.webkitCompassHeading) {
+                    heading = event.webkitCompassHeading;
+                }
+
+                if (heading !== null && heading !== undefined) {
+                    let direction = "الشمال";
+                    if (heading > 45 && heading <= 135) direction = "الشرق";
+                    else if (heading > 135 && heading <= 225) direction = "الجنوب";
+                    else if (heading > 225 && heading <= 315) direction = "الغرب";
+                    
+                    speak(`أنت تتجه الآن نحو ${direction}.`);
+                } else {
+                    speak("عذراً، متعذر تحديد اتجاه البوصلة على هذا الجهاز حالياً.");
+                }
+                window.removeEventListener('deviceorientation', handleOrientation);
+            }, { once: true });
+        } else {
+            speak("مستشعر البوصلة غير مدعوم على هذا الجهاز.");
+        }
+    });
+}
+
+if (whereAmIBtn) {
+    whereAmIBtn.addEventListener('click', () => {
+        speak("جاري استكشاف الموقع الجغرافي...");
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const lat = position.coords.latitude.toFixed(2);
+                const lon = position.coords.longitude.toFixed(2);
+                speak(`أنت حالياً بالقرب من الإحداثيات: خط عرض ${lat} وخط طول ${lon}.`);
+            }, () => speak("يرجى السماح بصلحية الموقع لتفعيل الجي بي إس."));
+        } else {
+            speak("خدمة الموقع الجغرافي غير مدعومة.");
+        }
+    });
+}
+
+// ==========================================
+// 6. شاشة الطوارئ والمساعدة
+// ==========================================
+const callVolunteerBtn = document.getElementById('callVolunteerBtn');
+const sendLocationBtn = document.getElementById('sendLocationBtn');
+
+if (callVolunteerBtn) {
+    callVolunteerBtn.addEventListener('click', () => {
+        speak("جاري الاتصال بالطوارئ والمساعد المباشر.");
+        setTimeout(() => { window.location.href = "tel:122"; }, 1200);
+    });
+}
+
+if (sendLocationBtn) {
+    sendLocationBtn.addEventListener('click', () => {
+        speak("جاري تحديد موقعك الجغرافي عبر الأقمار الصناعية...");
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const lat = position.coords.latitude.toFixed(4);
+                const lon = position.coords.longitude.toFixed(4);
+                speak(`تم تحديد موقعك: خط العرض ${lat} وخط الطول ${lon}.`);
+            }, () => speak("تعذر الوصول للموقع، يرجى تفعيل الـ GPS."));
+        } else {
+            speak("خدمة تحديد الموقع غير مدعومة على جهازك.");
+        }
+    });
+}
+
+// ==========================================
+// 7. شاشة الدليل والمكتبة الصوتية
+// ==========================================
+const playManualBtn = document.getElementById('playManualBtn');
+const playTipsBtn = document.getElementById('playTipsBtn');
+const stopAudioBtn = document.getElementById('stopAudioBtn');
+
+if (playManualBtn) {
+    playManualBtn.addEventListener('click', () => {
+        speak("مرحباً بك في تطبيق بصير. يوفر لك التطبيق خدمات القراءة الصريحة، وصف المشاهد والأشياء بالذكاء الاصطناعي، تحديد العملات والألوان، والملاحة الاتجاهية بسهولة.");
+    });
+}
+
+if (playTipsBtn) {
+    playTipsBtn.addEventListener('click', () => {
+        speak("نصيحة للتصوير: ثبّت الهاتف على مسافة ثلاثين سنتيمتراً من الورقة أو الشيء، واحرص على وجود إضاءة جيدة حولك للحصول على أدق نتيجة.");
+    });
+}
+
+if (stopAudioBtn) {
+    stopAudioBtn.addEventListener('click', () => {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+        if (statusBox) statusBox.innerText = "تم إيقاف الصوت بنجاح.";
+    });
+}
+
+// ==========================================
+// 8. شاشة الإعدادات والتحكم
+// ==========================================
+const dateTimeBtn = document.getElementById('dateTimeBtn');
+const testVoiceBtn = document.getElementById('testVoiceBtn');
+const resetAppBtn = document.getElementById('resetAppBtn');
 
 if (dateTimeBtn) {
     dateTimeBtn.addEventListener('click', () => {
@@ -464,10 +474,6 @@ if (dateTimeBtn) {
         speak(`اليوم هو ${dateStr}، والساعة الآن هي ${timeStr}.`);
     });
 }
-
-// --- المرحلة الثامنة: الإعدادات والتحكم ---
-const testVoiceBtn = document.getElementById('testVoiceBtn');
-const resetAppBtn = document.getElementById('resetAppBtn');
 
 if (testVoiceBtn) {
     testVoiceBtn.addEventListener('click', () => {
@@ -480,6 +486,6 @@ if (resetAppBtn) {
         speak("جاري إعادة تحميل وتحديث تطبيق بصير...");
         setTimeout(() => {
             window.location.reload();
-        }, 1500);
+        }, 1200);
     });
 }
