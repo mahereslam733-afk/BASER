@@ -112,12 +112,11 @@ async function getCleanArabicDescription(label) {
 
     // 2. استخدام محرك الترجمة واستخراج الكلمات العربية الصافية فقط
     try {
-        const cleanEnglish = lowerLabel.replace(/[^a-zA-Z ]/g, " "); // إزالة الأرقام والرموز الغريبة
+        const cleanEnglish = lowerLabel.replace(/[^a-zA-Z ]/g, " ");
         const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(cleanEnglish)}`);
         const data = await res.json();
         if (data && data[0] && data[0][0] && data[0][0][0]) {
             let translated = data[0][0][0].trim();
-            // تصفية أية رموز متبقية
             translated = translated.replace(/[^\u0600-\u06FF\s]/g, "");
             if (translated.length > 0) return translated;
         }
@@ -165,9 +164,10 @@ if (backBtn) {
     });
 }
 
-// --- المرحلة الأولى: قراءة النصوص (OCR) ---
+// --- المرحلة الأولى: قراءة النصوص (OCR) مع الكتابة على الشاشة ---
 const captureOcrBtn = document.getElementById('captureOcrBtn');
 const ocrCameraInput = document.getElementById('ocrCameraInput');
+const ocrResultDisplay = document.getElementById('ocrResultDisplay');
 
 if (captureOcrBtn && ocrCameraInput) {
     captureOcrBtn.addEventListener('click', () => {
@@ -178,7 +178,10 @@ if (captureOcrBtn && ocrCameraInput) {
     ocrCameraInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+
+        if (ocrResultDisplay) ocrResultDisplay.innerText = "جاري استخراج وقراءة النص العربي...";
         speak("تم التقاط الصورة، جاري استخراج وقراءة النص العربي...");
+
         try {
             const formData = new FormData();
             formData.append("file", file);
@@ -191,19 +194,26 @@ if (captureOcrBtn && ocrCameraInput) {
             const result = await response.json();
             if (result && result.ParsedResults && result.ParsedResults.length > 0) {
                 const extractedText = result.ParsedResults[0].ParsedText.trim();
-                speak(extractedText.length > 0 ? `النص المكتوب هو: ${extractedText}` : "لم نتمكن من إيجاد نص واضح بالورقة.");
+                const finalText = extractedText.length > 0 ? extractedText : "لم نتمكن من إيجاد نص واضح بالورقة.";
+                
+                // كتابة النص المكتوب على الشاشة
+                if (ocrResultDisplay) ocrResultDisplay.innerText = finalText;
+                speak(`النص المكتوب هو: ${finalText}`);
             } else {
+                if (ocrResultDisplay) ocrResultDisplay.innerText = "تعذر استخراج النص.";
                 speak("تعذر استخراج النص، يرجى إعادة التصوير بوضوح.");
             }
         } catch (err) {
+            if (ocrResultDisplay) ocrResultDisplay.innerText = "حدث خطأ أثناء الاتصال بخدمة القراءة.";
             speak("حدث خطأ أثناء الاتصال بخدمة القراءة.");
         }
     });
 }
 
-// --- المرحلة الثانية: التعرف على الأشياء (معدلة ومترجمة للعربية الصافية) ---
+// --- المرحلة الثانية: التعرف على الأشياء مع العرض الكتابي بالعربية ---
 const captureObjectBtn = document.getElementById('captureObjectBtn');
 const objectCameraInput = document.getElementById('objectCameraInput');
+const objectResultDisplay = document.getElementById('objectResultDisplay');
 
 if (captureObjectBtn && objectCameraInput) {
     captureObjectBtn.addEventListener('click', () => {
@@ -215,6 +225,7 @@ if (captureObjectBtn && objectCameraInput) {
         const file = e.target.files[0];
         if (!file) return;
         
+        if (objectResultDisplay) objectResultDisplay.innerText = "جاري تحليل الشيء بالذكاء الاصطناعي...";
         speak("تم التقاط الصورة، جاري تحليل الشيء بالذكاء الاصطناعي...");
 
         try {
@@ -231,14 +242,19 @@ if (captureObjectBtn && objectCameraInput) {
                     const rawLabel = result[0].label;
                     const arabicDescription = await getCleanArabicDescription(rawLabel);
                     
+                    // كتابة النتيجة والوصف بالعربية على الشاشة
+                    if (objectResultDisplay) objectResultDisplay.innerText = `الشيء المكتشف: ${arabicDescription}`;
                     speak(`الشيء الموجود أمامك هو: ${arabicDescription}`);
                 } else {
+                    if (objectResultDisplay) objectResultDisplay.innerText = "لم نتمكن من التحديد بدقة.";
                     speak("لم نتمكن من التحديد بدقة، يرجى الاقتراب من الشيء وإعادة التصوير.");
                 }
             } else {
+                if (objectResultDisplay) objectResultDisplay.innerText = "خادم الذكاء الاصطناعي مشغول حالياً.";
                 speak("خادم الذكاء الاصطناعي مشغول حالياً، جرب مرة أخرى بعد قليل.");
             }
         } catch (e) {
+            if (objectResultDisplay) objectResultDisplay.innerText = "حدث خطأ أثناء معالجة الصورة.";
             speak("حدث خطأ أثناء معالجة الصورة، يرجى إعادة المحاولة.");
         }
     });
@@ -247,6 +263,7 @@ if (captureObjectBtn && objectCameraInput) {
 // --- المرحلة الثالثة: التعرف على العملات ---
 const captureMoneyBtn = document.getElementById('captureMoneyBtn');
 const moneyCameraInput = document.getElementById('moneyCameraInput');
+const moneyResultDisplay = document.getElementById('moneyResultDisplay');
 
 if (captureMoneyBtn && moneyCameraInput) {
     captureMoneyBtn.addEventListener('click', () => {
@@ -257,7 +274,10 @@ if (captureMoneyBtn && moneyCameraInput) {
     moneyCameraInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+
+        if (moneyResultDisplay) moneyResultDisplay.innerText = "جاري فحص فئة العملة...";
         speak("تم التقاط صورة العملة، جاري فحص الفئة بوضوح...");
+
         try {
             const arrayBuffer = await file.arrayBuffer();
             const response = await fetch("https://api-inference.huggingface.co/models/google/vit-base-patch16-224", {
@@ -267,14 +287,20 @@ if (captureMoneyBtn && moneyCameraInput) {
             if (response.ok) {
                 const result = await response.json();
                 if (result && result.length > 0 && result[0].score > 0.35) {
-                    speak("تم التعرف على ورقة نقدية، يرجى التأكد من استقامة الورقة والإضاءة للتحقق التام من الفئة.");
+                    const msg = "تم التعرف على ورقة نقدية، يرجى التأكد من استقامة الورقة والإضاءة للتحقق التام من الفئة.";
+                    if (moneyResultDisplay) moneyResultDisplay.innerText = msg;
+                    speak(msg);
                 } else {
-                    speak("غير متأكد من فئة العملة، اضبط الإضاءة وصور كامل الورقة النقدية.");
+                    const msg = "غير متأكد من فئة العملة، اضبط الإضاءة وصور كامل الورقة النقدية.";
+                    if (moneyResultDisplay) moneyResultDisplay.innerText = msg;
+                    speak(msg);
                 }
             } else {
+                if (moneyResultDisplay) moneyResultDisplay.innerText = "خدمة العملات غير متاحة مؤقتاً.";
                 speak("خدمة التعرف على العملات غير متاحة مؤقتاً.");
             }
         } catch (e) {
+            if (moneyResultDisplay) moneyResultDisplay.innerText = "تعذر الاتصال بمركز المعالجة.";
             speak("تعذر الاتصال بمركز معالجة العملات.");
         }
     });
@@ -380,9 +406,10 @@ if (stopAudioBtn) {
     });
 }
 
-// --- المرحلة السابعة: الخدمات اليومية والألوان ---
+// --- المرحلة السابعة: الألوان ---
 const colorBtn = document.getElementById('colorBtn');
 const colorCameraInput = document.getElementById('colorCameraInput');
+const colorResultDisplay = document.getElementById('colorResultDisplay');
 const dateTimeBtn = document.getElementById('dateTimeBtn');
 
 if (colorBtn && colorCameraInput) {
@@ -394,6 +421,8 @@ if (colorBtn && colorCameraInput) {
     colorCameraInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
+
+        if (colorResultDisplay) colorResultDisplay.innerText = "جاري تحليل اللون...";
         speak("تم التقاط الصورة، جاري تحليل اللون الأساسي...");
 
         const img = new Image();
@@ -406,11 +435,9 @@ if (colorBtn && colorCameraInput) {
             ctx.drawImage(img, 0, 0, img.width, img.height);
 
             const pixelData = ctx.getImageData(Math.floor(img.width / 2), Math.floor(img.height / 2), 1, 1).data;
-            const r = pixelData[0];
-            const g = pixelData[1];
-            const b = pixelData[2];
+            const colorName = getColorName(pixelData[0], pixelData[1], pixelData[2]);
 
-            const colorName = getColorName(r, g, b);
+            if (colorResultDisplay) colorResultDisplay.innerText = `اللون المكتشف: ${colorName}`;
             speak(`اللون الأغلب في منتصف الصورة هو: ${colorName}`);
         };
     });
@@ -438,7 +465,7 @@ if (dateTimeBtn) {
     });
 }
 
-// --- المرحلة الثامنة: الإعدادات والتحكم (اختبار وإعادة ضبط) ---
+// --- المرحلة الثامنة: الإعدادات والتحكم ---
 const testVoiceBtn = document.getElementById('testVoiceBtn');
 const resetAppBtn = document.getElementById('resetAppBtn');
 
