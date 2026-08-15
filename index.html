@@ -239,5 +239,28 @@
     </div>
 
     <script src="app.js"></script>
-</body>
+</body> <!-- حاوية الكاميرا -->
+<div class="camera-container">
+    <video id="webcam" autoplay playsinline style="width: 100%; max-width: 500px; border-radius: 15px;"></video>
+    
+    <!-- عنصر Canvas مخفي ضروري لالتقاط الصورة (لا تحذفه) -->
+    <canvas id="canvas" style="display:none;"></canvas>
+</div>
+
+<!-- أزرار التحكم -->
+<div class="controls" style="margin-top: 20px;">
+    <button onclick="processDescribeObjects()" style="padding: 15px 30px; font-size: 18px; margin: 5px;">
+        وصف الأشياء
+    </button>
+    
+    <button onclick="processReadText()" style="padding: 15px 30px; font-size: 18px; margin: 5px;">
+        قراءة النص
+    </button>
+</div>
+
+<!-- مساحة لعرض النص المستخرج (اختياري) -->
+<div id="resultOutput" style="margin-top: 20px; font-size: 20px; color: #333;">
+    <!-- هنا ستظهر النتائج -->
+</div>
+
 </html>
