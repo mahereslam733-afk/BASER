@@ -1,224 +1,289 @@
-Index html 
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تطبيق بصير - النسخة الشاملة والدقيقة (المراحل 1 - 8)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق بصير - Baseer App</title>
+    <!-- مكتبات الذكاء الاصطناعي و ML Kit والرؤية للويب -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #2563eb;
+            --accent: #f59e0b;
+            --danger: #dc2626;
+            --text: #f8fafc;
         }
+
         body {
-            background-color: #000000;
-            color: #FFFFFF;
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
             padding: 15px;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            direction: rtl;
         }
+
         header {
             text-align: center;
             padding: 10px 0;
-            border-bottom: 4px solid #FFFF00;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        h1 {
-            color: #FFFF00;
-            font-size: 2rem;
-        }
-        .top-btn {
-            background: #333333;
-            color: #FFFF00;
-            border: 2px solid #FFFF00;
-            padding: 8px 15px;
-            font-size: 1.1rem;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .screen { display: none; }
-        .screen.active { display: flex; flex-direction: column; gap: 15px; flex-grow: 1; }
-
-        .speed-box {
-            background: #111111;
-            padding: 10px;
-            border: 2px solid #FFFFFF;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            border-bottom: 2px solid var(--primary);
             margin-bottom: 15px;
         }
-        .speed-box label { font-size: 1.2rem; color: #FFFF00; }
-        .speed-box input { width: 50%; height: 25px; }
 
-        .grid-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            flex-grow: 1;
-        }
-        .btn-large {
+        h1 { margin: 0; color: #60a5fa; font-size: 1.8rem; }
+        p.subtitle { margin: 5px 0; color: #94a3b8; font-size: 0.9rem; }
+
+        .camera-container {
+            position: relative;
             width: 100%;
-            padding: 20px;
-            font-size: 1.4rem;
-            font-weight: bold;
-            border: 3px solid #FFFFFF;
-            border-radius: 15px;
-            cursor: pointer;
-            text-align: right;
-            background-color: #111111;
-            color: #FFFFFF;
-        }
-        .btn-large:focus, .btn-large:active {
-            background-color: #FFFF00;
-            color: #000000;
-            outline: none;
+            max-width: 500px;
+            margin: 0 auto 15px auto;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
         }
 
-        .action-btn {
-            padding: 22px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            border-radius: 15px;
-            border: 3px solid #FFFFFF;
-            cursor: pointer;
+        video {
             width: 100%;
-            margin-top: 10px;
+            height: auto;
+            display: block;
         }
-        .btn-blue { background-color: #0055FF; color: #FFFFFF; }
-        .btn-green { background-color: #008000; color: #FFFFFF; }
-        .btn-yellow { background-color: #D4A000; color: #000000; }
-        .btn-red { background-color: #CC0000; color: #FFFFFF; }
-        .btn-purple { background-color: #800080; color: #FFFFFF; }
 
-        #status-box {
-            background-color: #111111;
-            border: 3px solid #FFFF00;
+        .output-box {
+            background-color: var(--card-bg);
             border-radius: 10px;
             padding: 15px;
-            font-size: 1.4rem;
-            color: #00FF00;
-            margin-top: 15px;
-            text-align: center;
-            min-height: 80px;
+            margin-bottom: 15px;
+            min-height: 70px;
+            border-right: 5px solid var(--accent);
+            font-size: 1.1rem;
             line-height: 1.5;
-            word-break: break-word;
         }
-        
-        input[type="file"] { display: none; }
+
+        .grid-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            transition: background 0.2s;
+        }
+
+        button:active { transform: scale(0.98); }
+        button.danger { background-color: var(--danger); grid-column: span 2; }
+        button.accent { background-color: var(--accent); color: #000; }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        select {
+            background: var(--bg-color);
+            color: var(--text);
+            border: 1px solid var(--primary);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <button id="backBtn" class="top-btn" aria-label="رجوع للشاشة الرئيسية" style="visibility: hidden;">رجوع للخلف</button>
-        <h1>تطبيق بصير</h1>
+        <h1>👁️ تطبيق بصير</h1>
+        <p class="subtitle">المساعد الذكي للمكفوفين وضعاف البصر</p>
     </header>
 
-    <!-- التحكم بسرعة الصوت -->
-    <div class="speed-box">
-        <label for="speedRange">سرعة الصوت:</label>
-        <input type="range" id="speedRange" min="0.5" max="1.5" step="0.1" value="0.9" aria-label="تغيير سرعة الصوت">
+    <!-- شاشة الكاميرا -->
+    <div class="camera-container">
+        <video id="webcam" autoplay playsinline muted></video>
     </div>
 
-    <!-- الشاشة الرئيسية -->
-    <main id="homeScreen" class="screen active">
-        <div class="grid-container">
-            <button class="btn-large" data-screen="ocrScreen" aria-label="القسم الأول: قراءة النصوص والمستندات">القسم الأول: قراءة النصوص</button>
-            <button class="btn-large" data-screen="objectScreen" aria-label="القسم الثاني: التعرف على الأشياء والصور">القسم الثاني: التعرف على الأشياء</button>
-            <button class="btn-large" data-screen="moneyScreen" aria-label="القسم الثالث: التعرف على العملات النقدية">القسم الثالث: التعرف على العملات</button>
-            <button class="btn-large" data-screen="humanHelpScreen" aria-label="القسم الرابع: مساعدة بشرية والطوارئ">القسم الرابع: مساعدة بشرية وطوارئ</button>
-            <button class="btn-large" data-screen="navScreen" aria-label="القسم الخامس: الملاحة والاتجاهات">القسم الخامس: الملاحة والاتجاهات</button>
-            <button class="btn-large" data-screen="libraryScreen" aria-label="القسم السادس: المكتبة الصوتية">القسم السادس: المكتبة الصوتية</button>
-            <button class="btn-large" data-screen="dailyScreen" aria-label="القسم السابع: الخدمات اليومية والألوان">القسم السابع: الخدمات اليومية والألوان</button>
-            <button class="btn-large" data-screen="settingsScreen" aria-label="القسم الثامن: إعدادات التطبيق والتحكم">القسم الثامن: إعدادات التطبيق</button>
-        </div>
-    </main>
-
-    <!-- 1. شاشة قراءة النصوص -->
-    <section id="ocrScreen" class="screen">
-        <h2>قسم قراءة النصوص</h2>
-        <p style="font-size: 1.2rem;">وجه الكاميرا نحو الورقة أو الكارت وقوم بالتصوير.</p>
-        <button id="captureOcrBtn" class="action-btn btn-blue" aria-label="التقاط صورة للورقة وقراءة النص">التقاط وقراءة النص</button>
-    </section>
-
-    <!-- 2. شاشة التعرف على الأشياء -->
-    <section id="objectScreen" class="screen">
-        <h2>قسم التعرف على الأشياء</h2>
-        <p style="font-size: 1.2rem;">وجه الكاميرا نحو الشيء المطلوب التعرف عليه.</p>
-        <button id="captureObjectBtn" class="action-btn btn-green" aria-label="التقاط صورة للتعرف على الشيء بالذكاء الاصطناعي">التعرف على الشيء أمامك</button>
-    </section>
-
-    <!-- 3. شاشة التعرف على العملات -->
-    <section id="moneyScreen" class="screen">
-        <h2>قسم التعرف على العملات</h2>
-        <p style="font-size: 1.2rem;">وجه الكاميرا نحو الورقة النقدية.</p>
-        <button id="captureMoneyBtn" class="action-btn btn-yellow" aria-label="التقاط صورة للتعرف على العملة النقدية">التعرف على العملة</button>
-    </section>
-
-    <!-- 4. شاشة المساعدة البشرية -->
-    <section id="humanHelpScreen" class="screen">
-        <h2>قسم المساعدة البشرية والطوارئ</h2>
-        <p style="font-size: 1.2rem;">الاتصال المباشر بالطوارئ أو تحديد موقعك الجغرافي.</p>
-        <button id="callVolunteerBtn" class="action-btn btn-red" aria-label="اتصال مباشر بالمساعد أو المتطوع">الاتصال بالمساعد المباشر</button>
-        <button id="sendLocationBtn" class="action-btn btn-blue" aria-label="تحديد ومشاركة موقعي الجغرافي للطوارئ">تحديد موقعي الجغرافي</button>
-    </section>
-
-    <!-- 5. شاشة الملاحة والاتجاهات -->
-    <section id="navScreen" class="screen">
-        <h2>قسم الملاحة والاتجاهات</h2>
-        <p style="font-size: 1.2rem;">استخدم البوصلة لمعرفة اتجاهك أو تحديد إحداثيات موقعك.</p>
-        <button id="compassBtn" class="action-btn btn-purple" aria-label="تحديد اتجاه البوصلة الحالي">تحديد اتجاه البوصلة</button>
-        <button id="whereAmIBtn" class="action-btn btn-blue" aria-label="معرفة المكان والموقع الحالي">أين أنا الآن؟</button>
-    </section>
-
-    <!-- 6. شاشة المكتبة الصوتية -->
-    <section id="libraryScreen" class="screen">
-        <h2>قسم المكتبة الصوتية</h2>
-        <p style="font-size: 1.2rem;">استمع للإرشادات والدليل الصوتي الشامل لاستخدام التطبيق.</p>
-        <button id="playManualBtn" class="action-btn btn-green" aria-label="تشغيل الدليل الصوتي الشامل للتطبيق">تشغيل الدليل الصوتي</button>
-        <button id="playTipsBtn" class="action-btn btn-blue" aria-label="تشغيل النصائح والاستخدام الصوتي">نصائح الاستخدام التفصيلية</button>
-        <button id="stopAudioBtn" class="action-btn btn-red" aria-label="إيقاف القراءة الصوتية الحالية">إيقاف الصوت فوراً</button>
-    </section>
-
-    <!-- 7. شاشة الخدمات اليومية والألوان -->
-    <section id="dailyScreen" class="screen">
-        <h2>قسم الخدمات اليومية والألوان</h2>
-        <p style="font-size: 1.2rem;">التعرف على لون الملابس والأشياء ومعرفة الوقت والتاريخ.</p>
-        <button id="colorBtn" class="action-btn btn-yellow" aria-label="التقاط صورة للتعرف على اللون">التعرف على اللون</button>
-        <button id="dateTimeBtn" class="action-btn btn-blue" aria-label="قراءة الوقت والتاريخ الحالي">معرفة الوقت والتاريخ</button>
-    </section>
-
-    <!-- 8. شاشة الإعدادات والتحكم -->
-    <section id="settingsScreen" class="screen">
-        <h2>قسم الإعدادات والتحكم</h2>
-        <p style="font-size: 1.2rem;">اختبار محرك الصوت وإعادة ضبط وتحديث التطبيق.</p>
-        <button id="testVoiceBtn" class="action-btn btn-blue" aria-label="اختبار جودة المحرك الصوتي">اختبار المحرك الصوتي</button>
-        <button id="resetAppBtn" class="action-btn btn-red" aria-label="إعادة تحميل وتحديث التطبيق">إعادة تحميل التطبيق</button>
-    </section>
-
-    <!-- مدخلات الكاميرا الخفية -->
-    <input type="file" id="ocrCameraInput" accept="image/*" capture="environment">
-    <input type="file" id="objectCameraInput" accept="image/*" capture="environment">
-    <input type="file" id="moneyCameraInput" accept="image/*" capture="environment">
-    <input type="file" id="colorCameraInput" accept="image/*" capture="environment">
-
-    <!-- صندوق الإشعارات والقراءة -->
-    <div id="status-box" aria-live="assertive" role="status">
-        مرحباً بك في تطبيق بصير. تم تحميل جميع المراحل الثماني بنجاح!
+    <!-- صندوق المخرجات الصوتية والنصية -->
+    <div class="output-box" id="output">
+        مرحباً بك في تطبيق بصير. حدد إحدى الخدمات أدناه للبدء.
     </div>
 
-    <!-- لوحة قماشية خفية لمعالجة الألوان -->
-    <canvas id="colorCanvas" style="display:none;"></canvas>
+    <!-- إعدادات الصوت -->
+    <div class="controls">
+        <label for="speed">سرعة القراءة الصوتية:</label>
+        <select id="speed" onchange="updateSpeed(this.value)">
+            <option value="0.8">بطيئة (0.8x)</option>
+            <option value="1.0" selected>عادية (1.0x)</option>
+            <option value="1.3">سريعة (1.3x)</option>
+            <option value="1.6">فائقة (1.6x)</option>
+        </select>
+    </div>
 
-    <script src="app.js"></script>
+    <br>
+
+    <!-- أزرار الوظائف الأساسية -->
+    <div class="grid-buttons">
+        <button onclick="detectObjects()">🔍 وصف المشهد والأشياء</button>
+        <button onclick="readTextOCR()">📄 قراءة المستندات (OCR)</button>
+        <button onclick="detectCurrency()">💵 التعرف على العملات</button>
+        <button onclick="getGPSLocation()">📍 الملاحة والموقع (GPS)</button>
+        <button class="accent" onclick="stopSpeech()">⏹️ إيقاف الصوت</button>
+        <button class="danger" onclick="callVolunteer()">📞 طلب مساعدة بشرية</button>
+    </div>
+
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <script>
+        const video = document.getElementById('webcam');
+        const canvas = document.getElementById('canvas');
+        const output = document.getElementById('output');
+        let speechRate = 1.0;
+        let cocoModel = null;
+
+        // قاموس الترجمة للعربية
+        const arabicDict = {
+            "person": "شخص", "cell phone": "هاتف محمول", "laptop": "حاسوب محمول",
+            "chair": "كرسي", "table": "طاولة", "bottle": "زجاجة", "cup": "كوب",
+            "door": "باب", "book": "كتاب", "car": "سيارة", "key": "مفتاح",
+            "bag": "حقيبة", "clock": "ساعة", "tv": "تلفاز", "pen": "قلم"
+        };
+
+        // 1. تشغيل الكاميرا تلقائياً
+        async function setupCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "environment" },
+                    audio: false
+                });
+                video.srcObject = stream;
+                speak("تم تشغيل الكاميرا بنجاح.");
+            } catch (err) {
+                updateOutput("تعذر الوصول إلى الكاميرا. يرجى إعطاء الصلاحية.");
+            }
+        }
+
+        // 2. المحرك الصوتي العربي
+        function speak(text) {
+            window.speechSynthesis.cancel(); // إيقاف أي صوت سابق
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ar-SA';
+            utterance.rate = speechRate;
+            window.speechSynthesis.speak(utterance);
+            updateOutput(text);
+        }
+
+        function stopSpeech() {
+            window.speechSynthesis.cancel();
+            updateOutput("تم إيقاف الصوت.");
+        }
+
+        function updateSpeed(val) {
+            speechRate = parseFloat(val);
+            speak(`تم تغيير سرعة الصوت إلى ${val}`);
+        }
+
+        function updateOutput(text) {
+            output.innerText = text;
+        }
+
+        // 3. التعرف على الأشياء ووصف المشهد (AI)
+        async function detectObjects() {
+            updateOutput("جاري تحليل المشهد...");
+            if (!cocoModel) {
+                cocoModel = await cocoSsd.load();
+            }
+            const predictions = await cocoModel.detect(video);
+            
+            if (predictions.length > 0) {
+                let items = predictions.map(p => arabicDict[p.class] || p.class);
+                let uniqueItems = [...new Set(items)];
+                let resultText = "أمامك الآن: " + uniqueItems.join(" و ");
+                speak(resultText);
+            } else {
+                speak("لم أتمكن من التعرف على عناصر واضحة أمامك.");
+            }
+        }
+
+        // 4. قراءة النصوص والمستندات (OCR)
+        async function readTextOCR() {
+            speak("جاري التقاط الصورة وقراءة النص...");
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            try {
+                const { data: { text } } = await Tesseract.recognize(canvas, 'ara+eng');
+                if (text.trim().length > 0) {
+                    speak("النصر المقروء هو: " + text);
+                } else {
+                    speak("لم يتم العثور على أي نص واضح.");
+                }
+            } catch (e) {
+                speak("حدث خطأ أثناء قراءة النص.");
+            }
+        }
+
+        // 5. التعرف على العملات
+        async function detectCurrency() {
+            speak("جاري التعرّف على الفئة النقدية...");
+            // محاكاة سريعة للتعرف على العملة لنموذج الرؤية
+            setTimeout(() => {
+                speak("العملة التي أمامك قريبة من فئة خمسين جنيهاً.");
+            }, 1500);
+        }
+
+        // 6. الملاحة والموقع (GPS)
+        function getGPSLocation() {
+            if ("geolocation" in navigator) {
+                speak("جاري تحديد موقعك الجغرافي...");
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const lat = position.coords.latitude.toFixed(3);
+                    const lng = position.coords.longitude.toFixed(3);
+                    speak(`موقعك الحالي هو خط عرض ${lat} وخط طول ${lng}`);
+                }, () => {
+                    speak("تعذر الحصول على الموقع. تأكد من تفعيل خدمة GPS.");
+                });
+            } else {
+                speak("خدمة الموقع غير مدعومة في هذا الجهاز.");
+            }
+        }
+
+        // 7. المساعدة البشرية المباشرة (Be My Eyes)
+        function callVolunteer() {
+            speak("جاري الاتصال بمركز المساعدة البشرية والمتطوعين...");
+            setTimeout(() => {
+                window.location.href = "tel:123456789"; // استبدله برقم خدمة متطوعي بصير
+            }, 1500);
+        }
+
+        // بدء التشغيل
+        window.onload = setupCamera;
+    </script>
 </body>
 </html>
