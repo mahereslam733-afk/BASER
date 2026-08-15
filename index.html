@@ -222,3 +222,59 @@
     <script src="app.js"></script>
 </body>
 </html>
+<!-- =====================================================
+     التعرف على الأشياء وقراءة النصوص - بصير
+===================================================== -->
+
+<section id="aiVisionSection" class="ai-vision">
+
+    <h2>التعرف بالذكاء الاصطناعي</h2>
+
+    <p id="aiStatus">
+        اختر صورة أو التقط صورة للتعرف على الأشياء وقراءة النص.
+    </p>
+
+    <input
+        type="file"
+        id="visionImage"
+        accept="image/*"
+        capture="environment"
+        aria-label="اختيار أو التقاط صورة"
+    >
+
+    <div class="vision-buttons">
+        <button id="detectObjectsBtn">
+            🤖 التعرف على الأشياء
+        </button>
+
+        <button id="readTextBtn">
+            📖 قراءة النص
+        </button>
+
+        <button id="describeImageBtn">
+            🔊 وصف الصورة
+        </button>
+    </div>
+
+    <img
+        id="visionPreview"
+        alt="الصورة المختارة"
+        style="display:none; max-width:100%;"
+    >
+
+    <div id="objectResults" aria-live="polite"></div>
+
+    <div id="textResults" aria-live="polite"></div>
+
+</section>
+
+<!-- نموذج التعرف على الأشياء -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
+<!-- OCR قراءة النصوص -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+<!-- كود الذكاء الاصطناعي -->
+<script src="vision-ai.js"></script>
