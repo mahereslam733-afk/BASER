@@ -291,3 +291,70 @@
 </body>
 </html>
 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تطبيق بصير - التعرف على الأشياء</title>
+  
+  <!-- استدعاء مكاتب TensorFlow.js ونموذج COCO-SSD -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
+  <style>
+    .camera-container {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    video, canvas {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .controls {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>خاصية التعرف على الأشياء</h2>
+
+  <div class="camera-container">
+    <video id="webcam" autoplay playsinline muted></video>
+    <canvas id="outputCanvas"></canvas>
+  </div>
+
+  <div class="controls">
+    <button id="startBtn">تشغيل الكاميرا والتحليل</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
