@@ -1,358 +1,101 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق بصير - Baser</title>
-    <style>
-        :root {
-            --primary-color: #2e7d32;
-            --bg-color: #f4f6f8;
-            --card-bg: #ffffff;
-            --text-color: #1a1a1a;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 15px;
-            direction: rtl;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--primary-color);
-            color: white;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-
-        .status-box {
-            background-color: #e8f5e9;
-            border: 2px solid var(--primary-color);
-            border-radius: 10px;
-            padding: 15px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
-            min-height: 40px;
-            color: #1b5e20;
-        }
-
-        .result-display {
-            background-color: #ffffff;
-            border: 2px dashed #007bff;
-            border-radius: 12px;
-            padding: 15px;
-            font-size: 1.3rem;
-            font-weight: bold;
-            text-align: center;
-            margin: 15px 0;
-            min-height: 50px;
-            color: #0d6efd;
-            word-break: break-word;
-        }
-
-        .screen {
-            display: none;
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        .grid-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .btn-large {
-            background-color: #ffffff;
-            border: 2px solid #ccc;
-            border-radius: 12px;
-            padding: 20px 10px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-large:focus, .btn-large:hover {
-            border-color: var(--primary-color);
-            background-color: #f1f8e9;
-            outline: none;
-        }
-
-        .btn-action {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 18px;
-            border-radius: 12px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 10px 0;
-        }
-
-        .btn-back {
-            background-color: #d32f2f;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            visibility: hidden;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        .control-group {
-            margin: 20px 0;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="header">
-        <h1>تطبيق بصير</h1>
-        <button id="backBtn" class="btn-back">رجوع ↩</button>
-    </div>
-
-    <!-- صندوق الحالة العامة والنطق -->
-    <div id="status-box" class="status-box">أهلاً بك في تطبيق بصير</div>
-
-    <!-- الشاشة الرئيسية -->
-    <div id="homeScreen" class="screen active">
-        <div class="grid-buttons">
-            <button class="btn-large" data-screen="screen-ocr" aria-label="قسم قراءة النصوص والأوراق">
-                📖 قراءة النصوص
-            </button>
-            <button class="btn-large" data-screen="screen-object" aria-label="قسم التعرف على الأشياء والمشهد">
-                🔍 التعرف على الأشياء
-            </button>
-            <button class="btn-large" data-screen="screen-money" aria-label="قسم فحص وتحديد العملات">
-                💵 معرفة العملات
-            </button>
-            <button class="btn-large" data-screen="screen-color" aria-label="قسم التعرف على الألوان والقماش">
-                🎨 معرفة الألوان
-            </button>
-            <button class="btn-large" data-screen="screen-nav" aria-label="قسم الاتجاهات والملاحة">
-                🧭 البوصلة والموقع
-            </button>
-            <button class="btn-large" data-screen="screen-help" aria-label="قسم الطوارئ والمساعدة البشرية">
-                🆘 الطوارئ والمساعدة
-            </button>
-            <button class="btn-large" data-screen="screen-audio" aria-label="قسم المكتبة الصوتية والدليل">
-                🎧 الدليل الصوتي
-            </button>
-            <button class="btn-large" data-screen="screen-settings" aria-label="قسم الإعدادات والتحكم">
-                ⚙️ الإعدادات
-            </button>
-        </div>
-    </div>
-
-    <!-- 1. شاشة قراءة النصوص -->
-    <div id="screen-ocr" class="screen">
-        <h2>📖 قراءة النصوص والكتب</h2>
-        <div id="ocrResultDisplay" class="result-display">سيظهر النص المكتوب هنا بعد التصوير</div>
-        <button id="captureOcrBtn" class="btn-action">التقاط صورة للورقة 📸</button>
-        <input type="file" id="ocrCameraInput" accept="image/*" capture="environment">
-    </div>
-
-    <!-- 2. شاشة التعرف على الأشياء -->
-    <div id="screen-object" class="screen">
-        <h2>🔍 التعرف على الأشياء ووصف المشهد</h2>
-        <div id="objectResultDisplay" class="result-display">سيظهر اسم الشيء أو وصف المشهد هنا</div>
-        <button id="captureObjectBtn" class="btn-action">تصوير الشيء أو المشهد 📸</button>
-        <input type="file" id="objectCameraInput" accept="image/*" capture="environment">
-    </div>
-
-    <!-- 3. شاشة العملات -->
-    <div id="screen-money" class="screen">
-        <h2>💵 فحص الورقة النقدية</h2>
-        <div id="moneyResultDisplay" class="result-display">نتيجة فحص العملة ستظهر هنا</div>
-        <button id="captureMoneyBtn" class="btn-action">تصوير الورقة النقدية 📸</button>
-        <input type="file" id="moneyCameraInput" accept="image/*" capture="environment">
-    </div>
-
-    <!-- 4. شاشة الألوان -->
-    <div id="screen-color" class="screen">
-        <h2>🎨 التعرف على الألوان</h2>
-        <div id="colorResultDisplay" class="result-display">اللون المحدد سيظهر هنا</div>
-        <button id="colorBtn" class="btn-action">تصوير العنصر لمعرفة لونه 📸</button>
-        <input type="file" id="colorCameraInput" accept="image/*" capture="environment">
-        <canvas id="colorCanvas" style="display:none;"></canvas>
-    </div>
-
-    <!-- 5. شاشة الملاحة -->
-    <div id="screen-nav" class="screen">
-        <h2>🧭 الملاحة والاتجاهات</h2>
-        <button id="compassBtn" class="btn-action">تحديد اتجاه البوصلة 🧭</button>
-        <button id="whereAmIBtn" class="btn-action">أين أنا الآن؟ 📍</button>
-    </div>
-
-    <!-- 6. شاشة الطوارئ -->
-    <div id="screen-help" class="screen">
-        <h2>🆘 الطوارئ والمساعدة</h2>
-        <button id="callVolunteerBtn" class="btn-action" style="background-color: #c62828;">اتصال بالطوارئ 📞</button>
-        <button id="sendLocationBtn" class="btn-action">تحديد وإرسال الإحداثيات 📍</button>
-    </div>
-
-    <!-- 7. المكتبة الصوتية -->
-    <div id="screen-audio" class="screen">
-        <h2>🎧 الدليل والمكتبة الصوتية</h2>
-        <button id="playManualBtn" class="btn-action">تشغيل دليل الاستخدام 📖</button>
-        <button id="playTipsBtn" class="btn-action">نصائح للتصوير الصحيح 💡</button>
-        <button id="stopAudioBtn" class="btn-action" style="background-color: #424242;">إيقاف الصوت ⏹️</button>
-    </div>
-
-    <!-- 8. الإعدادات -->
-    <div id="screen-settings" class="screen">
-        <h2>⚙️ الإعدادات والتحكم</h2>
-        <div class="control-group">
-            <label for="speedRange"><strong>سرعة النطق الصوتي:</strong></label>
-            <input type="range" id="speedRange" min="0.5" max="1.5" step="0.1" value="0.9" style="width: 100%; margin-top: 10px;">
-        </div>
-        <button id="dateTimeBtn" class="btn-action">معرفة الوقت والتاريخ 🕒</button>
-        <button id="testVoiceBtn" class="btn-action">اختبار الصوت 🔊</button>
-        <button id="resetAppBtn" class="btn-action" style="background-color: #e65100;">إعادة تحديث التطبيق 🔄</button>
-    </div>
-
-    <script src="app.js"></script>
-</body> <!-- حاوية الكاميرا -->
-<div class="camera-container">
-    <video id="webcam" autoplay playsinline style="width: 100%; max-width: 500px; border-radius: 15px;"></video>
-    
-    <!-- عنصر Canvas مخفي ضروري لالتقاط الصورة (لا تحذفه) -->
-    <canvas id="canvas" style="display:none;"></canvas>
-</div>
-
-<!-- أزرار التحكم -->
-<div class="controls" style="margin-top: 20px;">
-    <button onclick="processDescribeObjects()" style="padding: 15px 30px; font-size: 18px; margin: 5px;">
-        وصف الأشياء
-    </button>
-    
-    <button onclick="processReadText()" style="padding: 15px 30px; font-size: 18px; margin: 5px;">
-        قراءة النص
-    </button>
-</div>
-
-<!-- مساحة لعرض النص المستخرج (اختياري) -->
-<div id="resultOutput" style="margin-top: 20px; font-size: 20px; color: #333;">
-    <!-- هنا ستظهر النتائج -->
-</div>
-
-</html>
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <title>التعرف على الأشياء وترجمتها</title>
-    <!-- تحميل مكتبة TensorFlow.js -->
-    <script src="https://jsdelivr.net"></script>
-    <!-- تحميل نموذج COCO-SSD للتعرف على الأشياء -->
-    <script src="https://jsdelivr.net"></script>
-</head>
-<body>
-
-    <h1>التعرف على الأشياء بالذكاء الاصطناعي</h1>
-    
-    <!-- صورة تجريبية للتحليل -->
-    <img id="targetImg" src="https://unsplash.com" crossorigin="anonymous" width="400" alt="صورة طعام">
-    <br>
-    <button onclick="detectImage()">تعرف على ما في الصورة</button>
-    
-    <h2>النتيجة:</h2>
-    <p id="result">جاري التحميل...</p>
-
-    <!-- ربط ملف الـ JavaScript -->
-    <script src="app.js"></script>
-</body>
-</html>
-
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تطبيق بصير - التعرف على الأشياء</title>
+  <title>تطبيق أبصار - الذكاء الاصطناعي للمكفوفين</title>
   
   <!-- استدعاء مكاتب TensorFlow.js ونموذج COCO-SSD -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
 
   <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      margin: 0;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #00e676;
+      margin-bottom: 10px;
+    }
     .camera-container {
       position: relative;
       width: 100%;
-      max-width: 500px;
-      margin: 0 auto;
+      max-width: 480px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      background: #000;
     }
-
     video, canvas {
       width: 100%;
       height: auto;
-      border-radius: 12px;
+      display: block;
     }
-
     canvas {
       position: absolute;
       top: 0;
       left: 0;
     }
-
     .controls {
+      width: 100%;
+      max-width: 480px;
       margin-top: 15px;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
-
     button {
-      padding: 12px 24px;
-      font-size: 16px;
+      width: 100%;
+      padding: 16px;
+      font-size: 18px;
+      font-weight: bold;
       border: none;
-      border-radius: 8px;
-      background-color: #007bff;
-      color: white;
+      border-radius: 10px;
+      background-color: #00e676;
+      color: #000;
       cursor: pointer;
+      transition: 0.2s;
     }
-
     button:disabled {
-      background-color: #ccc;
+      background-color: #444;
+      color: #888;
+    }
+    .status-box {
+      margin-top: 15px;
+      padding: 12px;
+      background: #1e1e1e;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 480px;
+      text-align: center;
+      font-size: 16px;
+      color: #ffd54f;
     }
   </style>
 </head>
 <body>
 
-  <h2>خاصية التعرف على الأشياء</h2>
+  <h1>تطبيق أبصار 👁️</h1>
 
   <div class="camera-container">
     <video id="webcam" autoplay playsinline muted></video>
     <canvas id="outputCanvas"></canvas>
   </div>
 
+  <div class="status-box" id="statusBox">جاري تحميل نموذج التعرف على الأشياء...</div>
+
   <div class="controls">
-    <button id="startBtn">تشغيل الكاميرا والتحليل</button>
+    <button id="startBtn" disabled>تشغيل الكاميرا والتعرف اللحظي</button>
   </div>
 
   <script src="app.js"></script>
