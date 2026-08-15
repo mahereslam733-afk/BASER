@@ -278,3 +278,59 @@
 
 <!-- كود الذكاء الاصطناعي -->
 <script src="vision-ai.js"></script>
+<!-- =====================================================
+     وحدة رؤية بصير - الكاميرا والتعرف على الأشياء
+===================================================== -->
+
+<section id="basirVision">
+
+    <h2>التعرف على المشهد</h2>
+
+    <button id="startCameraBtn">
+        📷 تشغيل الكاميرا
+    </button>
+
+    <button id="captureSceneBtn" style="display:none;">
+        👁️ التعرف على المشهد
+    </button>
+
+    <button id="stopCameraBtn" style="display:none;">
+        ⛔ إيقاف الكاميرا
+    </button>
+
+    <div id="cameraContainer" style="display:none;">
+
+        <video
+            id="basirCamera"
+            autoplay
+            playsinline
+            muted
+            style="width:100%; max-width:600px;"
+        ></video>
+
+        <canvas
+            id="basirCanvas"
+            style="display:none;"
+        ></canvas>
+
+    </div>
+
+    <div
+        id="sceneDescription"
+        aria-live="polite"
+        style="margin-top:15px;"
+    >
+        لم يتم تحليل المشهد بعد.
+    </div>
+
+</section>
+
+
+<!-- مكتبة TensorFlow -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+
+<!-- نموذج التعرف على الأشياء -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
+<!-- كود رؤية بصير -->
+<script src="vision-scene.js"></script>
