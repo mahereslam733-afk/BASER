@@ -571,3 +571,253 @@ function processDescribeObjects() {
 function processReadText() {
   analyzeWithGemini("اقرأ جميع النصوص المكتوبة الموجودة في هذه الصورة بدقة باللغة العربية.");
 }
+// ======================================================
+// بصير - إضافة الذكاء الاصطناعي الحقيقي للتعرف على الصور
+// ======================================================
+
+async function absarAIAnalyzeImage(imageData) {
+
+    try {
+
+        if (!imageData) {
+            speakArabic("لم يتم التقاط صورة.");
+            return;
+        }
+
+        const aiStatus =
+            document.getElementById("ai-status");
+
+        const aiResult =
+            document.getElementById("ai-result");
+
+        if (aiStatus) {
+            aiStatus.textContent =
+                "جاري تحليل الصورة بالذكاء الاصطناعي...";
+        }
+
+        if (aiResult) {
+            aiResult.innerHTML =
+                "<p>🔄 جاري تحليل الصورة...</p>";
+        }
+
+        speakArabic(
+            "جاري تحليل الصورة بالذكاء الاصطناعي."
+        );
+
+
+        // إرسال الصورة إلى خادم الذكاء الاصطناعي
+        const response = await fetch(
+            "https://YOUR-SERVER-DOMAIN.com/api/analyze-image",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    image: imageData
+                })
+            }
+        );
+
+
+        if (!response.ok) {
+            throw new Error(
+                "فشل الاتصال بخدمة الذكاء الاصطناعي"
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const description =
+            data.description ||
+            "لم أستطع التعرف على محتوى الصورة.";
+
+
+        // عرض النتيجة
+        if (aiResult) {
+
+            aiResult.innerHTML = `
+                <div class="ai-result-box">
+                    <strong>نتيجة الذكاء الاصطناعي:</strong>
+                    <p>${description}</p>
+                </div>
+            `;
+        }
+
+
+        if (aiStatus) {
+
+            aiStatus.textContent =
+                "تم تحليل الصورة بنجاح.";
+        }
+
+
+        // قراءة النتيجة للمستخدم الكفيف
+        speakArabic(description);
+
+
+    } catch (error) {
+
+        console.error(
+            "Absar AI Error:",
+            error
+        );
+
+
+        const message =
+            "حدث خطأ أثناء تحليل الصورة. تأكد من اتصال الإنترنت.";
+
+
+        const aiResult =
+            document.getElementById("ai-result");
+
+
+        if (aiResult) {
+
+            aiResult.innerHTML = `
+                <div class="ai-result-box">
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+
+        speakArabic(message);
+    }
+}
+
+
+// ======================================================
+// زر جديد مستقل للتعرف بالذكاء الاصطناعي
+// ======================================================
+
+function addAbsarAIButton() {
+
+    const section =
+        document.getElementById(
+            "ai-object-section"
+        );
+
+    if (!section) {
+        return;
+    }
+
+
+    // منع إنشاء الزر أكثر من مرة
+    if (
+        document.getElementById(
+            "absar-real-ai-button"
+        )
+    ) {
+        return;
+    }
+
+
+    const button =
+        document.createElement("button");
+
+
+    button.id =
+        "absar-real-ai-button";
+
+
+    button.innerHTML =
+        "🤖 تحليل الصورة بالذكاء الاصطناعي";
+
+
+    button.style.cssText = `
+        display:block;
+        width:100%;
+        max-width:400px;
+        margin:12px auto;
+        padding:16px;
+        border:none;
+        border-radius:14px;
+        font-size:18px;
+        font-weight:bold;
+        cursor:pointer;
+    `;
+
+
+    button.addEventListener(
+        "click",
+        async function () {
+
+            if (!aiCanvas) {
+
+                speakArabic(
+                    "الكاميرا غير جاهزة."
+                );
+
+                return;
+            }
+
+
+            if (
+                !aiCamera ||
+                !aiCamera.videoWidth
+            ) {
+
+                speakArabic(
+                    "افتح الكاميرا أولًا."
+                );
+
+                return;
+            }
+
+
+            aiCanvas.width =
+                aiCamera.videoWidth;
+
+            aiCanvas.height =
+                aiCamera.videoHeight;
+
+
+            const context =
+                aiCanvas.getContext("2d");
+
+
+            context.drawImage(
+                aiCamera,
+                0,
+                0,
+                aiCanvas.width,
+                aiCanvas.height
+            );
+
+
+            const imageData =
+                aiCanvas.toDataURL(
+                    "image/jpeg",
+                    0.85
+                );
+
+
+            await absarAIAnalyzeImage(
+                imageData
+            );
+
+        }
+    );
+
+
+    section.appendChild(
+        button
+    );
+}
+
+
+// تشغيل الإضافة بعد تحميل الصفحة
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        addAbsarAIButton();
+
+    }
+);
