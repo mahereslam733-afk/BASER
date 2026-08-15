@@ -1,0 +1,63 @@
+package com.example.baseer // استبدل بـ package مشروعك
+
+import android.content.Context
+import android.graphics.Bitmap
+import android.speech.tts.TextToSpeech
+import java.util.Locale
+
+class BaseerSceneDescriber(
+    private val context: Context,
+    private val onSceneDescribed: (arabicDescription: String) -> Unit
+) : TextToSpeech.OnInitListener {
+
+    private var tts: TextToSpeech? = TextToSpeech(context, this)
+    private var isTtsReady = false
+
+    // قاموس ترجمة الأماكن والعناصر لتكوين وصف المشهد بالكامل
+    private val dictionary = mapOf(
+        "person" to "شخص",
+        "man" to "رجل",
+        "woman" to "امرأة",
+        "chair" to "كرسي",
+        "table" to "طاولة",
+        "laptop" to "حاسوب محمول",
+        "phone" to "هاتف محمول",
+        "cup" to "كوب",
+        "car" to "سيارة",
+        "door" to "باب"
+    )
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            tts?.language = Locale("ar")
+            isTtsReady = true
+        }
+    }
+
+    // دالة بناء وتأليف وصف المشهد بالعربية
+    fun describeScene(detectedObjects: List<String>) {
+        if (detectedObjects.isEmpty()) {
+            speakAndReturn("لم أتمكن من رؤية عناصر واضحة أمامك")
+            return
+        }
+
+        val arabicItems = detectedObjects.map { item ->
+            dictionary[item.lowercase()] ?: item
+        }
+
+        val fullText = "أمامك الآن: " + arabicItems.joinToString(" و ")
+        speakAndReturn(fullText)
+    }
+
+    private fun speakAndReturn(text: String) {
+        onSceneDescribed(text)
+        if (isTtsReady) {
+            tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+        }
+    }
+
+    fun close() {
+        tts?.stop()
+        tts?.shutdown()
+    }
+}
