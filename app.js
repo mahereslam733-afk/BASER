@@ -483,3 +483,91 @@ if (resetAppBtn) {
         }, 1500);
     });
 }
+// ==========================================
+// ميزات الذكاء الاصطناعي والنطق الصوتي (تطبيق بصير)
+// ==========================================
+
+// 1. مفتاح API الخاص بـ Gemini (استبدله بمفتاحك الخاص)
+const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY";
+
+// 2. دالة التقاط الصورة الحالية من الكاميرا وتحويلها إلى Base64
+function captureFrameAsBase64() {
+  const videoElem = document.querySelector('video');
+  let canvasElem = document.querySelector('canvas');
+
+  // إذا لم يكن هناك عنصر canvas في الصفحة، ننشئ واحداً في الذاكرة
+  if (!canvasElem) {
+    canvasElem = document.createElement('canvas');
+  }
+
+  const context = canvasElem.getContext('2d');
+  canvasElem.width = videoElem.videoWidth || 640;
+  canvasElem.height = videoElem.videoHeight || 480;
+  
+  context.drawImage(videoElem, 0, 0, canvasElem.width, canvasElem.height);
+  
+  const dataUrl = canvasElem.toDataURL('image/jpeg');
+  return dataUrl.split(',')[1]; // إرجاع كود Base64 الصافي
+}
+
+// 3. دالة إرسال الصورة لـ Gemini API وتحليلها
+async function analyzeWithGemini(promptText) {
+  speakText("جاري التحليل، انتظر لحظة");
+
+  try {
+    const base64Data = captureFrameAsBase64();
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            { text: promptText },
+            {
+              inline_data: {
+                mime_type: "image/jpeg",
+                data: base64Data
+              }
+            }
+          ]
+        }]
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.candidates && data.candidates[0].content.parts[0].text) {
+      const result = data.candidates[0].content.parts[0].text;
+      console.log("نتيجة التحليل:", result);
+      speakText(result); // نطق النتيجة صوتاً
+    } else {
+      speakText("لم أستطع التعرف على المحتوى، حاول مرة أخرى.");
+    }
+
+  } catch (error) {
+    console.error("خطأ أثناء الاتصال بالذكاء الاصطناعي:", error);
+    speakText("حدث خطأ أثناء الاتصال بالخدمة.");
+  }
+}
+
+// 4. دالة تحويل النص إلى صوت (Text-to-Speech)
+function speakText(text) {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel(); // إيقاف أي صوت سابق
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ar-EG'; // ضبط الصوت على اللغة العربية
+    utterance.rate = 0.9;     // سرعة النطق
+    window.speechSynthesis.speak(utterance);
+  }
+}
+
+// 5. دوال يمكنك استدعاؤها عند الضغط على الأزرار في تطبيقك
+function processDescribeObjects() {
+  analyzeWithGemini("صف العناصر والأشياء الموجودة في هذه الصورة باختصار باللغة العربية بأسلوب مناسب للمكفوفين.");
+}
+
+function processReadText() {
+  analyzeWithGemini("اقرأ جميع النصوص المكتوبة الموجودة في هذه الصورة بدقة باللغة العربية.");
+}
