@@ -892,3 +892,123 @@ async function detectImage() {
     }
 }
 
+let model;
+const video = document.getElementById('webcam');
+const canvas = document.getElementById('outputCanvas');
+const ctx = canvas.getContext('2d');
+const startBtn = document.getElementById('startBtn');
+
+// قاموس ترجمة أسماء الأشياء الشائعة للعربية
+const labelsTranslation = {
+  "person": "شخص",
+  "cell phone": "هاتف محمول",
+  "laptop": "حاسوب محمول",
+  "chair": "كرسي",
+  "bottle": "زجاجة",
+  "cup": "كوب",
+  "book": "كتاب",
+  "mouse": "فأرة",
+  "keyboard": "لوحة مفاتيح",
+  "backpack": "حقيبة ظهر",
+  "car": "سيارة",
+  "dog": "كلب",
+  "cat": "قطة"
+};
+
+// 1. تحميل نموذج الذكاء الاصطناعي عند فتح الصفحة
+async function loadModel() {
+  console.log("جاري تحميل النموذج...");
+  model = await cocoSsd.load();
+  console.log("تم تحميل النموذج بنجاح.");
+}
+
+loadModel();
+
+// 2. تشغيل الكاميرا الخلفية للهاتف
+async function setupCamera() {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: { exact: "environment" } }, // الكاميرا الخلفية
+    audio: false
+  });
+  video.srcObject = stream;
+
+  return new Promise((resolve) => {
+    video.onloadedmetadata = () => {
+      resolve(video);
+    };
+  });
+}
+
+// 3. نطق اسم الشيء المكتشف باللغة العربية
+function speakText(text) {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel(); // إيقاف أي نطق سابق
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ar-SA';
+    window.speechSynthesis.speak(utterance);
+  }
+}
+
+// 4. تحليل الإطارات والتعرف على الأشياء
+async function detectObjects() {
+  // ضبط أبعاد Canvas لتتطابق مع أبعاد الكاميرا
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  // إجراء التنبؤ
+  const predictions = await model.detect(video);
+
+  // مسح الرسم السابق
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  let detectedObjectsText = [];
+
+  predictions.forEach(prediction => {
+    // تصفية النتائج ذات نسبة التأكد العالية فقط (أكبر من 60%)
+    if (prediction.score > 0.60) {
+      const [x, y, width, height] = prediction.bbox;
+      const englishName = prediction.class;
+      const arabicName = labelsTranslation[englishName] || englishName;
+
+      detectedObjectsText.push(arabicName);
+
+      // رسم المربع حول الشيء المكتشف
+      ctx.strokeStyle = '#00FF00';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(x, y, width, height);
+
+      // رسم الخلفية للنص
+      ctx.fillStyle = '#00FF00';
+      const textWidth = ctx.measureText(arabicName).width;
+      ctx.fillRect(x, y > 20 ? y - 25 : 0, textWidth + 10, 25);
+
+      // كتابة اسم الشيء
+      ctx.fillStyle = '#000000';
+      ctx.font = '18px Arial';
+      ctx.fillText(arabicName, x + 5, y > 20 ? y - 7 : 18);
+    }
+  });
+
+  // نطق العناصر المكتشفة إذا وجدت
+  if (detectedObjectsText.length > 0) {
+    const speechOutput = "أمامي: " + detectedObjectsText.join(" و ");
+    speakText(speechOutput);
+  }
+
+  // استمرار الفحص التلقائي بعد ثانيتين لتجنب الإزعاج بالنطق المتكرر
+  setTimeout(() => {
+    requestAnimationFrame(detectObjects);
+  }, 2000);
+}
+
+// 5. زر البدء
+startBtn.addEventListener('click', async () => {
+  if (!model) {
+    alert("برجاء الانتظار حتى اكتمال تحميل نموذج الذكاء الاصطناعي.");
+    return;
+  }
+  startBtn.disabled = true;
+  await setupCamera();
+  video.play();
+  detectObjects();
+});
