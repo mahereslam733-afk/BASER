@@ -821,3 +821,74 @@ document.addEventListener(
 
     }
 );
+// قاموس ترجمة أسماء الأشياء الشائعة من الإنجليزية إلى العربية
+const translations = {
+    "person": "شخص",
+    "bicycle": "دراجة هوائية",
+    "car": "سيارة",
+    "motorcycle": "دراجة نارية",
+    "airplane": "طائرة",
+    "bus": "حافلة",
+    "train": "قطار",
+    "truck": "شاحنة",
+    "boat": "قارب",
+    "cat": "قطة",
+    "dog": "كلب",
+    "horse": "حصان",
+    "bowl": "وعاء / سلطانية",
+    "cup": "كوب",
+    "fork": "شوكة",
+    "knife": "سكين",
+    "spoon": "ملعقة",
+    "bowl": "طبق",
+    "apple": "تفاحة",
+    "sandwich": "شطيرة",
+    "orange": "برتقال",
+    "broccoli": "بروكلي",
+    "carrot": "جزر",
+    "chair": "كرسي",
+    "couch": "أريكة",
+    "potted plant": "نبتة منزلية",
+    "bed": "سرير",
+    "dining table": "طاولة طعام",
+    "tv": "تلفاز",
+    "laptop": "حاسوب محمول",
+    "mouse": "فأرة حاسوب",
+    "cell phone": "هاتف محمولكرسي"
+};
+
+let model = undefined;
+
+// تحميل النموذج عند فتح التطبيق
+cocoSsd.load().then(function (loadedModel) {
+    model = loadedModel;
+    document.getElementById("result").innerText = "النموذج جاهز، اضغط على الزر للتعرف.";
+});
+
+// دالة التعرف على الأشياء داخل الصورة
+async function detectImage() {
+    if (!model) {
+        alert("النموذج لم يكتمل تحميله بعد!");
+        return;
+    }
+    
+    const imgElement = document.getElementById("targetImg");
+    document.getElementById("result").innerText = "جاري التحليل...";
+
+    // إجراء التنبؤ
+    const predictions = await model.detect(imgElement);
+
+    if (predictions.length > 0) {
+        let resultsText = "الأشياء المكتشفة:<br>";
+        predictions.forEach(prediction => {
+            // ترجمة الاسم أو إبقاؤه كما هو إذا لم يتوفر في القاموس
+            let arabicName = translations[prediction.class] || prediction.class;
+            let confidence = Math.round(prediction.score * 100);
+            resultsText += `- ${arabicName} (دقة: ${confidence}%)<br>`;
+        });
+        document.getElementById("result").innerHTML = resultsText;
+    } else {
+        document.getElementById("result").innerText = "لم يتم التعرف على أي شيء بوضوح.";
+    }
+}
+
