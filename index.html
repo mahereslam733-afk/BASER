@@ -264,3 +264,30 @@
 </div>
 
 </html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>التعرف على الأشياء وترجمتها</title>
+    <!-- تحميل مكتبة TensorFlow.js -->
+    <script src="https://jsdelivr.net"></script>
+    <!-- تحميل نموذج COCO-SSD للتعرف على الأشياء -->
+    <script src="https://jsdelivr.net"></script>
+</head>
+<body>
+
+    <h1>التعرف على الأشياء بالذكاء الاصطناعي</h1>
+    
+    <!-- صورة تجريبية للتحليل -->
+    <img id="targetImg" src="https://unsplash.com" crossorigin="anonymous" width="400" alt="صورة طعام">
+    <br>
+    <button onclick="detectImage()">تعرف على ما في الصورة</button>
+    
+    <h2>النتيجة:</h2>
+    <p id="result">جاري التحميل...</p>
+
+    <!-- ربط ملف الـ JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
+
