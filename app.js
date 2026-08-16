@@ -456,3 +456,75 @@ if (resetAppBtn) {
         }, 1500);
     });
     }
+// =========================================================
+// 🚀 كود إضافي: تصحيح التعرف على الأشياء والترجمة والنطق العربي
+// =========================================================
+
+// 1. قاموس ترجمة إضافي وموسع
+const extraArabicDict = {
+    "person": "شخص", "cell phone": "هاتف محمول", "mobile phone": "هاتف محمول",
+    "laptop": "حاسوب محمول", "chair": "كرسي", "couch": "أريكة", "sofa": "أريكة",
+    "table": "طاولة", "dining table": "طاولة طعام", "bottle": "زجاجة", 
+    "water bottle": "زجاجة ماء", "cup": "كوب", "mug": "كوب", "door": "باب",
+    "book": "كتاب", "car": "سيارة", "key": "مفتاح", "bag": "حقيبة",
+    "backpack": "حقيبة ظهر", "handbag": "حقيبة يد", "clock": "ساعة",
+    "tv": "تلفاز", "television": "تلفاز", "pen": "قلم", "keyboard": "لوحة مفاتيح",
+    "mouse": "فأرة حاسوب", "glasses": "نظارة", "bed": "سرير", "remote": "جهاز تحكم"
+};
+
+// 2. إعادة تعريف دالة التعرف على الأشياء لحل مشكلة الترجمة والنطق
+detectObjects = async function() {
+    if (typeof updateOutput === 'function') updateOutput("جاري تحليل المشهد...");
+    
+    try {
+        if (!cocoModel) {
+            cocoModel = await cocoSsd.load();
+        }
+
+        const predictions = await cocoModel.detect(video);
+        
+        if (predictions && predictions.length > 0) {
+            // تصفية العناصر وترجمتها بدقة أكبر من 40%
+            let items = predictions
+                .filter(p => p.score > 0.40)
+                .map(p => {
+                    let label = p.class.toLowerCase();
+                    return extraArabicDict[label] || (typeof arabicDict !== 'undefined' ? arabicDict[label] : null) || label;
+                });
+
+            let uniqueItems = [...new Set(items)];
+
+            if (uniqueItems.length > 0) {
+                let resultText = "أمامك الآن: " + uniqueItems.join(" و ");
+                speak(resultText);
+            } else {
+                speak("لم أتمكن من التعرف على شيء واضح أمامك، قرّب الكاميرا قليلاً.");
+            }
+        } else {
+            speak("المشهد غير واضح، يرجى توجيه الكاميرا نحو الأشياء.");
+        }
+    } catch (error) {
+        console.error("Error detecting objects:", error);
+        speak("حدث خطأ أثناء تحليل الصورة، تأكد من الاتصال بالإنترنت عند التحميل الأول.");
+    }
+};
+
+// 3. تحسين دالة النطق العربي لإلغاء التداخل الصوتي
+const originalSpeak = typeof speak === 'function' ? speak : null;
+speak = function(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // إلغاء أي صوت سابق فوراً لسرعة الاستجابة
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ar-SA';
+        utterance.rate = typeof speechRate !== 'undefined' ? speechRate : 1.0;
+        
+        // جلب الأصوات المتاحة واختيار الصوت العربي إن وجد
+        const voices = window.speechSynthesis.getVoices();
+        const arVoice = voices.find(v => v.lang.includes('ar'));
+        if (arVoice) utterance.voice = arVoice;
+
+        window.speechSynthesis.speak(utterance);
+    }
+    if (typeof updateOutput === 'function') updateOutput(text);
+};
+
