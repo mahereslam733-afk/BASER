@@ -528,3 +528,45 @@ speak = function(text) {
     if (typeof updateOutput === 'function') updateOutput(text);
 };
 
+// =========================================================
+// 🚀 إضافة الذكاء الاصطناعي: وصف المشهد واستخراج النصوص ورؤية بصير
+// =========================================================
+
+// 1. المساعدة في استخراج النص وقراءته مباشرة (OCR)
+async function readTextFromImage(base64Image) {
+    speak("جاري قراءة النصوص الموجودة في الصورة...");
+    try {
+        const response = await fetch("https://api.ocr.space/parse/image", {
+            method: "POST",
+            headers: { "apikey": "helloworld" },
+            body: JSON.stringify({ base64Image: base64Image, language: "ara" })
+        });
+        const result = await response.json();
+        if (result && result.ParsedResults && result.ParsedResults.length > 0) {
+            const extractedText = result.ParsedResults[0].ParsedText.trim();
+            speak(extractedText.length > 0 ? `النص هو: ${extractedText}` : "لم يتم العثور على نص واضح.");
+        } else {
+            speak("تعذر قراءة النص، تأكد من الإضاءة ووضوح الورقة.");
+        }
+    } catch (err) {
+        speak("حدث خطأ أثناء الاتصال بخدمة قراءة النصوص.");
+    }
+}
+
+// 2. دالة تحسين النطق العربي وإلغاء الصوت السابق فوراً لمنع التداخل
+speak = function(text) {
+    if (statusBox) statusBox.innerText = text;
+
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // إيقاف أي صوت سابق فوراً
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = typeof speechSpeed !== 'undefined' ? speechSpeed : 0.9;
+        utterance.lang = 'ar-SA';
+        
+        const voices = window.speechSynthesis.getVoices();
+        const arVoice = voices.find(v => v.lang.includes('ar'));
+        if (arVoice) utterance.voice = arVoice;
+
+        window.speechSynthesis.speak(utterance);
+    }
+};
