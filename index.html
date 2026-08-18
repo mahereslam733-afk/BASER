@@ -220,8 +220,33 @@
     <canvas id="colorCanvas" style="display:none;"></canvas>
 
     <script src="app.js"></script>
+        <!-- الكود الإضافي يُنسخ هنا (فوق وسوم الإغلاق) -->
+    <section id="aiVisionSection" style="margin-top: 20px; border-top: 2px solid #FFFF00; padding-top: 15px;">
+        <h2>التعرف بالذكاء الاصطناعي</h2>
+        <p id="aiStatus">اختر صورة أو التقط صورة للتعرف على الأشياء وقراءة النص.</p>
+        
+        <div class="vision-buttons" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+            <button id="detectObjectsBtn" class="action-btn btn-green">🤖 التعرف على الأشياء</button>
+            <button id="readTextBtn" class="action-btn btn-blue">📖 قراءة النص</button>
+            <button id="describeImageBtn" class="action-btn btn-purple">🔊 وصف الصورة</button>
+        </div>
+
+        <div id="objectResults" aria-live="polite"></div>
+        <div id="textResults" aria-live="polite"></div>
+    </section>
+
+    <!-- مكتبات الذكاء الاصطناعي -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="app.js"></script>
+
 </body>
 </html>
+
+</body>
+</html>
+
 <!-- =====================================================
      التعرف على الأشياء وقراءة النصوص - بصير
 ===================================================== -->
