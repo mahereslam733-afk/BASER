@@ -570,3 +570,38 @@ speak = function(text) {
         window.speechSynthesis.speak(utterance);
     }
 };
+// =========================================================
+// 🔗 ربط أزرار الذكاء الاصطناعي الجديدة بالأفعال
+// =========================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    const detectObjectsBtn = document.getElementById('detectObjectsBtn');
+    const readTextBtn = document.getElementById('readTextBtn');
+    const describeImageBtn = document.getElementById('describeImageBtn');
+    const visionImage = document.getElementById('visionImage');
+
+    // زر قراءة النص
+    if (readTextBtn) {
+        readTextBtn.addEventListener('click', () => {
+            const ocrInput = document.getElementById('ocrCameraInput');
+            if (ocrInput) ocrInput.click();
+        });
+    }
+
+    // زر التعرف على الأشياء
+    if (detectObjectsBtn) {
+        detectObjectsBtn.addEventListener('click', () => {
+            const objInput = document.getElementById('objectCameraInput');
+            if (objInput) objInput.click();
+        });
+    }
+
+    // زر وصف الصورة
+    if (describeImageBtn) {
+        describeImageBtn.addEventListener('click', () => {
+            speak("جاري فتح الكاميرا لوصف المشهد بالكامل...");
+            const objInput = document.getElementById('objectCameraInput');
+            if (objInput) objInput.click();
+        });
+    }
+});
