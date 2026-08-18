@@ -605,3 +605,90 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+// ======================================================
+// بصير - الاتصال بالذكاء الاصطناعي لوصف المشهد وقراءة النص
+// ======================================================
+
+async function sendImageToAI(imageSource, task) {
+    try {
+        updateStatus("جاري تحليل الصورة...");
+
+        const response = await fetch("/api/vision", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                image: imageSource,
+                task: task
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || "حدث خطأ أثناء تحليل الصورة");
+        }
+
+        const result = data.result;
+
+        // عرض النتيجة في التطبيق إذا كان صندوق النتائج موجودًا
+        const resultBox =
+            document.getElementById("result-box") ||
+            document.getElementById("output") ||
+            document.getElementById("text-result");
+
+        if (resultBox) {
+            resultBox.textContent = result;
+        }
+
+        // نطق النتيجة بالعربية
+        if ("speechSynthesis" in window) {
+            speechSynthesis.cancel();
+
+            const speech = new SpeechSynthesisUtterance(result);
+            speech.lang = "ar-EG";
+            speech.rate =
+                typeof speechSpeed !== "undefined"
+                    ? speechSpeed
+                    : 0.9;
+
+            speechSynthesis.speak(speech);
+        }
+
+        updateStatus("تم الانتهاء من التحليل");
+
+        return result;
+
+    } catch (error) {
+
+        console.error("AI Error:", error);
+
+        updateStatus("حدث خطأ أثناء تحليل الصورة");
+
+        return null;
+    }
+}
+
+
+// وصف المشهد
+async function describeScene(imageSource) {
+    return await sendImageToAI(imageSource, "scene");
+}
+
+
+// قراءة النص
+async function readTextWithAI(imageSource) {
+    return await sendImageToAI(imageSource, "text");
+}
+
+
+// تحديث رسالة الحالة بدون إضافة زر جديد
+function updateStatus(message) {
+
+    const box = document.getElementById("status-box");
+
+    if (box) {
+        box.textContent = message;
+    }
+}
