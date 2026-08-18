@@ -196,3 +196,111 @@ app.listen(
 
     }
 );
+// ======================================================
+// بصير - API الذكاء الاصطناعي لتحليل الصور
+// ======================================================
+
+app.post("/api/vision", async (req, res) => {
+    try {
+        const { image, task } = req.body;
+
+        if (!image) {
+            return res.status(400).json({
+                success: false,
+                error: "لم يتم إرسال صورة"
+            });
+        }
+
+        if (!process.env.OPENAI_API_KEY) {
+            return res.status(500).json({
+                success: false,
+                error: "مفتاح الذكاء الاصطناعي غير موجود"
+            });
+        }
+
+        let instruction;
+
+        if (task === "scene") {
+            instruction = `
+أنت مساعد بصري للمكفوفين.
+صف الصورة بالكامل باللغة العربية بشكل واضح ومفيد.
+
+اذكر:
+- المكان والبيئة.
+- الأشخاص وما يفعلونه.
+- الأشياء الموجودة.
+- أماكن الأشياء بالنسبة لبعضها.
+- الألوان المهمة.
+- النصوص الظاهرة.
+- أي تفاصيل مهمة تساعد الشخص الكفيف على فهم المشهد.
+
+لا تخمن المعلومات غير الواضحة.
+اجعل الوصف طبيعيًا ومختصرًا نسبيًا.
+`;
+        } else {
+            instruction = `
+اقرأ جميع النصوص الظاهرة في الصورة باللغة العربية.
+حافظ على ترتيب النص قدر الإمكان.
+لا تضف شرحًا.
+إذا كان جزء من النص غير واضح، اكتب [غير واضح].
+`;
+        }
+
+        const response = await fetch(
+            "https://api.openai.com/v1/responses",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization":
+                        `Bearer ${process.env.OPENAI_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: "gpt-4.1-mini",
+                    input: [
+                        {
+                            role: "user",
+                            content: [
+                                {
+                                    type: "input_text",
+                                    text: instruction
+                                },
+                                {
+                                    type: "input_image",
+                                    image_url: image
+                                }
+                            ]
+                        }
+                    ]
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error(data);
+
+            return res.status(500).json({
+                success: false,
+                error: "فشل تحليل الصورة"
+            });
+        }
+
+        const result = data.output_text || "";
+
+        res.json({
+            success: true,
+            result: result
+        });
+
+    } catch (error) {
+
+        console.error("Vision Error:", error);
+
+        res.status(500).json({
+            success: false,
+            error: "حدث خطأ في خادم بصير"
+        });
+    }
+});
