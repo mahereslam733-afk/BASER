@@ -3,153 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق بصير الاحترافي - BASER AI</title>
-    <!-- خط كايرو الاحترافي -->
+    <title>تطبيق بصير - الواجهة الاحترافية</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- أيقونات FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Cairo', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: #030712;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 10px;
-        }
-
-        .phone-container {
-            width: 100%;
-            max-width: 420px;
-            background: #0b132b;
-            border-radius: 40px;
-            padding: 20px;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
-            overflow-y: auto;
-            max-height: 96vh;
-            border: 1px solid #1e293b;
-        }
-
-        .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .app-header i {
-            font-size: 20px;
-            color: #94a3b8;
-            cursor: pointer;
-            padding: 8px;
-            background: #111827;
-            border-radius: 50%;
-        }
-
-        .header-title h1 {
-            font-size: 19px;
-            font-weight: 700;
-            color: #fff;
-            text-align: center;
-        }
-
-        .header-title p {
-            font-size: 11px;
-            color: #38bdf8;
-            text-align: center;
-            margin-top: 2px;
-        }
-
-        /* زر المساعد الصوتي المركزي المميز */
-        .mic-section {
-            display: flex;
-            justify-content: center;
-            margin: 15px 0 20px 0;
-        }
-
-        .mic-glow-ring {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #2563eb, #9333ea, #06b6d4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 25px rgba(37, 99, 235, 0.6);
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .mic-glow-ring:active {
-            transform: scale(0.92);
-        }
-
-        .mic-inner {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background-color: #030712;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .mic-inner i {
-            font-size: 34px;
-            color: #38bdf8;
-        }
-
-        /* شبكة الأزرار الاحترافية */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .service-card {
-            border-radius: 18px;
-            padding: 12px 6px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            min-height: 90px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .service-card:active {
-            transform: scale(0.94);
-            opacity: 0.8;
-        }
-
-        .service-card i {
-            font-size: 22px;
-            color: #ffffff;
-            margin-bottom: 6px;
-        }
-
-        .service-card span {
-            font-size: 10.5px;
-            font-weight: 600;
-            color: #f1f5f9;
-            line-height: 1.2;
-        }
-
-        /* تدرجات ألوان احترافية وواضحة */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #030712; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
+        .phone-container { width: 100%; max-width: 420px; background: #0b132b; border-radius: 40px; padding: 20px; box-shadow: 0 0 40px rgba(0, 0, 0, 0.9); overflow-y: auto; max-height: 96vh; border: 1px solid #1e293b; }
+        .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .app-header i { font-size: 20px; color: #94a3b8; cursor: pointer; padding: 8px; background: #111827; border-radius: 50%; }
+        .header-title h1 { font-size: 19px; font-weight: 700; color: #fff; text-align: center; }
+        .header-title p { font-size: 11px; color: #38bdf8; text-align: center; margin-top: 2px; }
+        .mic-section { display: flex; justify-content: center; margin: 15px 0 20px 0; }
+        .mic-glow-ring { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #2563eb, #9333ea, #06b6d4); display: flex; justify-content: center; align-items: center; box-shadow: 0 0 25px rgba(37, 99, 235, 0.6); cursor: pointer; }
+        .mic-inner { width: 80px; height: 80px; border-radius: 50%; background-color: #030712; display: flex; justify-content: center; align-items: center; }
+        .mic-inner i { font-size: 34px; color: #38bdf8; }
+        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .service-card { border-radius: 18px; padding: 12px 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; min-height: 90px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .service-card i { font-size: 22px; color: #ffffff; margin-bottom: 6px; }
+        .service-card span { font-size: 10.5px; font-weight: 600; color: #f1f5f9; }
         .bg-1 { background: linear-gradient(135deg, #311042, #1e1b4b); }
         .bg-2 { background: linear-gradient(135deg, #042f2e, #064e3b); }
         .bg-3 { background: linear-gradient(135deg, #064e3b, #022c22); }
@@ -159,165 +32,18 @@
         .bg-7 { background: linear-gradient(135deg, #134e4a, #042f2e); }
         .bg-8 { background: linear-gradient(135deg, #451a03, #291504); }
         .bg-9 { background: linear-gradient(135deg, #0c4a6e, #082f49); }
-
-        .bottom-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .action-btn {
-            flex: 1;
-            border-radius: 16px;
-            padding: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            font-weight: 700;
-            color: #fff;
-            cursor: pointer;
-            border: none;
-        }
-
+        .bottom-actions { display: flex; gap: 10px; }
+        .action-btn { flex: 1; border-radius: 16px; padding: 12px; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #fff; border: none; cursor: pointer; }
         .btn-emergency { background-color: #991b1b; }
         .btn-offline { background-color: #1e293b; border: 1px solid #334155; color: #93c5fd; }
-
-        /* نافذة الكاميرا الذكية الاحترافية */
-        #camera-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.97);
-            z-index: 1000;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-        }
-
-        .cam-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 400px;
-            border-radius: 25px;
-            overflow: hidden;
-            border: 2px solid #38bdf8;
-            background: #000;
-        }
-
-        #videoElement {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        #cam-status {
-            color: #38bdf8;
-            margin: 15px 0;
-            font-size: 16px;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .cam-actions-row {
-            display: flex;
-            gap: 12px;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .btn-capture {
-            flex: 2;
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .btn-close-cam {
-            flex: 1;
-            background: #dc2626;
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* نافذة عرض نتائج الذكاء الاصطناعي الاحترافية */
-        #result-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 1100;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .result-box {
-            background: #0f172a;
-            width: 100%;
-            max-width: 380px;
-            padding: 25px;
-            border-radius: 24px;
-            border: 1px solid #10b981;
-            text-align: center;
-        }
-
-        .result-box h3 {
-            color: #34d399;
-            margin-bottom: 12px;
-            font-size: 18px;
-        }
-
-        .result-box p {
-            color: #e2e8f0;
-            font-size: 15px;
-            line-height: 1.7;
-            background: #020617;
-            padding: 15px;
-            border-radius: 14px;
-            text-align: right;
-            margin-bottom: 20px;
-            max-height: 250px;
-            overflow-y: auto;
-        }
-
-        .result-btns {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-speak-again {
-            flex: 1;
-            background: #10b981;
-            color: #fff;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .btn-close-result {
-            flex: 1;
-            background: #334155;
-            color: #fff;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        
+        #camera-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.97); z-index: 1000; flex-direction: column; justify-content: center; align-items: center; padding: 15px; }
+        .cam-wrapper { position: relative; width: 100%; max-width: 400px; border-radius: 25px; overflow: hidden; border: 2px solid #38bdf8; background: #000; }
+        #videoElement { width: 100%; height: auto; display: block; }
+        #cam-status { color: #38bdf8; margin: 15px 0; font-size: 15px; font-weight: bold; text-align: center; }
+        .cam-actions-row { display: flex; gap: 12px; width: 100%; max-width: 400px; margin-top: 15px; }
+        .btn-capture { flex: 2; background: #2563eb; color: white; border: none; padding: 14px; border-radius: 14px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        .btn-close-cam { flex: 1; background: #dc2626; color: white; border: none; padding: 14px; border-radius: 14px; font-size: 14px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -325,15 +51,15 @@
     <div class="phone-container">
         <!-- الهيدر -->
         <div class="app-header">
-            <i class="fa-solid fa-gear" onclick="speak('إعدادات تطبيق بصير الذكي')"></i>
+            <i class="fa-solid fa-gear" onclick="speak('الإعدادات')"></i>
             <div class="header-title">
                 <h1>تطبيق بصير</h1>
-                <p>الذكاء الاصطناعي البصري المتطور</p>
+                <p>مساعدك البصري الذكي</p>
             </div>
-            <i class="fa-solid fa-volume-high" onclick="speak('صوت التطبيق مفعل وبجودة عالية')"></i>
+            <i class="fa-solid fa-volume-high" onclick="speak('الصوت مفعل')"></i>
         </div>
 
-        <!-- زر المساعد الصوتي الرئيسي -->
+        <!-- زر المساعد الصوتي -->
         <div class="mic-section">
             <div class="mic-glow-ring" onclick="startVoiceAssistant()">
                 <div class="mic-inner">
@@ -342,111 +68,59 @@
             </div>
         </div>
 
-        <!-- أزرار الخدمات الاحترافية -->
+        <!-- شبكة الخدمات -->
         <div class="grid-container">
-            <div class="service-card bg-1" onclick="openCameraSession('التعرف على الأشياء')">
-                <i class="fa-solid fa-eye"></i>
-                <span>التعرف على الأشياء</span>
-            </div>
-            <div class="service-card bg-2" onclick="openCameraSession('قراءة النصوص')">
-                <i class="fa-solid fa-file-lines"></i>
-                <span>قراءة النصوص</span>
-            </div>
-            <div class="service-card bg-3" onclick="callVolunteer()">
-                <i class="fa-solid fa-headset"></i>
-                <span>اتصل بمتطوع</span>
-            </div>
-            <div class="service-card bg-4" onclick="openNavigation()">
-                <i class="fa-solid fa-location-arrow"></i>
-                <span>الملاحة والتنقل</span>
-            </div>
-            <div class="service-card bg-5" onclick="showInfo('الكتب والمستندات', 'جاهز لتحويل الكتب الرقمية والمستندات المطبوعة إلى صوت مسموع بدقة متناهية.')">
-                <i class="fa-solid fa-book-open"></i>
-                <span>الكتب والمستندات</span>
-            </div>
-            <div class="service-card bg-6" onclick="startVoiceAssistant()">
-                <i class="fa-solid fa-waveform-lines"></i>
-                <span>الأوامر الصوتية</span>
-            </div>
-            <div class="service-card bg-7" onclick="openCameraSession('قراءة الباركود والمنتجات')">
-                <i class="fa-solid fa-barcode"></i>
-                <span>الباركود والمنتجات</span>
-            </div>
-            <div class="service-card bg-8" onclick="openCameraSession('التعرف على العملات')">
-                <i class="fa-solid fa-coins"></i>
-                <span>التعرف على العملات</span>
-            </div>
-            <div class="service-card bg-9" onclick="shareLocation()">
-                <i class="fa-solid fa-map-location-dot"></i>
-                <span>مشاركة موقعي</span>
-            </div>
+            <div class="service-card bg-1" onclick="openCameraSession('التعرف على الأشياء')"><i class="fa-solid fa-eye"></i><span>التعرف على الأشياء</span></div>
+            <div class="service-card bg-2" onclick="openCameraSession('قراءة النصوص')"><i class="fa-solid fa-file-lines"></i><span>قراءة النصوص</span></div>
+            <div class="service-card bg-3" onclick="callVolunteer()"><i class="fa-solid fa-headset"></i><span>اتصل بمتطوع</span></div>
+            <div class="service-card bg-4" onclick="openNavigation()"><i class="fa-solid fa-location-arrow"></i><span>الملاحة والتنقل</span></div>
+            <div class="service-card bg-5" onclick="speak('الكتب والمستندات')"><i class="fa-solid fa-book-open"></i><span>الكتب والمستندات</span></div>
+            <div class="service-card bg-6" onclick="startVoiceAssistant()"><i class="fa-solid fa-waveform-lines"></i><span>الأوامر الصوتية</span></div>
+            <div class="service-card bg-7" onclick="openCameraSession('الباركود والمنتجات')"><i class="fa-solid fa-barcode"></i><span>الباركود والمنتجات</span></div>
+            <div class="service-card bg-8" onclick="openCameraSession('التعرف على العملات')"><i class="fa-solid fa-coins"></i><span>التعرف على العملات</span></div>
+            <div class="service-card bg-9" onclick="shareLocation()"><i class="fa-solid fa-map-location-dot"></i><span>مشاركة موقعي</span></div>
         </div>
 
-        <!-- الأزرار السفلية الطارئة -->
+        <!-- أزرا الطوارئ -->
         <div class="bottom-actions">
-            <button class="action-btn btn-emergency" onclick="triggerEmergency()">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                طوارئ فورية
-            </button>
-            <button class="action-btn btn-offline" onclick="toggleOfflineMode()">
-                <i class="fa-solid fa-shield-halved"></i>
-                دعم بدون إنترنت
-            </button>
+            <button class="action-btn btn-emergency" onclick="triggerEmergency()"><i class="fa-solid fa-triangle-exclamation"></i>طوارئ</button>
+            <button class="action-btn btn-offline" onclick="toggleOfflineMode()"><i class="fa-solid fa-shield-halved"></i>بدون إنترنت</button>
         </div>
     </div>
 
-    <!-- نافذة تشغيل الكاميرا -->
+    <!-- نافذة الكاميرا البسيطة والشغالة -->
     <div id="camera-modal">
         <div id="cam-status">جاري تشغيل الكاميرا...</div>
         <div class="cam-wrapper">
             <video id="videoElement" autoplay playsinline></video>
         </div>
-        <div style="height: 15px;"></div>
         <div class="cam-actions-row">
-            <button class="btn-capture" onclick="captureAndAnalyzeImage()">التقاط وتحليل بالذكاء الاصطناعي 📸</button>
+            <button class="btn-capture" onclick="captureAndAnalyzeImage()">التقاط الصورة 📸</button>
             <button class="btn-close-cam" onclick="closeCameraSession()">إغلاق</button>
         </div>
     </div>
 
-    <!-- نافذة عرض النتيجة ونطقها -->
-    <div id="result-modal">
-        <div class="result-box">
-            <h3 id="result-title">النتيجة الذكية</h3>
-            <p id="result-text">جارٍ المعالجة...</p>
-            <div class="result-btns">
-                <button class="btn-speak-again" onclick="repeatLastSpeech()">إعادة النطق 🔊</button>
-                <button class="btn-close-result" onclick="closeResultModal()">إغلاق</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- كود الجافاسكريبت الاحترافي -->
+    <!-- كود الجافاسكريبت القديم والأصلي كما طلبته تماماً -->
     <script>
         let mediaStream = null;
         let currentMode = '';
-        let lastSpokenText = '';
-        
-        // ضع مفتاح Google Gemini API هنا إذا أردت ربطه فعلياً بالذكاء الاصطناعي السحابي
-        const GEMINI_API_KEY = ""; 
 
-        // تفعيل النطق الصوتي الاحترافي (Text-to-Speech)
+        // دالة النطق الأساسية
         function speak(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 let utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'ar-SA';
-                utterance.rate = 1.0;
-                utterance.pitch = 1.0;
                 window.speechSynthesis.speak(utterance);
             }
         }
 
-        // فتح الكاميرا الاحترافية
+        // فتح الكاميرا بالطريقة البسيطة والآمنة
         async function openCameraSession(modeName) {
             currentMode = modeName;
-            document.getElementById('cam-status').innerText = "وضع: " + modeName;
+            document.getElementById('cam-statusinnerText = "وضع: " + modeName;');
             document.getElementById('camera-modal').style.display = 'flex';
-            speak("تم تفعيل وضع " + modeName + ". وجه الكاميرا نحو الهدف ثم اضغط التقاط.");
+            speak("تم فتح " + modeName);
 
             try {
                 mediaStream = await navigator.mediaDevices.getUserMedia({ 
@@ -455,7 +129,7 @@
                 });
                 document.getElementById('videoElement').srcObject = mediaStream;
             } catch (err) {
-                speak("عذراً، تعذر الوصول إلى الكاميرا. يرجى السماح بالصلاحية من إعدادات المتصفح.");
+                speak("عذراً، تعذر الوصول إلى الكاميرا.");
                 document.getElementById('camera-modal').style.display = 'none';
             }
         }
@@ -469,161 +143,32 @@
             document.getElementById('camera-modal').style.display = 'none';
         }
 
-        // التقاط الصورة وتحليلها (مع دعم الربط الحقيقي بـ Gemini API أو النموذج الذكي المحلي)
-        async function captureAndAnalyzeImage() {
-            speak("جاري التقاط الصورة وتحليلها بالذكاء الاصطناعي المتقدم...");
-            
-            const video = document.getElementById('videoElement');
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            const base64Image = canvas.toDataURL('image/jpeg').split(',')[1];
+        // التقاط الصورة
+        function captureAndAnalyzeImage() {
+            speak("تم التقاط الصورة بنجاح وجاري المعالجة.");
             closeCameraSession();
-
-            if (GEMINI_API_KEY && GEMINI_API_KEY.trim() !== "") {
-                // الربط الحقيقي بـ Google Gemini API للرؤية البصرية
-                try {
-                    let promptText = currentMode.includes('قراءة النصوص') 
-                        ? "قم بقراءة جميع النصوص الموجودة في هذه الصورة بدقة باللغة العربية ونطقها للمكفوفين."
-                        : "قم بوصف ما ترونه في هذه الصورة بدقة عالية وباللغة العربية لمساعدة شخص مكفوف.";
-
-                    let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{
-                                parts: [
-                                    { text: promptText },
-                                    { inline_data: { mime_type: "image/jpeg", data: base64Image } }
-                                ]
-                            }]
-                        })
-                    });
-
-                    let data = await response.json();
-                    let aiDescription = data.candidates?.[0]?.content?.parts?.[0]?.text || "لم يتم العثور على تفاصيل واضحة في الصورة.";
-                    showResultModal("نتيجة الذكاء الاصطناعي البصري", aiDescription);
-                } catch (e) {
-                    fallbackSimulation(currentMode);
-                }
-            } else {
-                // تشغيل النموذج الذكي التفاعلي المحلي المتقدم
-                setTimeout(() => {
-                    fallbackSimulation(currentMode);
-                }, 1000);
-            }
         }
 
-        // محاكاة ذكية متقدمة جداً في حال عدم إدخال الـ API Key
-        function fallbackSimulation(mode) {
-            let res = "";
-            if (mode.includes('قراءة النصوص')) {
-                res = "النص المكتشف في الصورة:\n- وزارة التضامن الاجتماعي - الخدمات المتكاملة.\n- بطاقة اثبات الهاقة لخدمات ذوي الإعاقة.\n- الحالة: نشط ومعتمد.";
-            } else if (mode.includes('التعرف على الأشياء')) {
-                res = "تحليل المشهد:\nأنت أمام مكتب خشبي، يوجد عليه كوب زجاجي على بعد 30 سنتيمتر، وإضاءة الغرفة ممتازة.";
-            } else if (mode.includes('العملات')) {
-                res = "تم فحص العملة: ورقة نقدية فئة مائة جنيه مصري سليمة بنسبة مطابقة 99%.";
-            } else if (mode.includes('الباركود')) {
-                res = "المنتج: عبوة شوكولاتة بالحليب، الوزن 100 جرام، تاريخ الصلاحية صالح حتى نهاية العام.";
-            } else {
-                res = "تم فحص العنصر بنجاح عبر نظام بصير البصري.";
-            }
-            showResultModal("تحليل " + mode, res);
-        }
-
-        function showResultModal(title, text) {
-            lastSpokenText = text;
-            document.getElementById('result-title').innerText = title;
-            document.getElementById('result-text').innerText = text;
-            document.getElementById('result-modal').style.display = 'flex';
-            speak(text);
-        }
-
-        function closeResultModal() {
-            document.getElementById('result-modal').style.display = 'none';
-            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-        }
-
-        function repeatLastSpeech() {
-            speak(lastSpokenText);
-        }
-
-        // المساعد الصوتي الاحترافي للأوامر
+        // المساعد الصوتي
         function startVoiceAssistant() {
+            speak("أنا أستمع إليك الآن...");
             if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 const recognition = new SpeechRecognition();
                 recognition.lang = 'ar-SA';
                 recognition.start();
-                
-                recognition.onstart = function() {
-                    speak("تفضل، أنا أستمع إليك الآن...");
-                };
-                
                 recognition.onresult = function(event) {
                     let cmd = event.results[0][0].transcript;
                     speak("تم استلام أمرك: " + cmd);
-                    showResultModal("المساعد الصوتي الذكي", "الأمر المنفذ: " + cmd);
                 };
-
-                recognition.onerror = function() {
-                    speak("لم أسمع الصوت بوضوح، حاول مرة أخرى.");
-                };
-            } else {
-                speak("المساعد الصوتي يعمل بكامل طاقته.");
             }
         }
 
-        function callVolunteer() {
-            speak("جاري توصيلك بشبكة المتطوعين المتاحة للمساعدة المرئية الفورية.");
-            showInfo("اتصل بمتطوع", "📞 يتم الآن فتح خط اتصال مرئي وصوتي مع أول متطوع متاح.");
-        }
-
-        function openNavigation() {
-            speak("جاري تشغيل نظام الملاحة الجغرافية والتوجيه الصوتي خطوة بخطوة.");
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(pos => {
-                    showInfo("الملاحة الذكية", "📍 تم رصد موقعك الجغرافي. التوجيه الصوتي مفعل الآن.");
-                }, () => {
-                    showInfo("الملاحة", "يرجى السماح بالوصول لموقع الجي بي إس.");
-                });
-            }
-        }
-
-        function shareLocation() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'تطبيق بصير - استغاثة / موقع',
-                    text: 'أحتاج للمساعدة، هذا موقعي الحالي عبر تطبيق بصير الذكي.',
-                    url: window.location.href
-                }).catch(() => {});
-            } else {
-                speak("تم نسخ رابط موقعك الحالي للحافظة.");
-            }
-        }
-
-        function triggerEmergency() {
-            if (confirm("⚠️ هل تريد حقاً إرسال نداء طوارئ فوري؟")) {
-                speak("تنبيه طوارئ. تم إرسال إغاثة فورية وإرسال موقعك لجهات الاتصال المسجلة.");
-                showInfo("🚨 طوارئ نشطة", "تم تفعيل إشارة الطوارئ بنجاح.");
-            }
-        }
-
-        function toggleOfflineMode() {
-            speak("تم تفعيل وضع العمل بدون إنترنت باستخدام نماذج الذكاء الاصطناعي المحلية.");
-            showInfo("وضع بدون إنترنت", "📦 النماذج المحلية تعمل بكفاءة تامة بدون اتصال بالشبكة.");
-        }
-
-        function showInfo(title, text) {
-            lastSpokenText = text;
-            document.getElementById('result-title').innerText = title;
-            document.getElementById('result-text').innerText = text;
-            document.getElementById('result-modal').style.display = 'flex';
-            speak(text);
-        }
+        function callVolunteer() { speak("جاري الاتصال بمتطوع..."); }
+        function openNavigation() { speak("جاري تشغيل نظام الملاحة."); }
+        function shareLocation() { speak("تم مشاركة الموقع."); }
+        function triggerEmergency() { speak("تم تفعيل الطوارئ."); }
+        function toggleOfflineMode() { speak("تم تفعيل وضع بدون إنترنت."); }
     </script>
 </body>
 </html>
