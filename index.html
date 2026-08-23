@@ -196,17 +196,17 @@
     <div class="phone-container">
         <!-- الهيدر العلوي -->
         <div class="app-header">
-            <i class="fa-solid fa-bars" id="menuBtn"></i>
+            <i class="fa-solid fa-bars" onclick="alert('فتح القائمة الجانبية')"></i>
             <div class="header-title">
                 <h1>مرحبًا بك</h1>
                 <p>كيف يمكنني مساعدتك اليوم؟</p>
             </div>
-            <i class="fa-regular fa-bell" id="notificationsBtn"></i>
+            <i class="fa-regular fa-bell" onclick="alert('فتح لوحة الإشعارات')"></i>
         </div>
 
         <!-- زر المساعد الصوتي المركزي -->
         <div class="mic-section">
-            <div class="mic-glow-ring" id="voiceAssistantBtn">
+            <div class="mic-glow-ring" onclick="alert('مرحباً، تم تفعيل المساعد الصوتي المركزي')">
                 <div class="mic-inner">
                     <i class="fa-solid fa-microphone"></i>
                 </div>
@@ -215,63 +215,63 @@
 
         <!-- شبكة الأزرار -->
         <div class="grid-container">
-            <div class="service-card c-purple-dark" id="btnObjectRecognition">
+            <div class="service-card c-purple-dark" onclick="alert('جاري فتح ميزة التعرف على الأشياء...')">
                 <i class="fa-solid fa-camera"></i>
                 <span>التعرف على الأشياء</span>
             </div>
-            <div class="service-card c-teal-dark" id="btnOcr">
+            <div class="service-card c-teal-dark" onclick="alert('جاري تشغيل قارئ النصوص (OCR)...')">
                 <i class="fa-solid fa-file-lines"></i>
                 <span>قراءة النصوص</span>
             </div>
-            <div class="service-card c-green-dark" id="btnVolunteer">
+            <div class="service-card c-green-dark" onclick="alert('جاري الاتصال بالمتطوع المتاح...')">
                 <i class="fa-solid fa-headset"></i>
                 <span>اتصل بمتطوع</span>
             </div>
-            <div class="service-card c-blue-dark" id="btnNavigation">
+            <div class="service-card c-blue-dark" onclick="alert('جاري فتح خريطة الملاحة والتنقل...')">
                 <i class="fa-solid fa-location-dot"></i>
                 <span>الملاحة والتنقل</span>
             </div>
-            <div class="service-card c-orange-dark" id="btnBooks">
+            <div class="service-card c-orange-dark" onclick="alert('جاري فتح قسم الكتب والمستندات...')">
                 <i class="fa-solid fa-book-open"></i>
                 <span>الكتب والمستندات</span>
             </div>
-            <div class="service-card c-indigo-dark" id="btnVoiceAssistantCard">
+            <div class="service-card c-indigo-dark" onclick="alert('تشغيل إعدادات المساعد الصوتي...')">
                 <i class="fa-solid fa-waveform"></i>
                 <span>المساعد الصوتي</span>
             </div>
-            <div class="service-card c-teal-med" id="btnLibrarySearch">
+            <div class="service-card c-teal-med" onclick="alert('جاري البحث الصوتي في المكتبات...')">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <span>البحث الصوتي في المكتبات</span>
             </div>
-            <div class="service-card c-yellow-dark" id="btnEducation">
+            <div class="service-card c-yellow-dark" onclick="alert('جاري فتح قسم التعلم والتعليم...')">
                 <i class="fa-solid fa-graduation-cap"></i>
                 <span>التعلم والتعليم</span>
             </div>
-            <div class="service-card c-cyan-dark" id="btnBarcode">
+            <div class="service-card c-cyan-dark" onclick="alert('جاري فتح قارئ الباركود والمنتجات...')">
                 <i class="fa-solid fa-barcode"></i>
                 <span>قراءة الباركود والمنتجات</span>
             </div>
-            <div class="service-card c-blue-med" id="btnCurrency">
+            <div class="service-card c-blue-med" onclick="alert('جاري تشغيل التعرف على العملات...')">
                 <i class="fa-solid fa-coins"></i>
                 <span>التعرف على العملات</span>
             </div>
-            <div class="service-card c-magenta" id="btnColors">
+            <div class="service-card c-magenta" onclick="alert('جاري تفعيل التعرف على الألوان...')">
                 <i class="fa-solid fa-palette"></i>
                 <span>التعرف على الألوان</span>
             </div>
-            <div class="service-card c-cyan-deep" id="btnFaceRecognition">
+            <div class="service-card c-cyan-deep" onclick="alert('جاري تشغيل التعرف على الوجوه...')">
                 <i class="fa-solid fa-user-check"></i>
                 <span>التعرف على الوجوه</span>
             </div>
-            <div class="service-card c-brown" id="btnIndoorNav">
+            <div class="service-card c-brown" onclick="alert('جاري تفعيل الملاحة الداخلية...')">
                 <i class="fa-solid fa-building"></i>
                 <span>الملاحة الداخلية</span>
             </div>
-            <div class="service-card c-blue-bright" id="btnShareLocation">
+            <div class="service-card c-blue-bright" onclick="alert('جاري مشاركة موقعك الحالي...')">
                 <i class="fa-solid fa-map-pin"></i>
                 <span>مشاركة موقعي</span>
             </div>
-            <div class="service-card c-slate" id="btnHistory">
+            <div class="service-card c-slate" onclick="alert('جاري فتح سجل المعلومات...')">
                 <i class="fa-solid fa-clock-rotate-left"></i>
                 <span>سجل المعلومات</span>
             </div>
@@ -279,48 +279,16 @@
 
         <!-- الأزرار السفلية -->
         <div class="bottom-actions">
-            <button class="action-btn btn-emergency" id="btnEmergency">
+            <button class="action-btn btn-emergency" onclick="alert('⚠️ تنبيه: تم تفعيل وضع الطوارئ بنجاح!')">
                 <i class="fa-solid fa-triangle-exclamation"></i>
                 طوارئ
             </button>
-            <button class="action-btn btn-offline" id="btnOfflineMode">
+            <button class="action-btn btn-offline" onclick="alert('تم تفعيل وضع العمل بدون إنترنت.')">
                 <i class="fa-solid fa-cloud-slash"></i>
                 دعم بدون إنترنت
             </button>
         </div>
     </div>
 
-    <!-- كود الجافاسكريبت المدمج لتفعيل كل الأزرار -->
-    <script>
-        function setupClick(id, message) {
-            const element = document.getElementById(id);
-            if (element) {
-                element.addEventListener('click', function() {
-                    alert(message);
-                });
-            }
-        }
-
-        setupClick('voiceAssistantBtn', 'مرحباً، تم تفعيل المساعد الصوتي المركزي');
-        setupClick('btnObjectRecognition', 'جاري فتح ميزة التعرف على الأشياء...');
-        setupClick('btnOcr', 'جاري تشغيل قارئ النصوص (OCR)...');
-        setupClick('btnVolunteer', 'جاري الاتصال بالمتطوع المتاح...');
-        setupClick('btnNavigation', 'جاري فتح خريطة الملاحة والتنقل...');
-        setupClick('btnBooks', 'جاري فتح قسم الكتب والمستندات...');
-        setupClick('btnVoiceAssistantCard', 'تشغيل إعدادات المساعد الصوتي...');
-        setupClick('btnLibrarySearch', 'جاري البحث الصوتي في المكتبات...');
-        setupClick('btnEducation', 'جاري فتح قسم التعلم والتعليم...');
-        setupClick('btnBarcode', 'جاري فتح قارئ الباركود والمنتجات...');
-        setupClick('btnCurrency', 'جاري تشغيل التعرف على العملات...');
-        setupClick('btnColors', 'جاري تفعيل التعرف على الألوان...');
-        setupClick('btnFaceRecognition', 'جاري تشغيل التعرف على الوجوه...');
-        setupClick('btnIndoorNav', 'جاري تفعيل الملاحة الداخلية...');
-        setupClick('btnShareLocation', 'جاري مشاركة موقعك الحالي...');
-        setupClick('btnHistory', 'جاري فتح سجل المعلومات...');
-        setupClick('btnEmergency', '⚠️ تنبيه: تم تفعيل وضع الطوارئ بنجاح!');
-        setupClick('btnOfflineMode', 'تم تفعيل وضع العمل بدون إنترنت.');
-        setupClick('menuBtn', 'فتح القائمة الجانبية');
-        setupClick('notificationsBtn', 'فتح لوحة الإشعارات');
-    </script>
 </body>
 </html>
