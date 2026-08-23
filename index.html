@@ -307,3 +307,309 @@
 
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تطبيق بصير الذكي</title>
+    <!-- خط كايرو العصري المتناسق مع الواجهة الفخمة -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background-color: #030712;
+            color: #FFFFFF;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .phone-container {
+            width: 100%;
+            max-width: 440px;
+            background: #060b1c;
+            border-radius: 40px;
+            padding: 20px 15px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.95);
+            border: 1px solid #1e293b;
+            display: flex;
+            flex-direction: column;
+            min-height: 96vh;
+        }
+        
+        /* الهيدر العلوي */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0 15px 0;
+        }
+        .header-icon-btn {
+            background: #111827;
+            color: #94a3b8;
+            border: 1px solid #1f2937;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        .welcome-title {
+            text-align: center;
+        }
+        .welcome-title h1 {
+            font-size: 1.4rem;
+            color: #f8fafc;
+            font-weight: 700;
+        }
+        .welcome-title p {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* زر الميكروفون المضيء الكبير في المنتصف */
+        .mic-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px 0 20px 0;
+        }
+        .mic-glow-btn {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0b132b, #111827);
+            border: 3px solid transparent;
+            background-image: linear-gradient(#0b132b, #0b132b), linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
+            background-origin: border-box;
+            background-clip: content-box, border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.3);
+            transition: transform 0.1s ease;
+        }
+        .mic-glow-btn:active {
+            transform: scale(0.93);
+        }
+        .mic-glow-btn i {
+            font-size: 32px;
+            color: #38bdf8;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
+
+        /* شبكة الأزرار الفخمة (3 أعمدة) */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            flex-grow: 1;
+        }
+        
+        .btn-card {
+            padding: 12px 6px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            text-align: center;
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 95px;
+            transition: transform 0.1s ease;
+            background: none;
+        }
+        .btn-card:active {
+            transform: scale(0.94);
+        }
+        .btn-card span {
+            font-size: 0.78rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        .btn-card i {
+            font-size: 22px;
+        }
+
+        /* تدرجات ألوان الأزرار */
+        .c-purple { background: linear-gradient(135deg, #2e1065, #4c1d95); }
+        .c-teal   { background: linear-gradient(135deg, #042f2e, #0f766e); }
+        .c-green  { background: linear-gradient(135deg, #022c22, #065f46); }
+        .c-blue   { background: linear-gradient(135deg, #1e3a8a, #1d4ed8); }
+        .c-orange { background: linear-gradient(135deg, #431407, #b45309); }
+        .c-yellow { background: linear-gradient(135deg, #451a03, #92400e); }
+        .c-dark   { background: linear-gradient(135deg, #111827, #1f2937); }
+        .c-red    { background: linear-gradient(135deg, #7f1d1d, #991b1b); }
+
+        /* صف الأزرار السفلي الخاص */
+        .bottom-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .action-special-btn {
+            padding: 12px;
+            border-radius: 16px;
+            border: none;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #fff;
+        }
+        .btn-emergency { background: linear-gradient(135deg, #991b1b, #7f1d1d); border: 1px solid #ef4444; }
+        .btn-offline   { background: linear-gradient(135deg, #0f172a, #1e293b); border: 1px solid #334155; }
+
+        /* صندوق الحالة والإشعارات الداخلية */
+        #status-box {
+            background-color: #111827;
+            border: 1px solid #38bdf8;
+            border-radius: 16px;
+            padding: 12px;
+            font-size: 0.95rem;
+            color: #38bdf8;
+            margin-top: 10px;
+            text-align: center;
+            min-height: 55px;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+    </style>
+</head>
+<body>
+
+<div class="phone-container">
+    <!-- الهيدر العلوي -->
+    <header>
+        <button class="header-icon-btn" id="menuBtn" aria-label="القائمة الجانبية"><i class="fa-solid fa-bars"></i></button>
+        <div class="welcome-title">
+            <h1>مرحبًا بك</h1>
+            <p>كيف يمكنني مساعدتك اليوم؟</p>
+        </div>
+        <button class="header-icon-btn" id="notifBtn" aria-label="الإشعارات"><i class="fa-solid fa-bell"></i></button>
+    </header>
+
+    <!-- زر الميكروفون المركزي المضيء -->
+    <div class="mic-section">
+        <button class="mic-glow-btn" id="micBtn" aria-label="التحدث والبحث الصوتي">
+            <i class="fa-solid fa-microphone"></i>
+        </button>
+    </div>
+
+    <!-- الشاشة الرئيسية (تضم جميع الأزرار والخدمات المطابقة للصورة) -->
+    <main id="homeScreen" class="screen active">
+        <div class="grid-container">
+            <!-- الصف الأول -->
+            <button class="btn-card c-purple" data-screen="objectScreen" aria-label="التعرف على الأشياء">
+                <i class="fa-solid fa-camera" style="color: #c084fc;"></i>
+                <span>التعرف على الأشياء</span>
+            </button>
+            <button class="btn-card c-teal" data-screen="ocrScreen" aria-label="قراءة النصوص">
+                <i class="fa-solid fa-file-lines" style="color: #2dd4bf;"></i>
+                <span>قراءة النصوص</span>
+            </button>
+            <button class="btn-card c-green" data-screen="humanHelpScreen" aria-label="اتصل بمطوع">
+                <i class="fa-solid fa-headset" style="color: #34d399;"></i>
+                <span>اتصل بمطوع</span>
+            </button>
+
+            <!-- الصف الثاني -->
+            <button class="btn-card c-blue" data-screen="navScreen" aria-label="الملاحة والتنقل">
+                <i class="fa-solid fa-location-arrow" style="color: #60a5fa;"></i>
+                <span>الملاحة والتنقل</span>
+            </button>
+            <button class="btn-card c-orange" data-screen="libraryScreen" aria-label="الكتب والمستندات">
+                <i class="fa-solid fa-book-open" style="color: #fb923c;"></i>
+                <span>الكتب والمستندات</span>
+            </button>
+            <button class="btn-card c-purple" data-screen="libraryScreen" aria-label="المساعد الصوتي">
+                <i class="fa-solid fa-waveform" style="color: #a855f7;"></i>
+                <span>المساعد الصوتي</span>
+            </button>
+
+            <!-- الصف الثالث -->
+            <button class="btn-card c-teal" data-screen="libraryScreen" aria-label="البحث الصوتي في المكتبات">
+                <i class="fa-solid fa-magnifying-glass" style="color: #2dd4bf;"></i>
+                <span>البحث الصوتي في المكتبات</span>
+            </button>
+            <button class="btn-card c-yellow" data-screen="settingsScreen" aria-label="التعلم والتعليم">
+                <i class="fa-solid fa-graduation-cap" style="color: #fbbf24;"></i>
+                <span>التعلم والتعليم</span>
+            </button>
+            <button class="btn-card c-blue" data-screen="ocrScreen" aria-label="قراءة الباركود والمنتجات">
+                <i class="fa-solid fa-barcode" style="color: #38bdf8;"></i>
+                <span>قراءة الباركود والمنتجات</span>
+            </button>
+
+            <!-- الصف الرابع -->
+            <button class="btn-card c-blue" data-screen="moneyScreen" aria-label="التعرف على العملات">
+                <i class="fa-solid fa-coins" style="color: #60a5fa;"></i>
+                <span>التعرف على العملات</span>
+            </button>
+            <button class="btn-card c-purple" data-screen="dailyScreen" aria-label="التعرف على الألوان">
+                <i class="fa-solid fa-palette" style="color: #e879f9;"></i>
+                <span>التعرف على الألوان</span>
+            </button>
+            <button class="btn-card c-teal" data-screen="objectScreen" aria-label="التعرف على الوجوه">
+                <i class="fa-solid fa-user-gear" style="color: #2dd4bf;"></i>
+                <span>التعرف على الوجوه</span>
+            </button>
+
+            <!-- الصف الخامس -->
+            <button class="btn-card c-orange" data-screen="navScreen" aria-label="الملاحة الداخلية">
+                <i class="fa-solid fa-building" style="color: #fb923c;"></i>
+                <span>الملاحة الداخلية</span>
+            </button>
+            <button class="btn-card c-blue" data-screen="humanHelpScreen" aria-label="مشاركة موقعي">
+                <i class="fa-solid fa-location-dot" style="color: #38bdf8;"></i>
+                <span>مشاركة موقعي</span>
+            </button>
+            <button class="btn-card c-dark" data-screen="settingsScreen" aria-label="سجل المعلومات">
+                <i class="fa-solid fa-clock-rotate-left" style="color: #94a3b8;"></i>
+                <span>سجل المعلومات</span>
+            </button>
+        </div>
+
+        <!-- الأزرار السفلية الخاصة -->
+        <div class="bottom-actions">
+            <button class="action-special-btn btn-emergency" id="emergencyBtn" aria-label="طوارئ">
+                <i class="fa-solid fa-triangle-exclamation"></i> طوارئ
+            </button>
+            <button class="action-special-btn btn-offline" id="offlineBtn" aria-label="دعم بدون إنترنت">
+                <i class="fa-solid fa-cloud-slash"></i> دعم بدون إنترنت
+            </button>
+        </div>
+    </main>
+
+    <!-- صندوق الإشعارات والنطق -->
+    <div id="status-box" aria-live="assertive" role="status">
+        مرحباً بك في تطبيق بصير الذكي. جاهز لمساعدتك!
+    </div>
+</div>
+
+</body>
+</html>
