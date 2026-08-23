@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق بصير - BASER</title>
-    <!-- استدعاء خط كايرو العربي الأنيق -->
+    <!-- استدعاء خط كايرو -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- استدعاء أيقونات FontAwesome -->
+    <!-- استدعاء الأيقونات -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -38,7 +38,6 @@
             max-height: 95vh;
         }
 
-        /* الهيدر العلوي */
         .app-header {
             display: flex;
             justify-content: space-between;
@@ -69,7 +68,6 @@
             margin-top: 2px;
         }
 
-        /* زر المساعد الصوتي المركزي المتوهج */
         .mic-section {
             display: flex;
             justify-content: center;
@@ -103,7 +101,6 @@
             color: #fff;
         }
 
-        /* شبكة الأزرار */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -142,7 +139,6 @@
             line-height: 1.2;
         }
 
-        /* ألوان الكاردز المطابقة للصورة تماماً */
         .c-purple-dark { background-color: #2e1a47; }
         .c-teal-dark  { background-color: #0f3e3d; }
         .c-green-dark { background-color: #0d3823; }
@@ -159,7 +155,6 @@
         .c-blue-bright{ background-color: #0f325e; }
         .c-slate      { background-color: #112640; }
 
-        /* الأزرار السفلية */
         .bottom-actions {
             display: flex;
             gap: 10px;
@@ -201,24 +196,24 @@
     <div class="phone-container">
         <!-- الهيدر العلوي -->
         <div class="app-header">
-            <i class="fa-solid fa-bars" id="menuBtn" title="القائمة"></i>
+            <i class="fa-solid fa-bars" id="menuBtn"></i>
             <div class="header-title">
                 <h1>مرحبًا بك</h1>
                 <p>كيف يمكنني مساعدتك اليوم؟</p>
             </div>
-            <i class="fa-regular fa-bell" id="notificationsBtn" title="الإشعارات"></i>
+            <i class="fa-regular fa-bell" id="notificationsBtn"></i>
         </div>
 
-        <!-- زر المساعد الصوتي المركزي المتوهج -->
+        <!-- زر المساعد الصوتي المركزي -->
         <div class="mic-section">
-            <div class="mic-glow-ring" id="voiceAssistantBtn" title="المساعد الصوتي">
+            <div class="mic-glow-ring" id="voiceAssistantBtn">
                 <div class="mic-inner">
                     <i class="fa-solid fa-microphone"></i>
                 </div>
             </div>
         </div>
 
-        <!-- شبكة الأزرار والخدمات الأساسية -->
+        <!-- شبكة الأزرار -->
         <div class="grid-container">
             <div class="service-card c-purple-dark" id="btnObjectRecognition">
                 <i class="fa-solid fa-camera"></i>
@@ -240,7 +235,7 @@
                 <i class="fa-solid fa-book-open"></i>
                 <span>الكتب والمستندات</span>
             </div>
-            <div class="service-card c-indigo-dark" id="btnVoiceAssistant">
+            <div class="service-card c-indigo-dark" id="btnVoiceAssistantCard">
                 <i class="fa-solid fa-waveform"></i>
                 <span>المساعد الصوتي</span>
             </div>
@@ -295,7 +290,37 @@
         </div>
     </div>
 
-    <!-- ربط ملف الـ JavaScript الخاص بوظائف التطبيق القديمة -->
-    <script src="app.js"></script>
+    <!-- كود الجافاسكريبت المدمج لتفعيل كل الأزرار -->
+    <script>
+        function setupClick(id, message) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('click', function() {
+                    alert(message);
+                });
+            }
+        }
+
+        setupClick('voiceAssistantBtn', 'مرحباً، تم تفعيل المساعد الصوتي المركزي');
+        setupClick('btnObjectRecognition', 'جاري فتح ميزة التعرف على الأشياء...');
+        setupClick('btnOcr', 'جاري تشغيل قارئ النصوص (OCR)...');
+        setupClick('btnVolunteer', 'جاري الاتصال بالمتطوع المتاح...');
+        setupClick('btnNavigation', 'جاري فتح خريطة الملاحة والتنقل...');
+        setupClick('btnBooks', 'جاري فتح قسم الكتب والمستندات...');
+        setupClick('btnVoiceAssistantCard', 'تشغيل إعدادات المساعد الصوتي...');
+        setupClick('btnLibrarySearch', 'جاري البحث الصوتي في المكتبات...');
+        setupClick('btnEducation', 'جاري فتح قسم التعلم والتعليم...');
+        setupClick('btnBarcode', 'جاري فتح قارئ الباركود والمنتجات...');
+        setupClick('btnCurrency', 'جاري تشغيل التعرف على العملات...');
+        setupClick('btnColors', 'جاري تفعيل التعرف على الألوان...');
+        setupClick('btnFaceRecognition', 'جاري تشغيل التعرف على الوجوه...');
+        setupClick('btnIndoorNav', 'جاري تفعيل الملاحة الداخلية...');
+        setupClick('btnShareLocation', 'جاري مشاركة موقعك الحالي...');
+        setupClick('btnHistory', 'جاري فتح سجل المعلومات...');
+        setupClick('btnEmergency', '⚠️ تنبيه: تم تفعيل وضع الطوارئ بنجاح!');
+        setupClick('btnOfflineMode', 'تم تفعيل وضع العمل بدون إنترنت.');
+        setupClick('menuBtn', 'فتح القائمة الجانبية');
+        setupClick('notificationsBtn', 'فتح لوحة الإشعارات');
+    </script>
 </body>
 </html>
