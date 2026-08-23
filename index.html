@@ -1,361 +1,301 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تطبيق بصير - النسخة الشاملة والدقيقة (المراحل 1 - 8)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق بصير - BASER</title>
+    <!-- استدعاء خط كايرو العربي الأنيق -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- استدعاء أيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Cairo', sans-serif;
         }
+
         body {
-            background-color: #000000;
-            color: #FFFFFF;
-            padding: 15px;
+            background-color: #050b14;
+            color: #ffffff;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
+            padding: 10px;
         }
-        header {
-            text-align: center;
-            padding: 10px 0;
-            border-bottom: 4px solid #FFFF00;
-            margin-bottom: 15px;
+
+        .phone-container {
+            width: 100%;
+            max-width: 420px;
+            background: #050b14;
+            border-radius: 35px;
+            padding: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            overflow-y: auto;
+            max-height: 95vh;
+        }
+
+        /* الهيدر العلوي */
+        .app-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 15px;
+            padding: 0 5px;
         }
-        h1 {
-            color: #FFFF00;
-            font-size: 2rem;
-        }
-        .top-btn {
-            background: #333333;
-            color: #FFFF00;
-            border: 2px solid #FFFF00;
-            padding: 8px 15px;
-            font-size: 1.1rem;
-            border-radius: 8px;
-            font-weight: bold;
+
+        .app-header i {
+            font-size: 22px;
+            color: #fff;
             cursor: pointer;
         }
-        .screen { display: none; }
-        .screen.active { display: flex; flex-direction: column; gap: 15px; flex-grow: 1; }
 
-        .speed-box {
-            background: #111111;
-            padding: 10px;
-            border: 2px solid #FFFFFF;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+        .header-title {
+            text-align: center;
         }
-        .speed-box label { font-size: 1.2rem; color: #FFFF00; }
-        .speed-box input { width: 50%; height: 25px; }
 
+        .header-title h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .header-title p {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* زر المساعد الصوتي المركزي المتوهج */
+        .mic-section {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0 20px 0;
+        }
+
+        .mic-glow-ring {
+            width: 95px;
+            height: 95px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #9333ea, #06b6d4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
+            cursor: pointer;
+        }
+
+        .mic-inner {
+            width: 87px;
+            height: 87px;
+            border-radius: 50%;
+            background-color: #0b132b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .mic-inner i {
+            font-size: 38px;
+            color: #fff;
+        }
+
+        /* شبكة الأزرار */
         .grid-container {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            flex-grow: 1;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
         }
-        .btn-large {
-            width: 100%;
-            padding: 20px;
-            font-size: 1.4rem;
-            font-weight: bold;
-            border: 3px solid #FFFFFF;
-            border-radius: 15px;
+
+        .service-card {
+            border-radius: 16px;
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
             cursor: pointer;
-            text-align: right;
-            background-color: #111111;
-            color: #FFFFFF;
+            transition: transform 0.2s ease;
+            min-height: 95px;
+            border: none;
         }
-        .btn-large:focus, .btn-large:active {
-            background-color: #FFFF00;
-            color: #000000;
-            outline: none;
+
+        .service-card:active {
+            transform: scale(0.95);
+        }
+
+        .service-card i {
+            font-size: 24px;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .service-card span {
+            font-size: 11px;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        /* ألوان الكاردز المطابقة للصورة تماماً */
+        .c-purple-dark { background-color: #2e1a47; }
+        .c-teal-dark  { background-color: #0f3e3d; }
+        .c-green-dark { background-color: #0d3823; }
+        .c-blue-dark  { background-color: #0c2b4e; }
+        .c-orange-dark{ background-color: #532e0d; }
+        .c-indigo-dark{ background-color: #2a1b4e; }
+        .c-teal-med   { background-color: #0e3830; }
+        .c-yellow-dark{ background-color: #523d0d; }
+        .c-cyan-dark  { background-color: #13364e; }
+        .c-blue-med   { background-color: #0f2c4e; }
+        .c-magenta    { background-color: #47133c; }
+        .c-cyan-deep  { background-color: #0d3942; }
+        .c-brown      { background-color: #38231c; }
+        .c-blue-bright{ background-color: #0f325e; }
+        .c-slate      { background-color: #112640; }
+
+        /* الأزرار السفلية */
+        .bottom-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
         }
 
         .action-btn {
-            padding: 22px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            border-radius: 15px;
-            border: 3px solid #FFFFFF;
+            flex: 1;
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
             cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
+            border: none;
         }
-        .btn-blue { background-color: #0055FF; color: #FFFFFF; }
-        .btn-green { background-color: #008000; color: #FFFFFF; }
-        .btn-yellow { background-color: #D4A000; color: #000000; }
-        .btn-red { background-color: #CC0000; color: #FFFFFF; }
-        .btn-purple { background-color: #800080; color: #FFFFFF; }
 
-        #status-box {
-            background-color: #111111;
-            border: 3px solid #FFFF00;
-            border-radius: 10px;
-            padding: 15px;
-            font-size: 1.4rem;
-            color: #00FF00;
-            margin-top: 15px;
-            text-align: center;
-            min-height: 80px;
-            line-height: 1.5;
-            word-break: break-word;
+        .btn-emergency {
+            background-color: #7f1d1d;
         }
-        
-        input[type="file"] { display: none; }
+
+        .btn-offline {
+            background-color: #0f1c30;
+            border: 1.5px solid #1e3a8a;
+            color: #93c5fd;
+        }
+
+        .action-btn i {
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <button id="backBtn" class="top-btn" aria-label="رجوع للشاشة الرئيسية" style="visibility: hidden;">رجوع للخلف</button>
-        <h1>تطبيق بصير</h1>
-    </header>
+    <div class="phone-container">
+        <!-- الهيدر العلوي -->
+        <div class="app-header">
+            <i class="fa-solid fa-bars" id="menuBtn" title="القائمة"></i>
+            <div class="header-title">
+                <h1>مرحبًا بك</h1>
+                <p>كيف يمكنني مساعدتك اليوم؟</p>
+            </div>
+            <i class="fa-regular fa-bell" id="notificationsBtn" title="الإشعارات"></i>
+        </div>
 
-    <!-- التحكم بسرعة الصوت -->
-    <div class="speed-box">
-        <label for="speedRange">سرعة الصوت:</label>
-        <input type="range" id="speedRange" min="0.5" max="1.5" step="0.1" value="0.9" aria-label="تغيير سرعة الصوت">
-    </div>
+        <!-- زر المساعد الصوتي المركزي المتوهج -->
+        <div class="mic-section">
+            <div class="mic-glow-ring" id="voiceAssistantBtn" title="المساعد الصوتي">
+                <div class="mic-inner">
+                    <i class="fa-solid fa-microphone"></i>
+                </div>
+            </div>
+        </div>
 
-    <!-- الشاشة الرئيسية -->
-    <main id="homeScreen" class="screen active">
+        <!-- شبكة الأزرار والخدمات الأساسية -->
         <div class="grid-container">
-            <button class="btn-large" data-screen="ocrScreen" aria-label="القسم الأول: قراءة النصوص والمستندات">القسم الأول: قراءة النصوص</button>
-            <button class="btn-large" data-screen="objectScreen" aria-label="القسم الثاني: التعرف على الأشياء والصور">القسم الثاني: التعرف على الأشياء</button>
-            <button class="btn-large" data-screen="moneyScreen" aria-label="القسم الثالث: التعرف على العملات النقدية">القسم الثالث: التعرف على العملات</button>
-            <button class="btn-large" data-screen="humanHelpScreen" aria-label="القسم الرابع: مساعدة بشرية والطوارئ">القسم الرابع: مساعدة بشرية وطوارئ</button>
-            <button class="btn-large" data-screen="navScreen" aria-label="القسم الخامس: الملاحة والاتجاهات">القسم الخامس: الملاحة والاتجاهات</button>
-            <button class="btn-large" data-screen="libraryScreen" aria-label="القسم السادس: المكتبة الصوتية">القسم السادس: المكتبة الصوتية</button>
-            <button class="btn-large" data-screen="dailyScreen" aria-label="القسم السابع: الخدمات اليومية والألوان">القسم السابع: الخدمات اليومية والألوان</button>
-            <button class="btn-large" data-screen="settingsScreen" aria-label="القسم الثامن: إعدادات التطبيق والتحكم">القسم الثامن: إعدادات التطبيق</button>
-        </div>
-    </main>
-
-    <!-- 1. شاشة قراءة النصوص -->
-    <section id="ocrScreen" class="screen">
-        <h2>قسم قراءة النصوص</h2>
-        <p style="font-size: 1.2rem;">وجه الكاميرا نحو الورقة أو الكارت وقوم بالتصوير.</p>
-        <button id="captureOcrBtn" class="action-btn btn-blue" aria-label="التقاط صورة للورقة وقراءة النص">التقاط وقراءة النص</button>
-    </section>
-
-    <!-- 2. شاشة التعرف على الأشياء -->
-    <section id="objectScreen" class="screen">
-        <h2>قسم التعرف على الأشياء</h2>
-        <p style="font-size: 1.2rem;">وجه الكاميرا نحو الشيء المطلوب التعرف عليه.</p>
-        <button id="captureObjectBtn" class="action-btn btn-green" aria-label="التقاط صورة للتعرف على الشيء بالذكاء الاصطناعي">التعرف على الشيء أمامك</button>
-    </section>
-
-    <!-- 3. شاشة التعرف على العملات -->
-    <section id="moneyScreen" class="screen">
-        <h2>قسم التعرف على العملات</h2>
-        <p style="font-size: 1.2rem;">وجه الكاميرا نحو الورقة النقدية.</p>
-        <button id="captureMoneyBtn" class="action-btn btn-yellow" aria-label="التقاط صورة للتعرف على العملة النقدية">التعرف على العملة</button>
-    </section>
-
-    <!-- 4. شاشة المساعدة البشرية -->
-    <section id="humanHelpScreen" class="screen">
-        <h2>قسم المساعدة البشرية والطوارئ</h2>
-        <p style="font-size: 1.2rem;">الاتصال المباشر بالطوارئ أو تحديد موقعك الجغرافي.</p>
-        <button id="callVolunteerBtn" class="action-btn btn-red" aria-label="اتصال مباشر بالمساعد أو المتطوع">الاتصال بالمساعد المباشر</button>
-        <button id="sendLocationBtn" class="action-btn btn-blue" aria-label="تحديد ومشاركة موقعي الجغرافي للطوارئ">تحديد موقعي الجغرافي</button>
-    </section>
-
-    <!-- 5. شاشة الملاحة والاتجاهات -->
-    <section id="navScreen" class="screen">
-        <h2>قسم الملاحة والاتجاهات</h2>
-        <p style="font-size: 1.2rem;">استخدم البوصلة لمعرفة اتجاهك أو تحديد إحداثيات موقعك.</p>
-        <button id="compassBtn" class="action-btn btn-purple" aria-label="تحديد اتجاه البوصلة الحالي">تحديد اتجاه البوصلة</button>
-        <button id="whereAmIBtn" class="action-btn btn-blue" aria-label="معرفة المكان والموقع الحالي">أين أنا الآن؟</button>
-    </section>
-
-    <!-- 6. شاشة المكتبة الصوتية -->
-    <section id="libraryScreen" class="screen">
-        <h2>قسم المكتبة الصوتية</h2>
-        <p style="font-size: 1.2rem;">استمع للإرشادات والدليل الصوتي الشامل لاستخدام التطبيق.</p>
-        <button id="playManualBtn" class="action-btn btn-green" aria-label="تشغيل الدليل الصوتي الشامل للتطبيق">تشغيل الدليل الصوتي</button>
-        <button id="playTipsBtn" class="action-btn btn-blue" aria-label="تشغيل النصائح والاستخدام الصوتي">نصائح الاستخدام التفصيلية</button>
-        <button id="stopAudioBtn" class="action-btn btn-red" aria-label="إيقاف القراءة الصوتية الحالية">إيقاف الصوت فوراً</button>
-    </section>
-
-    <!-- 7. شاشة الخدمات اليومية والألوان -->
-    <section id="dailyScreen" class="screen">
-        <h2>قسم الخدمات اليومية والألوان</h2>
-        <p style="font-size: 1.2rem;">التعرف على لون الملابس والأشياء ومعرفة الوقت والتاريخ.</p>
-        <button id="colorBtn" class="action-btn btn-yellow" aria-label="التقاط صورة للتعرف على اللون">التعرف على اللون</button>
-        <button id="dateTimeBtn" class="action-btn btn-blue" aria-label="قراءة الوقت والتاريخ الحالي">معرفة الوقت والتاريخ</button>
-    </section>
-
-    <!-- 8. شاشة الإعدادات والتحكم -->
-    <section id="settingsScreen" class="screen">
-        <h2>قسم الإعدادات والتحكم</h2>
-        <p style="font-size: 1.2rem;">اختبار محرك الصوت وإعادة ضبط وتحديث التطبيق.</p>
-        <button id="testVoiceBtn" class="action-btn btn-blue" aria-label="اختبار جودة المحرك الصوتي">اختبار المحرك الصوتي</button>
-        <button id="resetAppBtn" class="action-btn btn-red" aria-label="إعادة تحميل وتحديث التطبيق">إعادة تحميل التطبيق</button>
-    </section>
-
-    <!-- مدخلات الكاميرا الخفية -->
-    <input type="file" id="ocrCameraInput" accept="image/*" capture="environment">
-    <input type="file" id="objectCameraInput" accept="image/*" capture="environment">
-    <input type="file" id="moneyCameraInput" accept="image/*" capture="environment">
-    <input type="file" id="colorCameraInput" accept="image/*" capture="environment">
-
-    <!-- صندوق الإشعارات والقراءة -->
-    <div id="status-box" aria-live="assertive" role="status">
-        مرحباً بك في تطبيق بصير. تم تحميل جميع المراحل الثماني بنجاح!
-    </div>
-
-    <!-- لوحة قماشية خفية لمعالجة الألوان -->
-    <canvas id="colorCanvas" style="display:none;"></canvas>
-
-    <script src="app.js"></script>
-        <!-- الكود الإضافي يُنسخ هنا (فوق وسوم الإغلاق) -->
-    <section id="aiVisionSection" style="margin-top: 20px; border-top: 2px solid #FFFF00; padding-top: 15px;">
-        <h2>التعرف بالذكاء الاصطناعي</h2>
-        <p id="aiStatus">اختر صورة أو التقط صورة للتعرف على الأشياء وقراءة النص.</p>
-        
-        <div class="vision-buttons" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-            <button id="detectObjectsBtn" class="action-btn btn-green">🤖 التعرف على الأشياء</button>
-            <button id="readTextBtn" class="action-btn btn-blue">📖 قراءة النص</button>
-            <button id="describeImageBtn" class="action-btn btn-purple">🔊 وصف الصورة</button>
+            <div class="service-card c-purple-dark" id="btnObjectRecognition">
+                <i class="fa-solid fa-camera"></i>
+                <span>التعرف على الأشياء</span>
+            </div>
+            <div class="service-card c-teal-dark" id="btnOcr">
+                <i class="fa-solid fa-file-lines"></i>
+                <span>قراءة النصوص</span>
+            </div>
+            <div class="service-card c-green-dark" id="btnVolunteer">
+                <i class="fa-solid fa-headset"></i>
+                <span>اتصل بمتطوع</span>
+            </div>
+            <div class="service-card c-blue-dark" id="btnNavigation">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>الملاحة والتنقل</span>
+            </div>
+            <div class="service-card c-orange-dark" id="btnBooks">
+                <i class="fa-solid fa-book-open"></i>
+                <span>الكتب والمستندات</span>
+            </div>
+            <div class="service-card c-indigo-dark" id="btnVoiceAssistant">
+                <i class="fa-solid fa-waveform"></i>
+                <span>المساعد الصوتي</span>
+            </div>
+            <div class="service-card c-teal-med" id="btnLibrarySearch">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>البحث الصوتي في المكتبات</span>
+            </div>
+            <div class="service-card c-yellow-dark" id="btnEducation">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>التعلم والتعليم</span>
+            </div>
+            <div class="service-card c-cyan-dark" id="btnBarcode">
+                <i class="fa-solid fa-barcode"></i>
+                <span>قراءة الباركود والمنتجات</span>
+            </div>
+            <div class="service-card c-blue-med" id="btnCurrency">
+                <i class="fa-solid fa-coins"></i>
+                <span>التعرف على العملات</span>
+            </div>
+            <div class="service-card c-magenta" id="btnColors">
+                <i class="fa-solid fa-palette"></i>
+                <span>التعرف على الألوان</span>
+            </div>
+            <div class="service-card c-cyan-deep" id="btnFaceRecognition">
+                <i class="fa-solid fa-user-check"></i>
+                <span>التعرف على الوجوه</span>
+            </div>
+            <div class="service-card c-brown" id="btnIndoorNav">
+                <i class="fa-solid fa-building"></i>
+                <span>الملاحة الداخلية</span>
+            </div>
+            <div class="service-card c-blue-bright" id="btnShareLocation">
+                <i class="fa-solid fa-map-pin"></i>
+                <span>مشاركة موقعي</span>
+            </div>
+            <div class="service-card c-slate" id="btnHistory">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <span>سجل المعلومات</span>
+            </div>
         </div>
 
-        <div id="objectResults" aria-live="polite"></div>
-        <div id="textResults" aria-live="polite"></div>
-    </section>
+        <!-- الأزرار السفلية -->
+        <div class="bottom-actions">
+            <button class="action-btn btn-emergency" id="btnEmergency">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                طوارئ
+            </button>
+            <button class="action-btn btn-offline" id="btnOfflineMode">
+                <i class="fa-solid fa-cloud-slash"></i>
+                دعم بدون إنترنت
+            </button>
+        </div>
+    </div>
 
-    <!-- مكتبات الذكاء الاصطناعي -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <!-- ربط ملف الـ JavaScript الخاص بوظائف التطبيق القديمة -->
     <script src="app.js"></script>
-
 </body>
 </html>
-
-</body>
-</html>
-
-<!-- =====================================================
-     التعرف على الأشياء وقراءة النصوص - بصير
-===================================================== -->
-
-<section id="aiVisionSection" class="ai-vision">
-
-    <h2>التعرف بالذكاء الاصطناعي</h2>
-
-    <p id="aiStatus">
-        اختر صورة أو التقط صورة للتعرف على الأشياء وقراءة النص.
-    </p>
-
-    <input
-        type="file"
-        id="visionImage"
-        accept="image/*"
-        capture="environment"
-        aria-label="اختيار أو التقاط صورة"
-    >
-
-    <div class="vision-buttons">
-        <button id="detectObjectsBtn">
-            🤖 التعرف على الأشياء
-        </button>
-
-        <button id="readTextBtn">
-            📖 قراءة النص
-        </button>
-
-        <button id="describeImageBtn">
-            🔊 وصف الصورة
-        </button>
-    </div>
-
-    <img
-        id="visionPreview"
-        alt="الصورة المختارة"
-        style="display:none; max-width:100%;"
-    >
-
-    <div id="objectResults" aria-live="polite"></div>
-
-    <div id="textResults" aria-live="polite"></div>
-
-</section>
-
-<!-- نموذج التعرف على الأشياء -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
-
-<!-- OCR قراءة النصوص -->
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-
-<!-- كود الذكاء الاصطناعي -->
-<script src="vision-ai.js"></script>
-<!-- =====================================================
-     وحدة رؤية بصير - الكاميرا والتعرف على الأشياء
-===================================================== -->
-
-<section id="basirVision">
-
-    <h2>التعرف على المشهد</h2>
-
-    <button id="startCameraBtn">
-        📷 تشغيل الكاميرا
-    </button>
-
-    <button id="captureSceneBtn" style="display:none;">
-        👁️ التعرف على المشهد
-    </button>
-
-    <button id="stopCameraBtn" style="display:none;">
-        ⛔ إيقاف الكاميرا
-    </button>
-
-    <div id="cameraContainer" style="display:none;">
-
-        <video
-            id="basirCamera"
-            autoplay
-            playsinline
-            muted
-            style="width:100%; max-width:600px;"
-        ></video>
-
-        <canvas
-            id="basirCanvas"
-            style="display:none;"
-        ></canvas>
-
-    </div>
-
-    <div
-        id="sceneDescription"
-        aria-live="polite"
-        style="margin-top:15px;"
-    >
-        لم يتم تحليل المشهد بعد.
-    </div>
-
-</section>
-
-
-<!-- مكتبة TensorFlow -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-
-<!-- نموذج التعرف على الأشياء -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
-
-<!-- كود رؤية بصير -->
-<script src="vision-scene.js"></script>
