@@ -692,3 +692,29 @@ function updateStatus(message) {
         box.textContent = message;
     }
 }
+// تفعيل زر المساعد الصوتي المركزي
+document.getElementById('voiceAssistantBtn').addEventListener('click', function() {
+    alert('تم تفعيل المساعد الصوتي!');
+    // هنا تقدر تضيف كود الصوت أو الـ Speech Recognition الخاص بك
+});
+
+// تفعيل زر التعرف على الأشياء
+document.getElementById('btnObjectRecognition').addEventListener('click', function() {
+    alert('جاري فتح الكاميرا للتعرف على الأشياء...');
+    // هنا كود فتح الكاميرا والذكاء الاصطناعي
+});
+
+// تفعيل زر قراءة النصوص (OCR)
+document.getElementById('btnOcr').addEventListener('click', function() {
+    alert('جاري قراءة النصوص...');
+});
+
+// تفعيل زر الطوارئ
+document.getElementById('btnEmergency').addEventListener('click', function() {
+    alert('تم تفعيل وضع الطوارئ!');
+});
+
+// تفعيل زر دعم بدون إنترنت
+document.getElementById('btnOfflineMode').addEventListener('click', function() {
+    alert('تم الانتقال لوضع العمل بدون إنترنت.');
+});
