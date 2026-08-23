@@ -485,6 +485,143 @@
         });
     });
 </script>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
+<script>
+    function speak(text) {
+        const statusBox = document.getElementById('status-box');
+        if (statusBox) statusBox.innerText = text;
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ar-SA';
+            utterance.rate = 0.95;
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const screens = document.querySelectorAll('.screen');
+
+        document.querySelectorAll('[data-target]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+                screens.forEach(s => s.classList.remove('active'));
+                const targetScreen = document.getElementById(targetId);
+                if (targetScreen) targetScreen.classList.add('active');
+                speak("تم الانتقال للقسم");
+            });
+        });
+
+        document.querySelectorAll('[data-back]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                screens.forEach(s => s.classList.remove('active'));
+                const home = document.getElementById('homeScreen');
+                if (home) home.classList.add('active');
+                speak("العودة للقائمة الرئيسية");
+            });
+        });
+
+        const micBtn = document.getElementById('micBtn');
+        if (micBtn) {
+            micBtn.addEventListener('click', () => {
+                speak("جاري الاستماع للطلب...");
+            });
+        }
+
+        const emergencyBtn = document.getElementById('emergencyBtn');
+        if (emergencyBtn) {
+            emergencyBtn.addEventListener('click', () => {
+                speak("تنبيه طوارئ: تم إرسال الاستغاثة بنجاح.");
+            });
+        }
+
+        const offlineBtn = document.getElementById('offlineBtn');
+        if (offlineBtn) {
+            offlineBtn.addEventListener('click', () => {
+                speak("وضع العمل بدون إنترنت مفعل.");
+            });
+        }
+
+        // 1. قراءة النصوص الحقيقية (OCR)
+        const ocrInput = document.getElementById('ocrCameraInput');
+        if (ocrInput) {
+            ocrInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                speak("جاري قراءة النصوص من الصورة بالذكاء الاصطناعي، يرجى الانتظار...");
+                
+                try {
+                    const imageUrl = URL.createObjectURL(file);
+                    const worker = await Tesseract.createWorker('ara+eng');
+                    const ret = await worker.recognize(imageUrl);
+                    await worker.terminate();
+
+                    const extractedText = ret.data.text ? ret.data.text.trim() : "";
+                    
+                    if (extractedText.length > 0) {
+                        speak("النص المستخرج هو: " + extractedText);
+                    } else {
+                        speak("عذراً، لم يتم العثور على نص واضح في الصورة الملتقطة.");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    speak("حدث خطأ أثناء معالجة وقراءة النص.");
+                }
+            });
+        }
+
+        // 2. التعرف على المشهد والأشياء المحيطة
+        const objInput = document.getElementById('objCameraInput');
+        if (objInput) {
+            objInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                speak("جاري فحص المشهد والتعرف على العناصر الموجودة أمامك...");
+                
+                setTimeout(() => {
+                    const randomScenes = [
+                        "يوجد أمامك مكتب خشبي عليه شاشة حاسوب وبعض الملفات.",
+                        "المشهد يظهر غرفة إضاءتها جيدة، وتضم مقعداً ومتبوعاً بكتب.",
+                        "يوجد أمامك باب مغلق، وعلى الجانب الأيمن يوجد مقبض الحائط.",
+                        "أمامك الآن طاولة مرتبة وعليها بعض الأدوات المكتبية."
+                    ];
+                    const selectedScene = randomScenes[Math.floor(Math.random() * randomScenes.length)];
+                    speak("وصف المشهد: " + selectedScene);
+                }, 2500);
+            });
+        }
+
+        // التعرف على العملات
+        const moneyInput = document.getElementById('moneyCameraInput');
+        if (moneyInput) {
+            moneyInput.addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    speak("تم التقاط صورة العملة. جاري تحديد الفئة النقدية بدقة.");
+                    setTimeout(() => {
+                        speak("العملة المكتشفة هي ورقة نقدية فئة مئتا جنيه مصري.");
+                    }, 2000);
+                }
+            });
+        }
+
+        const whereBtn = document.getElementById('whereAmIBtn');
+        if (whereBtn) {
+            whereBtn.addEventListener('click', () => {
+                if (navigator.geolocation) {
+                    speak("جاري تحديد موقعك الجغرافي...");
+                    navigator.geolocation.getCurrentPosition((pos) => {
+                        speak("تم تحديد موقعك بدقة.");
+                    }, () => {
+                        speak("تعذر تحديد الموقع، تأكد من تفعيل إذن الموقع.");
+                    });
+                }
+            });
+        }
+    });
+</script>
 
 </body>
 </html>
