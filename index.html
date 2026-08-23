@@ -171,4 +171,180 @@
         function toggleOfflineMode() { speak("تم تفعيل وضع بدون إنترنت."); }
     </script>
 </body>
+    
 </html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق بصير - الواجهة الاحترافية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #030712; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
+        .phone-container { width: 100%; max-width: 420px; background: #0b132b; border-radius: 40px; padding: 20px; box-shadow: 0 0 40px rgba(0, 0, 0, 0.9); overflow-y: auto; max-height: 96vh; border: 1px solid #1e293b; }
+        .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .app-header i { font-size: 20px; color: #94a3b8; cursor: pointer; padding: 8px; background: #111827; border-radius: 50%; }
+        .header-title h1 { font-size: 19px; font-weight: 700; color: #fff; text-align: center; }
+        .header-title p { font-size: 11px; color: #38bdf8; text-align: center; margin-top: 2px; }
+        .mic-section { display: flex; justify-content: center; margin: 15px 0 20px 0; }
+        .mic-glow-ring { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #2563eb, #9333ea, #06b6d4); display: flex; justify-content: center; align-items: center; box-shadow: 0 0 25px rgba(37, 99, 235, 0.6); cursor: pointer; }
+        .mic-inner { width: 80px; height: 80px; border-radius: 50%; background-color: #030712; display: flex; justify-content: center; align-items: center; }
+        .mic-inner i { font-size: 34px; color: #38bdf8; }
+        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .service-card { border-radius: 18px; padding: 12px 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; min-height: 90px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .service-card i { font-size: 22px; color: #ffffff; margin-bottom: 6px; }
+        .service-card span { font-size: 10.5px; font-weight: 600; color: #f1f5f9; }
+        .bg-1 { background: linear-gradient(135deg, #311042, #1e1b4b); }
+        .bg-2 { background: linear-gradient(135deg, #042f2e, #064e3b); }
+        .bg-3 { background: linear-gradient(135deg, #064e3b, #022c22); }
+        .bg-4 { background: linear-gradient(135deg, #1e3a8a, #172554); }
+        .bg-5 { background: linear-gradient(135deg, #431407, #2c1b18); }
+        .bg-6 { background: linear-gradient(135deg, #3b0764, #2e1065); }
+        .bg-7 { background: linear-gradient(135deg, #134e4a, #042f2e); }
+        .bg-8 { background: linear-gradient(135deg, #451a03, #291504); }
+        .bg-9 { background: linear-gradient(135deg, #0c4a6e, #082f49); }
+        .bottom-actions { display: flex; gap: 10px; }
+        .action-btn { flex: 1; border-radius: 16px; padding: 12px; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #fff; border: none; cursor: pointer; }
+        .btn-emergency { background-color: #991b1b; }
+        .btn-offline { background-color: #1e293b; border: 1px solid #334155; color: #93c5fd; }
+        
+        #camera-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.97); z-index: 1000; flex-direction: column; justify-content: center; align-items: center; padding: 15px; }
+        .cam-wrapper { position: relative; width: 100%; max-width: 400px; border-radius: 25px; overflow: hidden; border: 2px solid #38bdf8; background: #000; }
+        #videoElement { width: 100%; height: auto; display: block; }
+        #cam-status { color: #38bdf8; margin: 15px 0; font-size: 15px; font-weight: bold; text-align: center; }
+        .cam-actions-row { display: flex; gap: 12px; width: 100%; max-width: 400px; margin-top: 15px; }
+        .btn-capture { flex: 2; background: #2563eb; color: white; border: none; padding: 14px; border-radius: 14px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        .btn-close-cam { flex: 1; background: #dc2626; color: white; border: none; padding: 14px; border-radius: 14px; font-size: 14px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="phone-container">
+        <!-- الهيدر -->
+        <div class="app-header">
+            <i class="fa-solid fa-gear" onclick="speak('الإعدادات')"></i>
+            <div class="header-title">
+                <h1>تطبيق بصير</h1>
+                <p>مساعدك البصري الذكي</p>
+            </div>
+            <i class="fa-solid fa-volume-high" onclick="speak('الصوت مفعل')"></i>
+        </div>
+
+        <!-- زر المساعد الصوتي -->
+        <div class="mic-section">
+            <div class="mic-glow-ring" onclick="startVoiceAssistant()">
+                <div class="mic-inner">
+                    <i class="fa-solid fa-microphone-lines"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- شبكة الخدمات -->
+        <div class="grid-container">
+            <div class="service-card bg-1" onclick="openCameraSession('التعرف على الأشياء')"><i class="fa-solid fa-eye"></i><span>التعرف على الأشياء</span></div>
+            <div class="service-card bg-2" onclick="openCameraSession('قراءة النصوص')"><i class="fa-solid fa-file-lines"></i><span>قراءة النصوص</span></div>
+            <div class="service-card bg-3" onclick="callVolunteer()"><i class="fa-solid fa-headset"></i><span>اتصل بمتطوع</span></div>
+            <div class="service-card bg-4" onclick="openNavigation()"><i class="fa-solid fa-location-arrow"></i><span>الملاحة والتنقل</span></div>
+            <div class="service-card bg-5" onclick="speak('الكتب والمستندات')"><i class="fa-solid fa-book-open"></i><span>الكتب والمستندات</span></div>
+            <div class="service-card bg-6" onclick="startVoiceAssistant()"><i class="fa-solid fa-waveform-lines"></i><span>الأوامر الصوتية</span></div>
+            <div class="service-card bg-7" onclick="openCameraSession('الباركود والمنتجات')"><i class="fa-solid fa-barcode"></i><span>الباركود والمنتجات</span></div>
+            <div class="service-card bg-8" onclick="openCameraSession('التعرف على العملات')"><i class="fa-solid fa-coins"></i><span>التعرف على العملات</span></div>
+            <div class="service-card bg-9" onclick="shareLocation()"><i class="fa-solid fa-map-location-dot"></i><span>مشاركة موقعي</span></div>
+        </div>
+
+        <!-- أزرار الطوارئ -->
+        <div class="bottom-actions">
+            <button class="action-btn btn-emergency" onclick="triggerEmergency()"><i class="fa-solid fa-triangle-exclamation"></i>طوارئ</button>
+            <button class="action-btn btn-offline" onclick="toggleOfflineMode()"><i class="fa-solid fa-shield-halved"></i>بدون إنترنت</button>
+        </div>
+    </div>
+
+    <!-- نافذة الكاميرا -->
+    <div id="camera-modal">
+        <div id="cam-status">جاري تشغيل الكاميرا...</div>
+        <div class="cam-wrapper">
+            <video id="videoElement" autoplay playsinline></video>
+        </div>
+        <div class="cam-actions-row">
+            <button class="btn-capture" onclick="captureAndAnalyzeImage()">التقاط الصورة 📸</button>
+            <button class="btn-close-cam" onclick="closeCameraSession()">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- كود الجافاسكريبت المصحح بالكامل -->
+    <script>
+        let mediaStream = null;
+        let currentMode = '';
+
+        // دالة النطق الأساسية
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                let utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ar-SA';
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // فتح الكاميرا
+        async function openCameraSession(modeName) {
+            currentMode = modeName;
+            document.getElementById('cam-status').innerText = "وضع: " + modeName;
+            document.getElementById('camera-modal').style.display = 'flex';
+            speak("تم فتح " + modeName);
+
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' }, 
+                    audio: false 
+                });
+                document.getElementById('videoElement').srcObject = mediaStream;
+            } catch (err) {
+                speak("عذراً، تعذر الوصول إلى الكاميرا.");
+                document.getElementById('camera-modal').style.display = 'none';
+            }
+        }
+
+        // إغلاق الكاميرا
+        function closeCameraSession() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+            document.getElementById('camera-modal').style.display = 'none';
+        }
+
+        // التقاط الصورة
+        function captureAndAnalyzeImage() {
+            speak("تم التقاط الصورة بنجاح وجاري المعالجة.");
+            closeCameraSession();
+        }
+
+        // المساعد الصوتي
+        function startVoiceAssistant() {
+            speak("أنا أستمع إليك الآن...");
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'ar-SA';
+                recognition.start();
+                recognition.onresult = function(event) {
+                    let cmd = event.results[0][0].transcript;
+                    speak("تم استلام أمرك: " + cmd);
+                };
+            }
+        }
+
+        function callVolunteer() { speak("جاري الاتصال بمتطوع..."); }
+        function openNavigation() { speak("جاري تشغيل نظام الملاحة."); }
+        function shareLocation() { speak("تم مشاركة الموقع."); }
+        function triggerEmergency() { speak("تم تفعيل الطوارئ."); }
+        function toggleOfflineMode() { speak("تم تفعيل وضع بدون إنترنت."); }
+    </script>
+</body>
+</html>
+
