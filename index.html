@@ -334,5 +334,75 @@
             }
         }
     </script>
+    <button id="detectObjBtn" class="action-btn" onclick="detectObjectsInScene()" style="display:none; margin: 10px auto; padding: 12px 20px; background-color: #00f2fe; color: #0b0f19; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;">التعرف على الأشياء في المشهد 🔍</button>
+<script src="https://cdn.jsdelivr.5net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
+<script>
+    let aiModel = null;
+
+    const objectTranslations = {
+        "person": "شخص",
+        "chair": "كرسي",
+        "table": "طاولة",
+        "laptop": "جهاز حاسوب محمول",
+        "cell phone": "هاتف محمول",
+        "book": "كتاب",
+        "cup": "كوب",
+        "bottle": "زجاجة",
+        "keyboard": "لوحة مفاتيح",
+        "mouse": "فأرة حاسوب",
+        "tv": "شاشة تلفاز",
+        "clock": "ساعة",
+        "door": "باب",
+        "backpack": "حقيبة ظهر",
+        "handbag": "حقيبة يد"
+    };
+
+    async function detectObjectsInScene() {
+        const video = document.getElementById('cameraStream');
+        const statusBox = document.getElementById('statusBox');
+
+        if (!video || !video.srcObject) {
+            alert("الكاميرا غير مفعلة!");
+            return;
+        }
+
+        statusBox.innerText = "جاري تحليل المشهد بالذكاء الاصطناعي... انتظر لحظات";
+        speakText("جاري تحليل المشهد");
+
+        try {
+            if (!aiModel) {
+                statusBox.innerText = "جاري تحميل نموذج الذكاء الاصطناعي لأول مرة...";
+                aiModel = await cocoSsd.load();
+            }
+
+            const predictions = await aiModel.detect(video);
+
+            if (predictions && predictions.length > 0) {
+                let detectedItems = [];
+                predictions.forEach(prediction => {
+                    let engName = prediction.class.toLowerCase();
+                    let arName = objectTranslations[engName] || engName;
+                    if (!detectedItems.includes(arName)) {
+                        detectedItems.push(arName);
+                    }
+                });
+
+                let description = "أرى في المشهد: " + detectedItems.join("، ");
+                statusBox.innerText = description;
+                speakText(description);
+            } else {
+                let msg = "لم أتمكن من التعرف على أي أجسام واضحة في هذا الاتجاه.";
+                statusBox.innerText = msg;
+                speakText(msg);
+            }
+        } catch (err) {
+            statusBox.innerText = "حدث خطأ أثناء تحليل المشهد.";
+            speakText("حدث خطأ في تحليل المشهد");
+        }
+    }
+</script>
+
 </body>
 </html>
