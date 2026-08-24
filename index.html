@@ -116,6 +116,7 @@ justify-content:center;
 align-items:center;
 gap:6px;
 cursor:pointer;
+touch-action:manipulation;
 }
 
 .btn-card:active,
@@ -123,7 +124,8 @@ cursor:pointer;
 .mic-glow-btn:active,
 .action-special-btn:active,
 .camera-btn:active,
-.back-btn:active{
+.back-btn:active,
+.small-btn:active{
 transform:scale(.96);
 }
 
@@ -142,60 +144,4 @@ line-height:1.2;
 .c-teal-1{background:linear-gradient(145deg,#042f2e,#115e59)}
 .c-green-1{background:linear-gradient(145deg,#022c22,#065f46)}
 .c-blue-1{background:linear-gradient(145deg,#1e3a8a,#1e40af)}
-.c-orange-1{background:linear-gradient(145deg,#431407,#9a3412)}
-.c-purple-2{background:linear-gradient(145deg,#31104a,#4c1d95)}
-.c-teal-2{background:linear-gradient(145deg,#042f2e,#0f766e)}
-.c-yellow-1{background:linear-gradient(145deg,#451a03,#854d0e)}
-.c-blue-2{background:linear-gradient(145deg,#0c4a6e,#0369a1)}
-.c-blue-3{background:linear-gradient(145deg,#172554,#1d4ed8)}
-.c-purple-3{background:linear-gradient(145deg,#4a044e,#701a75)}
-.c-teal-3{background:linear-gradient(145deg,#042f2e,#134e4a)}
-.c-brown-1{background:linear-gradient(145deg,#2c1611,#451a03)}
-.c-blue-4{background:linear-gradient(145deg,#0f172a,#1e3a8a)}
-.c-dark-1{background:linear-gradient(145deg,#0b132b,#1e293b)}
-
-.bottom-actions{
-display:grid;
-grid-template-columns:1.1fr 1.2fr;
-gap:8px;
-margin-top:8px;
-}
-
-.action-special-btn{
-padding:12px 8px;
-border-radius:16px;
-font-size:.82rem;
-font-weight:bold;
-color:#fff;
-cursor:pointer;
-}
-
-.btn-emergency{
-background:linear-gradient(145deg,#581c87,#7f1d1d);
-border:1px solid #ef4444;
-}
-
-.btn-offline{
-background:linear-gradient(145deg,#090d16,#0f172a);
-border:1px solid #1e3a8a;
-}
-
-.sub-screen-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-border-bottom:1px solid #1e293b;
-padding-bottom:8px;
-margin-bottom:5px;
-}
-
-.sub-screen-header h2{
-font-size:1.05rem;
-color:#38bdf8;
-}
-
-.back-btn{
-background:#111827;
-color:#94a3b8;
-border:1px solid #334155;
-padding:7
+.c-orange-1{background:linear-gradient(145deg,#431407,#
