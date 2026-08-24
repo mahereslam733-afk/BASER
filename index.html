@@ -702,6 +702,357 @@
             };
         }
     </script>
+  <!-- ============================= -->
+<!-- محرك التعرف الحقيقي على الأشياء -->
+<!-- ============================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+
+    const objectInput = document.getElementById("objCameraInput");
+    const statusBox = document.getElementById("status-box");
+
+    let objectModel = null;
+
+    // =========================
+    // النطق العربي
+    // =========================
+
+    function speakObject(text) {
+
+        if (statusBox) {
+            statusBox.textContent = text;
+        }
+
+        if (!("speechSynthesis" in window)) return;
+
+        speechSynthesis.cancel();
+
+        const speech = new SpeechSynthesisUtterance(text);
+
+        speech.lang = "ar-EG";
+        speech.rate = 0.85;
+        speech.pitch = 1;
+
+        const voices = speechSynthesis.getVoices();
+
+        const arabicVoice = voices.find(v =>
+            v.lang &&
+            v.lang.toLowerCase().startsWith("ar")
+        );
+
+        if (arabicVoice) {
+            speech.voice = arabicVoice;
+        }
+
+        speechSynthesis.speak(speech);
+    }
+
+
+    // =========================
+    // ترجمة أسماء الأشياء
+    // =========================
+
+    const objectNames = {
+
+        person: "شخص",
+        bicycle: "دراجة",
+        car: "سيارة",
+        motorcycle: "دراجة نارية",
+        airplane: "طائرة",
+        bus: "حافلة",
+        train: "قطار",
+        truck: "شاحنة",
+        boat: "قارب",
+
+        traffic_light: "إشارة مرور",
+        fire_hydrant: "صنبور إطفاء",
+        stop_sign: "علامة توقف",
+        parking_meter: "عداد انتظار السيارات",
+        bench: "مقعد",
+
+        bird: "طائر",
+        cat: "قطة",
+        dog: "كلب",
+        horse: "حصان",
+        sheep: "خروف",
+        cow: "بقرة",
+        elephant: "فيل",
+        bear: "دب",
+        zebra: "حمار وحشي",
+        giraffe: "زرافة",
+
+        backpack: "حقيبة ظهر",
+        umbrella: "مظلة",
+        handbag: "حقيبة يد",
+        tie: "ربطة عنق",
+        suitcase: "حقيبة سفر",
+
+        frisbee: "قرص طائر",
+        skis: "زلاجات",
+        snowboard: "لوح تزلج",
+        sports_ball: "كرة",
+        kite: "طائرة ورقية",
+        baseball_bat: "مضرب بيسبول",
+        baseball_glove: "قفاز بيسبول",
+        skateboard: "لوح تزلج",
+        surfboard: "لوح ركوب الأمواج",
+        tennis_racket: "مضرب تنس",
+
+        bottle: "زجاجة",
+        wine_glass: "كأس",
+        cup: "كوب",
+        fork: "شوكة",
+        knife: "سكين",
+        spoon: "ملعقة",
+        bowl: "وعاء",
+
+        banana: "موزة",
+        apple: "تفاحة",
+        sandwich: "شطيرة",
+        orange: "برتقالة",
+        broccoli: "بروكلي",
+        carrot: "جزرة",
+        hot_dog: "هوت دوغ",
+        pizza: "بيتزا",
+        donut: "دونات",
+        cake: "كعكة",
+
+        chair: "كرسي",
+        couch: "أريكة",
+        potted_plant: "نبات",
+        bed: "سرير",
+        dining_table: "طاولة طعام",
+        toilet: "مرحاض",
+
+        tv: "تلفاز",
+        laptop: "حاسوب محمول",
+        mouse: "فأرة كمبيوتر",
+        remote: "جهاز تحكم",
+        keyboard: "لوحة مفاتيح",
+        cell_phone: "هاتف محمول",
+
+        microwave: "ميكروويف",
+        oven: "فرن",
+        toaster: "محمصة",
+        sink: "حوض",
+        refrigerator: "ثلاجة",
+
+        book: "كتاب",
+        clock: "ساعة",
+        vase: "مزهرية",
+        scissors: "مقص",
+        teddy_bear: "دب لعبة",
+        hair_drier: "مجفف شعر",
+        toothbrush: "فرشاة أسنان"
+    };
+
+
+    // =========================
+    // تحميل نموذج الذكاء الاصطناعي
+    // =========================
+
+    speakObject("جاري تجهيز نظام التعرف على الأشياء...");
+
+    try {
+
+        objectModel = await cocoSsd.load();
+
+        speakObject("تم تجهيز نظام التعرف على الأشياء.");
+
+    } catch (error) {
+
+        console.error(error);
+
+        speakObject(
+            "تعذر تحميل نظام التعرف على الأشياء. تأكد من الاتصال بالإنترنت."
+        );
+
+        return;
+    }
+
+
+    // =========================
+    // فتح الكاميرا
+    // =========================
+
+    if (!objectInput) {
+        console.error("لم يتم العثور على objCameraInput");
+        return;
+    }
+
+
+    objectInput.addEventListener("change", async function (event) {
+
+        const file = event.target.files[0];
+
+        if (!file) return;
+
+        speakObject(
+            "تم التقاط الصورة. جاري تحليل الأشياء الموجودة أمامك..."
+        );
+
+
+        try {
+
+            // إنشاء صورة من الملف
+            const image = new Image();
+
+            const imageURL = URL.createObjectURL(file);
+
+            image.src = imageURL;
+
+
+            await new Promise((resolve, reject) => {
+
+                image.onload = resolve;
+                image.onerror = reject;
+
+            });
+
+
+            // =========================
+            // التعرف الحقيقي
+            // =========================
+
+            const predictions = await objectModel.detect(image);
+
+
+            console.log("نتائج التعرف:", predictions);
+
+
+            // نأخذ فقط الأشياء ذات الثقة العالية
+            const validObjects = predictions.filter(item => {
+
+                return item.score >= 0.60;
+
+            });
+
+
+            // =========================
+            // لا يوجد شيء مؤكد
+            // =========================
+
+            if (validObjects.length === 0) {
+
+                speakObject(
+                    "لم أتعرف على أي شيء بدرجة ثقة كافية. حاول توجيه الكاميرا مباشرة نحو الشيء مع إضاءة جيدة."
+                );
+
+                URL.revokeObjectURL(imageURL);
+
+                // تصفير input للسماح بتصوير جديد
+                objectInput.value = "";
+
+                return;
+            }
+
+
+            // =========================
+            // ترتيب النتائج
+            // =========================
+
+            validObjects.sort((a, b) => b.score - a.score);
+
+
+            // نأخذ أعلى 3 أشياء فقط
+            const topObjects = validObjects.slice(0, 3);
+
+
+            // إزالة التكرار
+            const uniqueObjects = [];
+
+            topObjects.forEach(item => {
+
+                if (!uniqueObjects.includes(item.class)) {
+
+                    uniqueObjects.push(item.class);
+
+                }
+
+            });
+
+
+            // =========================
+            // تحويلها للعربية
+            // =========================
+
+            const arabicObjects = uniqueObjects.map(item => {
+
+                return objectNames[item] || null;
+
+            }).filter(Boolean);
+
+
+            // لو النموذج اكتشف شيئًا غير موجود في قاموسنا
+            if (arabicObjects.length === 0) {
+
+                speakObject(
+                    "تم اكتشاف عنصر، ولكن لم أتمكن من تحديد اسمه بالعربية."
+                );
+
+                URL.revokeObjectURL(imageURL);
+                objectInput.value = "";
+
+                return;
+            }
+
+
+            // =========================
+            // تكوين النتيجة
+            // =========================
+
+            let result;
+
+            if (arabicObjects.length === 1) {
+
+                result =
+                    "أمامك " + arabicObjects[0];
+
+            } else {
+
+                result =
+                    "أمامك " +
+                    arabicObjects.join(" و ");
+
+            }
+
+
+            // =========================
+            // النتيجة النهائية
+            // =========================
+
+            speakObject(result);
+
+
+            URL.revokeObjectURL(imageURL);
+
+            // السماح بالتقاط صورة جديدة
+            objectInput.value = "";
+
+
+        } catch (error) {
+
+            console.error(
+                "Object Recognition Error:",
+                error
+            );
+
+            speakObject(
+                "حدث خطأ أثناء تحليل الصورة. حاول مرة أخرى."
+            );
+
+            objectInput.value = "";
+
+        }
+
+    });
+
+});
+            </script>  
 </body>
 </html>
   
