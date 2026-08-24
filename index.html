@@ -140,7 +140,6 @@
 
     <h2>كيف يمكنني مساعدتك اليوم؟</h2>
 
-    <!-- زر الميكروفون الرئيسي -->
     <div class="mic-container">
         <button class="mic-btn" onclick="speakText('مرحباً بك في تطبيق بصير')">🎤</button>
     </div>
@@ -154,7 +153,7 @@
     <button id="captureBtn" class="capture-btn" onclick="captureAndReadText()">التقاط وقراءة النص 📸</button>
     <canvas id="canvas" style="display:none;"></canvas>
 
-    <!-- شبكة الأزرار الأصلية كاملة -->
+    <!-- شبكة الأزرار الكاملة -->
     <div class="grid-container">
         <button class="feature-btn btn-teal" onclick="triggerAction('الاتصال بمطوع', 'tel:01000000000', 'جاري الاتصال بالمطوع')">
             <span>📞</span><span>اتصل بمطوع</span>
@@ -162,11 +161,11 @@
         <button class="feature-btn btn-teal" onclick="startCamera()">
             <span>📄</span><span>قراءة النصوص</span>
         </button>
-        <button class="feature-btn btn-purple" onclick="triggerAction('التعرف على الأشياء', null, 'جاري تفعيل التعرف على الأشياء')">
+        <button class="feature-btn btn-purple" onclick="notifyUnderDevelopment('التعرف على الأشياء')">
             <span>📷</span><span>التعرف على الأشياء</span>
         </button>
 
-        <button class="feature-btn btn-purple" onclick="triggerAction('المساعد الصوتي', null, 'المساعد الصوتي جاهز')">
+        <button class="feature-btn btn-purple" onclick="notifyUnderDevelopment('المساعد الصوتي')">
             <span>🎧</span><span>المساعد الصوتي</span>
         </button>
         <button class="feature-btn btn-orange" onclick="startCamera()">
@@ -176,27 +175,27 @@
             <span>🧭</span><span>الملاحة والتنقل</span>
         </button>
 
-        <button class="feature-btn btn-blue" onclick="triggerAction('قراءة الباركود', null, 'جاري تشغيل قارئ الباركود')">
+        <button class="feature-btn btn-blue" onclick="notifyUnderDevelopment('قراءة الباركود')">
             <span>📊</span><span>قراءة الباركود</span>
         </button>
-        <button class="feature-btn btn-orange" onclick="triggerAction('التعلم والتعليم', null, 'قسم التعلم والتعليم')">
+        <button class="feature-btn btn-orange" onclick="notifyUnderDevelopment('التعلم والتعليم')">
             <span>🎓</span><span>التعلم والتعليم</span>
         </button>
-        <button class="feature-btn btn-teal" onclick="triggerAction('البحث الصوتي', null, 'جاري البحث الصوتي')">
+        <button class="feature-btn btn-teal" onclick="notifyUnderDevelopment('البحث الصوتي')">
             <span>🔍</span><span>البحث الصوتي</span>
         </button>
 
-        <button class="feature-btn btn-teal" onclick="triggerAction('التعرف على الوجوه', null, 'جاري التعرف على الوجوه')">
+        <button class="feature-btn btn-teal" onclick="notifyUnderDevelopment('التعرف على الوجوه')">
             <span>👤</span><span>التعرف على الوجوه</span>
         </button>
-        <button class="feature-btn btn-purple" onclick="triggerAction('التعرف على الألوان', null, 'جاري فحص الألوان')">
+        <button class="feature-btn btn-purple" onclick="notifyUnderDevelopment('التعرف على الألوان')">
             <span>🎨</span><span>التعرف على الألوان</span>
         </button>
-        <button class="feature-btn btn-blue" onclick="triggerAction('التعرف على العملات', null, 'جاري التعرف على العملات')">
+        <button class="feature-btn btn-blue" onclick="notifyUnderDevelopment('التعرف على العملات')">
             <span>🪙</span><span>التعرف على العملات</span>
         </button>
 
-        <button class="feature-btn btn-darkblue" onclick="triggerAction('سجل المعلومات', null, 'فتح سجل المعلومات')">
+        <button class="feature-btn btn-darkblue" onclick="notifyUnderDevelopment('سجل المعلومات')">
             <span>🕒</span><span>سجل المعلومات</span>
         </button>
         <button class="feature-btn btn-blue" onclick="getGPSLocation()">
@@ -209,7 +208,7 @@
 
     <!-- الصف الأخير -->
     <div class="bottom-grid">
-        <button class="feature-btn btn-darkblue" onclick="triggerAction('دعم بدون إنترنت', null, 'وضع عدم الاتصال مفعل')">
+        <button class="feature-btn btn-darkblue" onclick="notifyUnderDevelopment('دعم بدون إنترنت')">
             <span>⚡</span><span>دعم بدون إنترنت</span>
         </button>
         <button class="feature-btn btn-darkred" onclick="triggerAction('حالة الطوارئ', 'tel:123', 'جاري الاتصال بالطوارئ')">
@@ -217,8 +216,7 @@
         </button>
     </div>
 
-    <!-- صندوق عرض الحالات والنتائج -->
-    <div id="statusBox">أهلاً بك في تطبيق بصير. انقر على أي زر للبدء.</div>
+    <div id="statusBox">أهلاً بك في تطبيق بصير. زر قراءة النصوص والاتصال والموقع يعملون بكفاءة.</div>
 
     <script>
         let currentStream = null;
@@ -303,6 +301,12 @@
                 statusBox.innerText = "حدث خطأ أثناء معالجة الصورة.";
                 speakText("حدث خطأ في القراءة");
             });
+        }
+
+        function notifyUnderDevelopment(featureName) {
+            let msg = `خاصية ${featureName} قيد التطوير وسيتم تفعيلها قريباً`;
+            document.getElementById('statusBox').innerText = msg;
+            speakText(msg);
         }
 
         function triggerAction(name, link, speechMessage) {
