@@ -690,12 +690,1292 @@ function updateStatus(message) {
 
     if (box) {
         box.textContent = message;
+        
+    }// ============================================================
+// بصير - وحدة تشغيل الوظائف الأساسية
+// أضف هذا الجزء في نهاية app.js
+// لا يغيّر شكل الواجهة
+// ============================================================
+
+(function () {
+    "use strict";
+
+    // --------------------------------------------------------
+    // أدوات عامة
+    // --------------------------------------------------------
+
+    function say(message) {
+        if (typeof window.speak === "function") {
+            window.speak(message);
+        } else if ("speechSynthesis" in window) {
+            window.speechSynthesis.cancel();
+
+            const u = new SpeechSynthesisUtterance(message);
+            u.lang = "ar-EG";
+            u.rate = 0.9;
+
+            const voices = window.speechSynthesis.getVoices();
+            const arVoice = voices.find(v =>
+                v.lang && v.lang.toLowerCase().startsWith("ar")
+            );
+
+            if (arVoice) u.voice = arVoice;
+
+            window.speechSynthesis.speak(u);
+        }
+
+        const box = document.getElementById("status-box");
+        if (box) box.textContent = message;
     }
+
+    function showScreen(id, message) {
+        document.querySelectorAll(".screen").forEach(screen => {
+            screen.classList.remove("active");
+        });
+
+        const screen = document.getElementById(id);
+
+        if (screen) {
+            screen.classList.add("active");
+
+            if (message) {
+                say(message);
+            }
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+    }
+
+    function openCamera(id) {
+        const input = document.getElementById(id);
+
+        if (!input) {
+            say("هذه الخاصية غير متاحة حاليًا.");
+            return;
+        }
+
+        input.value = "";
+        input.click();
+    }
+
+    // --------------------------------------------------------
+    // التنقل بين جميع شاشات الواجهة الموجودة
+    // --------------------------------------------------------
+
+    document.querySelectorAll(".btn-card[data-target]").forEach(button => {
+
+        button.addEventListener("click", function () {
+
+            const target = this.getAttribute("data-target");
+            const name =
+                this.querySelector("span")?.textContent ||
+                "القسم المطلوب";
+
+            showScreen(target, "تم فتح " + name);
+        });
+
+    });
+
+    document.querySelectorAll(".back-btn[data-back]").forEach(button => {
+
+        button.addEventListener("click", function () {
+
+            showScreen("homeScreen", "تم الرجوع إلى القائمة الرئيسية.");
+
+        });
+
+    });
+
+    // --------------------------------------------------------
+    // زر الميكروفون / المساعد الصوتي
+    // --------------------------------------------------------
+
+    const micBtn = document.getElementById("micBtn");
+
+    if (micBtn) {
+
+        micBtn.addEventListener("click", function () {
+
+            if (
+                "SpeechRecognition" in window ||
+                "webkitSpeechRecognition" in window
+            ) {
+
+                const Recognition =
+                    window.SpeechRecognition ||
+                    window.webkitSpeechRecognition;
+
+                const recognition = new Recognition();
+
+                recognition.lang = "ar-EG";
+                recognition.continuous = false;
+                recognition.interimResults = false;
+
+                say("أنا أستمع إليك.");
+
+                recognition.onresult = function (event) {
+
+                    const text =
+                        event.results[0][0].transcript.trim();
+
+                    if (!text) {
+                        say("لم أسمع طلبك.");
+                        return;
+                    }
+
+                    say("قلت: " + text);
+
+                    handleVoiceCommand(text);
+                };
+
+                recognition.onerror = function () {
+                    say("تعذر تشغيل الميكروفون. تأكد من السماح باستخدام الميكروفون.");
+                };
+
+                try {
+                    recognition.start();
+                } catch (e) {
+                    say("الميكروفون مشغول حاليًا.");
+                }
+
+            } else {
+
+                say("التعرف الصوتي غير مدعوم في هذا المتصفح.");
+
+            }
+
+        });
+
+    }
+
+    // --------------------------------------------------------
+    // أوامر المساعد الصوتي
+    // --------------------------------------------------------
+
+    function handleVoiceCommand(text) {
+
+        const command = text.toLowerCase();
+
+        if (
+            command.includes("شيء") ||
+            command.includes("اشياء") ||
+            command.includes("الأشياء") ||
+            command.includes("حاجة") ||
+            command.includes("ما أمامي")
+        ) {
+
+            showScreen(
+                "objectScreen",
+                "جاري فتح التعرف على الأشياء."
+            );
+
+            setTimeout(() => {
+                openCamera("objCameraInput");
+            }, 700);
+
+            return;
+        }
+
+        if (
+            command.includes("نص") ||
+            command.includes("اقرأ") ||
+            command.includes("قراءة") ||
+            command.includes("مستند")
+        ) {
+
+            showScreen(
+                "ocrScreen",
+                "جاري فتح قارئ النصوص."
+            );
+
+            setTimeout(() => {
+                openCamera("ocrCameraInput");
+            }, 700);
+
+            return;
+        }
+
+        if (
+            command.includes("عملة") ||
+            command.includes("فلوس") ||
+            command.includes("نقود")
+        ) {
+
+            showScreen(
+                "moneyScreen",
+                "جاري فتح التعرف على العملات."
+            );
+
+            setTimeout(() => {
+                openCamera("moneyCameraInput");
+            }, 700);
+
+            return;
+        }
+
+        if (
+            command.includes("مساعد") ||
+            command.includes("متطوع") ||
+            command.includes("مساعدة")
+        ) {
+
+            showScreen(
+                "helpScreen",
+                "جاري فتح المساعدة البشرية."
+            );
+
+            return;
+        }
+
+        if (
+            command.includes("موقع") ||
+            command.includes("أنا فين") ||
+            command.includes("اين انا")
+        ) {
+
+            showScreen(
+                "navScreen",
+                "جاري فتح الملاحة."
+            );
+
+            setTimeout(() => {
+
+                const button =
+                    document.getElementById("whereAmIBtn");
+
+                if (button) button.click();
+
+            }, 700);
+
+            return;
+        }
+
+        say("لم أفهم الطلب. حاول أن تقول: اقرأ النص، تعرف على الأشياء، تعرف على العملة، أو أين أنا.");
+    }
+
+    // ========================================================
+    // 1 - قراءة النصوص OCR
+    // ========================================================
+
+    const ocrInput =
+        document.getElementById("ocrCameraInput");
+
+    if (ocrInput) {
+
+        ocrInput.addEventListener("change", async function () {
+
+            const file = this.files && this.files[0];
+
+            if (!file) return;
+
+            say("تم التقاط الصورة. جاري قراءة النص، يرجى الانتظار.");
+
+            try {
+
+                if (
+                    typeof Tesseract === "undefined"
+                ) {
+                    throw new Error("Tesseract غير متاح");
+                }
+
+                const imageURL =
+                    URL.createObjectURL(file);
+
+                const result =
+                    await Tesseract.recognize(
+                        imageURL,
+                        "ara+eng",
+                        {
+                            logger: function (info) {
+
+                                if (
+                                    info.status === "recognizing text" &&
+                                    typeof info.progress === "number"
+                                ) {
+
+                                    const percent =
+                                        Math.round(
+                                            info.progress * 100
+                                        );
+
+                                    const box =
+                                        document.getElementById(
+                                            "status-box"
+                                        );
+
+                                    if (box) {
+                                        box.textContent =
+                                            "جاري قراءة النص... " +
+                                            percent +
+                                            "%";
+                                    }
+                                }
+                            }
+                        }
+                    );
+
+                URL.revokeObjectURL(imageURL);
+
+                let text =
+                    result &&
+                    result.data &&
+                    result.data.text
+                        ? result.data.text.trim()
+                        : "";
+
+                text = cleanArabicOCR(text);
+
+                if (text.length > 0) {
+
+                    say("النص المقروء هو: " + text);
+
+                } else {
+
+                    say(
+                        "لم أجد نصًا واضحًا. حاول تصوير الورقة بإضاءة أفضل."
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "OCR ERROR:",
+                    error
+                );
+
+                say(
+                    "حدث خطأ أثناء قراءة النص. حاول التقاط الصورة مرة أخرى."
+                );
+            }
+
+        });
+
+    }
+
+    function cleanArabicOCR(text) {
+
+        return text
+            .replace(/\r?\n+/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+
+    }
+
+    // ========================================================
+    // 2 - التعرف الحقيقي على الأشياء
+    // باستخدام COCO-SSD
+    // ========================================================
+
+    let cocoModel = null;
+
+    const objectArabic = {
+
+        person: "شخص",
+        bicycle: "دراجة",
+        car: "سيارة",
+        motorcycle: "دراجة نارية",
+        airplane: "طائرة",
+        bus: "حافلة",
+        train: "قطار",
+        truck: "شاحنة",
+        boat: "قارب",
+
+        traffic_light: "إشارة مرور",
+        fire_hydrant: "صنبور إطفاء",
+        stop_sign: "علامة توقف",
+        parking_meter: "عداد انتظار",
+
+        bench: "مقعد",
+        bird: "طائر",
+        cat: "قطة",
+        dog: "كلب",
+        horse: "حصان",
+        sheep: "خروف",
+        cow: "بقرة",
+        elephant: "فيل",
+        bear: "دب",
+        zebra: "حمار وحشي",
+        giraffe: "زرافة",
+
+        backpack: "حقيبة ظهر",
+        umbrella: "مظلة",
+        handbag: "حقيبة يد",
+        tie: "ربطة عنق",
+        suitcase: "حقيبة سفر",
+
+        frisbee: "قرص طائر",
+        skis: "زلاجات",
+        snowboard: "لوح تزلج",
+        sports_ball: "كرة",
+        kite: "طائرة ورقية",
+        baseball_bat: "مضرب بيسبول",
+        baseball_glove: "قفاز رياضي",
+        skateboard: "لوح تزلج",
+
+        bottle: "زجاجة",
+        wine_glass: "كأس",
+        cup: "كوب",
+        fork: "شوكة",
+        knife: "سكين",
+        spoon: "ملعقة",
+        bowl: "وعاء",
+
+        banana: "موزة",
+        apple: "تفاحة",
+        sandwich: "شطيرة",
+        orange: "برتقالة",
+        broccoli: "بروكلي",
+        carrot: "جزرة",
+        pizza: "بيتزا",
+        donut: "دونات",
+        cake: "كعكة",
+
+        chair: "كرسي",
+        couch: "أريكة",
+        potted_plant: "نبات",
+        bed: "سرير",
+        dining_table: "طاولة طعام",
+        toilet: "مرحاض",
+        tv: "تلفاز",
+        laptop: "حاسوب محمول",
+        mouse: "فأرة حاسوب",
+        remote: "جهاز تحكم",
+        keyboard: "لوحة مفاتيح",
+        cell_phone: "هاتف محمول",
+        microwave: "ميكروويف",
+        oven: "فرن",
+        toaster: "محمصة",
+        sink: "حوض",
+        refrigerator: "ثلاجة",
+        book: "كتاب",
+        clock: "ساعة",
+        vase: "مزهرية",
+        scissors: "مقص",
+        teddy_bear: "دب لعبة",
+        hair_drier: "مجفف شعر",
+        toothbrush: "فرشاة أسنان"
+    };
+
+    async function loadObjectModel() {
+
+        if (cocoModel) {
+            return cocoModel;
+        }
+
+        if (typeof cocoSsd === "undefined") {
+
+            await loadScript(
+                "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"
+            );
+
+            await loadScript(
+                "https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"
+            );
+        }
+
+        cocoModel =
+            await cocoSsd.load();
+
+        return cocoModel;
+    }
+
+    function loadScript(src) {
+
+        return new Promise((resolve, reject) => {
+
+            const script =
+                document.createElement("script");
+
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+
+            document.head.appendChild(script);
+
+        });
+    }
+
+    async function recognizeObjects(file) {
+
+        try {
+
+            const model =
+                await loadObjectModel();
+
+            const image =
+                await createImageFromFile(file);
+
+            const predictions =
+                await model.detect(image);
+
+            if (!predictions.length) {
+
+                say(
+                    "لم أتمكن من التعرف على شيء واضح في الصورة."
+                );
+
+                return;
+            }
+
+            const detected =
+                predictions
+                    .filter(item => item.score >= 0.40)
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, 6);
+
+            if (!detected.length) {
+
+                say(
+                    "المشهد غير واضح. حاول التصوير من مسافة أقرب."
+                );
+
+                return;
+            }
+
+            const names =
+                detected.map(item => {
+
+                    const key =
+                        item.class.toLowerCase();
+
+                    return (
+                        objectArabic[key] ||
+                        item.class
+                    );
+
+                });
+
+            const unique =
+                [...new Set(names)];
+
+            say(
+                "تعرفت على: " +
+                unique.join("، ")
+            );
+
+        } catch (error) {
+
+            console.error(
+                "OBJECT ERROR:",
+                error
+            );
+
+            say(
+                "حدث خطأ أثناء التعرف على الأشياء. تأكد من الاتصال بالإنترنت وحاول مرة أخرى."
+            );
+        }
+    }
+
+    function createImageFromFile(file) {
+
+        return new Promise((resolve, reject) => {
+
+            const image = new Image();
+
+            const url =
+                URL.createObjectURL(file);
+
+            image.onload = function () {
+
+                URL.revokeObjectURL(url);
+
+                resolve(image);
+            };
+
+            image.onerror = reject;
+
+            image.src = url;
+        });
+    }
+
+    const objectInput =
+        document.getElementById("objCameraInput");
+
+    if (objectInput) {
+
+        objectInput.addEventListener(
+            "change",
+            async function () {
+
+                const file =
+                    this.files && this.files[0];
+
+                if (!file) return;
+
+                say(
+                    "تم التقاط الصورة. جاري التعرف على الأشياء بالذكاء الاصطناعي."
+                );
+
+                await recognizeObjects(file);
+
+            }
+        );
+    }
+
+    // ========================================================
+    // 3 - العملات
+    // ========================================================
+
+    const moneyInput =
+        document.getElementById("moneyCameraInput");
+
+    if (moneyInput) {
+
+        moneyInput.addEventListener(
+            "change",
+            async function () {
+
+                const file =
+                    this.files && this.files[0];
+
+                if (!file) return;
+
+                say(
+                    "جاري تحليل صورة العملة."
+                );
+
+                /*
+                 * مهم:
+                 * COCO-SSD وViT العام لا يستطيعان تحديد فئة
+                 * الجنيه المصري بشكل موثوق.
+                 *
+                 * لذلك لا سنقول للمستخدم قيمة وهمية.
+                 */
+
+                try {
+
+                    const result =
+                        await analyzeMoneyWithServer(file);
+
+                    if (result) {
+
+                        say(
+                            "العملة: " + result
+                        );
+
+                    } else {
+
+                        say(
+                            "لم أستطع تحديد فئة العملة بدقة. صوّر الورقة النقدية كاملة وبإضاءة جيدة."
+                        );
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        "MONEY ERROR:",
+                        error
+                    );
+
+                    say(
+                        "التعرف على فئة العملة يحتاج إلى نموذج متخصص بالعملات المصرية."
+                    );
+                }
+
+            }
+        );
+    }
+
+    async function analyzeMoneyWithServer(file) {
+
+        /*
+         * إذا كان لديك Backend في /api/vision
+         * سيتم استخدامه.
+         */
+
+        try {
+
+            const base64 =
+                await fileToBase64(file);
+
+            const response =
+                await fetch(
+                    "/api/vision",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+                        body: JSON.stringify({
+                            image: base64,
+                            task: "egyptian_currency"
+                        })
+                    }
+                );
+
+            if (!response.ok) {
+                return null;
+            }
+
+            const data =
+                await response.json();
+
+            if (
+                data &&
+                data.success &&
+                data.result
+            ) {
+
+                return data.result;
+            }
+
+        } catch (error) {
+
+            return null;
+
+        }
+
+        return null;
+    }
+
+    // ========================================================
+    // 4 - المساعدة البشرية
+    // ========================================================
+
+    const volunteerButton =
+        document.getElementById(
+            "callVolunteerDirect"
+        );
+
+    if (volunteerButton) {
+
+        volunteerButton.addEventListener(
+            "click",
+            function () {
+
+                say(
+                    "جاري الاتصال بالمساعد."
+                );
+
+                setTimeout(() => {
+
+                    window.location.href =
+                        "tel:122";
+
+                }, 700);
+
+            }
+        );
+    }
+
+    // ========================================================
+    // 5 - الموقع
+    // ========================================================
+
+    const locationButton =
+        document.getElementById(
+            "whereAmIBtn"
+        );
+
+    if (locationButton) {
+
+        locationButton.addEventListener(
+            "click",
+            function () {
+
+                if (!navigator.geolocation) {
+
+                    say(
+                        "خدمة تحديد الموقع غير مدعومة."
+                    );
+
+                    return;
+                }
+
+                say(
+                    "جاري تحديد موقعك الحالي."
+                );
+
+                navigator.geolocation.getCurrentPosition(
+
+                    function (position) {
+
+                        const lat =
+                            position.coords.latitude
+                                .toFixed(5);
+
+                        const lon =
+                            position.coords.longitude
+                                .toFixed(5);
+
+                        say(
+                            `موقعك الحالي هو خط عرض ${lat} وخط طول ${lon}.`
+                        );
+
+                    },
+
+                    function () {
+
+                        say(
+                            "تعذر تحديد موقعك. اسمح للمتصفح باستخدام الموقع وشغل نظام تحديد المواقع."
+                        );
+
+                    },
+
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 15000,
+                        maximumAge: 0
+                    }
+                );
+
+            }
+        );
+    }
+
+    // ========================================================
+    // 6 - مشاركة الموقع
+    // ========================================================
+
+    function shareLocation() {
+
+        if (!navigator.geolocation) {
+
+            say(
+                "خدمة الموقع غير متاحة."
+            );
+
+            return;
+        }
+
+        say(
+            "جاري تجهيز موقعك للمشاركة."
+        );
+
+        navigator.geolocation.getCurrentPosition(
+
+            async function (position) {
+
+                const lat =
+                    position.coords.latitude;
+
+                const lon =
+                    position.coords.longitude;
+
+                const mapURL =
+                    `https://www.google.com/maps?q=${lat},${lon}`;
+
+                if (
+                    navigator.share
+                ) {
+
+                    try {
+
+                        await navigator.share({
+                            title: "موقعي الحالي",
+                            text: "هذا موقعي الحالي من تطبيق بصير",
+                            url: mapURL
+                        });
+
+                        say(
+                            "تم فتح خيارات مشاركة الموقع."
+                        );
+
+                    } catch (e) {
+
+                        say(
+                            "تم إلغاء المشاركة."
+                        );
+                    }
+
+                } else {
+
+                    try {
+
+                        await navigator.clipboard.writeText(
+                            mapURL
+                        );
+
+                        say(
+                            "تم نسخ رابط موقعك."
+                        );
+
+                    } catch (e) {
+
+                        say(
+                            "تعذر مشاركة الموقع من هذا الجهاز."
+                        );
+                    }
+                }
+            },
+
+            function () {
+
+                say(
+                    "تعذر الحصول على الموقع."
+                );
+
+            },
+
+            {
+                enableHighAccuracy: true,
+                timeout: 15000
+            }
+        );
+    }
+
+    // --------------------------------------------------------
+    // إذا تم الضغط على بطاقة مشاركة موقعي
+    // --------------------------------------------------------
+
+    document.querySelectorAll(".btn-card").forEach(button => {
+
+        const text =
+            button.querySelector("span")?.textContent || "";
+
+        if (text.includes("مشاركة موقعي")) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    setTimeout(
+                        shareLocation,
+                        500
+                    );
+
+                }
+            );
+        }
+
+    });
+
+    // ========================================================
+    // 7 - زر الطوارئ
+    // ========================================================
+
+    const emergency =
+        document.getElementById(
+            "emergencyBtn"
+        );
+
+    if (emergency) {
+
+        emergency.addEventListener(
+            "click",
+            function () {
+
+                say(
+                    "تنبيه طوارئ. هل تريد الاتصال بالطوارئ؟"
+                );
+
+                setTimeout(() => {
+
+                    const confirmed =
+                        confirm(
+                            "هل تريد الاتصال بالطوارئ؟"
+                        );
+
+                    if (confirmed) {
+
+                        window.location.href =
+                            "tel:122";
+                    }
+
+                }, 500);
+
+            }
+        );
+    }
+
+    // ========================================================
+    // 8 - دعم بدون إنترنت
+    // ========================================================
+
+    const offline =
+        document.getElementById(
+            "offlineBtn"
+        );
+
+    if (offline) {
+
+        offline.addEventListener(
+            "click",
+            function () {
+
+                if (navigator.onLine) {
+
+                    say(
+                        "أنت متصل بالإنترنت. بعض وظائف بصير يمكنها العمل الآن."
+                    );
+
+                } else {
+
+                    say(
+                        "أنت تعمل الآن بدون إنترنت. الوظائف التي تعتمد على الذكاء الاصطناعي السحابي قد لا تعمل."
+                    );
+
+                }
+
+            }
+        );
+    }
+
+    // ========================================================
+    // 9 - زر الإشعارات
+    // ========================================================
+
+    const notification =
+        document.getElementById(
+            "notifBtn"
+        );
+
+    if (notification) {
+
+        notification.addEventListener(
+            "click",
+            function () {
+
+                say(
+                    "لا توجد إشعارات جديدة."
+                );
+
+            }
+        );
+    }
+
+    // ========================================================
+    // 10 - زر القائمة
+    // ========================================================
+
+    const menu =
+        document.getElementById(
+            "menuBtn"
+        );
+
+    if (menu) {
+
+        menu.addEventListener(
+            "click",
+            function () {
+
+                say(
+                    "أنت في القائمة الرئيسية. اختر الوظيفة التي تريد استخدامها."
+                );
+
+            }
+        );
+    }
+
+    // ========================================================
+    // 11 - المكتبة والمساعد الصوتي
+    // ========================================================
+
+    document.querySelectorAll(
+        '[data-target="libScreen"]'
+    ).forEach(button => {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                setTimeout(() => {
+
+                    say(
+                        "هذا القسم مخصص للكتب والمستندات والمساعد الصوتي والبحث الصوتي."
+                    );
+
+                }, 300);
+
+            }
+        );
+
+    });
+
+    // ========================================================
+    // 12 - التعليم
+    // ========================================================
+
+    document.querySelectorAll(
+        '[data-target="eduScreen"]'
+    ).forEach(button => {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                setTimeout(() => {
+
+                    say(
+                        "تم فتح قسم التعلم والتعليم."
+                    );
+
+                }, 300);
+
+            }
+        );
+
+    });
+
+    // ========================================================
+    // 13 - سجل المعلومات
+    // ========================================================
+
+    document.querySelectorAll(
+        '[data-target="settingsScreen"]'
+    ).forEach(button => {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                setTimeout(() => {
+
+                    say(
+                        "تم فتح سجل المعلومات."
+                    );
+
+                }, 300);
+
+            }
+        );
+
+    });
+
+    // ========================================================
+    // 14 - التعرف على اللون
+    // ملاحظة: HTML الحالي لا يحتوي على colorCameraInput
+    // لذلك لا نغيّر الواجهة.
+    // ========================================================
+
+    document.querySelectorAll(
+        '[data-target="colorScreen"]'
+    ).forEach(button => {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                setTimeout(() => {
+
+                    say(
+                        "تم فتح التعرف على الألوان. تحتاج هذه الوظيفة إلى كاميرا مخصصة داخل هذه الشاشة."
+                    );
+
+                }, 300);
+
+            }
+        );
+
+    });
+
+    // ========================================================
+    // 15 - التاريخ والوقت
+    // يمكن استدعاؤها من المساعد الصوتي
+    // ========================================================
+
+    function tellDateTime() {
+
+        const now =
+            new Date();
+
+        const date =
+            now.toLocaleDateString(
+                "ar-EG",
+                {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric"
+                }
+            );
+
+        const time =
+            now.toLocaleTimeString(
+                "ar-EG"
+            );
+
+        say(
+            `اليوم ${date} والساعة الآن ${time}.`
+        );
+    }
+
+    // ========================================================
+    // 16 - الاتصال بالإنترنت
+    // ========================================================
+
+    window.addEventListener(
+        "online",
+        function () {
+
+            say(
+                "تم الاتصال بالإنترنت."
+            );
+
+        }
+    );
+
+    window.addEventListener(
+        "offline",
+        function () {
+
+            say(
+                "تم فقد الاتصال بالإنترنت."
+            );
+
+        }
+    );
+
+    // ========================================================
+    // 17 - تحويل الملف إلى Base64
+    // ========================================================
+
+    function fileToBase64(file) {
+
+        return new Promise(
+            (resolve, reject) => {
+
+                const reader =
+                    new FileReader();
+
+                reader.onload =
+                    () => resolve(
+                        reader.result
+                    );
+
+                reader.onerror =
+                    reject;
+
+                reader.readAsDataURL(file);
+
+            }
+        );
+    }
+
+    // جعل بعض الوظائف متاحة للتطبيق
+    window.BASER = {
+
+        speak: say,
+        openScreen: showScreen,
+        openCamera: openCamera,
+        recognizeObjects: recognizeObjects,
+        shareLocation: shareLocation,
+        tellDateTime: tellDateTime
+
+    };
+
+    // ========================================================
+    // رسالة تشغيل
+    // ========================================================
+
+    setTimeout(
+        function () {
+
+            say(
+                "تم تشغيل نظام بصير. يمكنك اختيار أي وظيفة من الشاشة."
+            );
+
+        },
+        1000
+    );
+
+})();
 }
-// تفعيل زر المساعد الصوتي المركزي
-document.getElementById('voiceAssistantBtn').addEventListener('click', function() {
-    alert('تم تفعيل المساعد الصوتي!');
-    // هنا تقدر تضيف كود الصوت أو الـ Speech Recognition الخاص بك
 });
 
 // تفعيل زر التعرف على الأشياء
