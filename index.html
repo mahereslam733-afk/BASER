@@ -572,27 +572,6 @@
             });
         }
 
-        // 2. التعرف على المشهد والأشياء المحيطة
-        const objInput = document.getElementById('objCameraInput');
-        if (objInput) {
-            objInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                speak("جاري فحص المشهد والتعرف على العناصر الموجودة أمامك...");
-                
-                setTimeout(() => {
-                    const randomScenes = [
-                        "يوجد أمامك مكتب خشبي عليه شاشة حاسوب وبعض الملفات.",
-                        "المشهد يظهر غرفة إضاءتها جيدة، وتضم مقعداً ومتبوعاً بكتب.",
-                        "يوجد أمامك باب مغلق، وعلى الجانب الأيمن يوجد مقبض الحائط.",
-                        "أمامك الآن طاولة مرتبة وعليها بعض الأدوات المكتبية."
-                    ];
-                    const selectedScene = randomScenes[Math.floor(Math.random() * randomScenes.length)];
-                    speak("وصف المشهد: " + selectedScene);
-                }, 2500);
-            });
-        }
 
         // التعرف على العملات
         const moneyInput = document.getElementById('moneyCameraInput');
