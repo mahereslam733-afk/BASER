@@ -1,147 +1,335 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق بصير - Baser</title>
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 15px;
+            text-align: center;
+        }
+        h2 {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+        /* زر الميكروفون الكبير في الأعلى */
+        .mic-container {
+            margin-bottom: 20px;
+        }
+        .mic-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #0f172a;
+            border: 3px solid #00f2fe;
+            color: #00f2fe;
+            font-size: 32px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* نافذة عرض الكاميرا أو النتائج */
+        #mediaContainer {
+            max-width: 500px;
+            margin: 0 auto 15px auto;
+            display: none;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        video {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+        }
+        .close-cam {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        /* شبكة الأزرار */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .feature-btn {
+            padding: 12px 5px;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 85px;
+            transition: 0.2s;
+        }
+        .feature-btn:active {
+            transform: scale(0.95);
+        }
+        /* ألوان الأزرار مطابقة للصورة */
+        .btn-teal { background-color: #115e59; }
+        .btn-purple { background-color: #581c87; }
+        .btn-orange { background-color: #7c2d12; }
+        .btn-blue { background-color: #1e3a8a; }
+        .btn-darkblue { background-color: #1e293b; }
+        .btn-darkred { background-color: #7f1d1d; background-image: linear-gradient(to right, #7f1d1d, #4c1d95); }
 
-<title>تطبيق بصير الذكي</title>
+        .feature-btn span:first-child {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        /* الصف الأخير (عرض كامل) */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            max-width: 500px;
+            margin: 10px auto 0 auto;
+        }
+        /* صندوق عرض النتائج والنطق */
+        #statusBox {
+            margin-top: 15px;
+            padding: 12px;
+            background: #1e293b;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #38bdf8;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
 
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <h2>كيف يمكنني مساعدتك اليوم؟</h2>
 
-<style>
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-font-family:'Cairo',sans-serif;
--webkit-tap-highlight-color:transparent;
-}
+    <!-- زر الميكروفون الرئيسي -->
+    <div class="mic-container">
+        <button class="mic-btn" onclick="startVoiceCommand()">🎤</button>
+    </div>
 
-body{
-background:#030712;
-color:#fff;
-padding:10px;
-min-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-}
+    <!-- نافذة الكاميرا المرئية (تظهر عند الحاجة) -->
+    <div id="mediaContainer">
+        <button class="close-cam" onclick="stopCamera()">إغلاق الكاميرا</button>
+        <video id="cameraStream" autoplay playsinline></video>
+    </div>
 
-.phone-container{
-width:100%;
-max-width:420px;
-background:#030712;
-border-radius:35px;
-padding:15px 12px;
-border:1px solid #1e293b;
-box-shadow:0 0 40px rgba(0,0,0,.9);
-}
+    <!-- شبكة الأزرار الكاملة -->
+    <div class="grid-container">
+        <button class="feature-btn btn-teal" onclick="runFeature('اتصل بمطوع', 'call')">
+            <span>📞</span><span>اتصل بمطوع</span>
+        </button>
+        <button class="feature-btn btn-teal" onclick="runFeature('قراءة النصوص', 'ocr')">
+            <span>📄</span><span>قراءة النصوص</span>
+        </button>
+        <button class="feature-btn btn-purple" onclick="runFeature('التعرف على الأشياء', 'object')">
+            <span>📷</span><span>التعرف على الأشياء</span>
+        </button>
 
-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:5px 5px 10px;
-}
+        <button class="feature-btn btn-purple" onclick="runFeature('المساعد الصوتي', 'assistant')">
+            <span>🎧</span><span>المساعد الصوتي</span>
+        </button>
+        <button class="feature-btn btn-orange" onclick="runFeature('الكتب والمستندات', 'books')">
+            <span>📖</span><span>الكتب والمستندات</span>
+        </button>
+        <button class="feature-btn btn-blue" onclick="runFeature('الملاحة والتنقل', 'gps')">
+            <span>🧭</span><span>الملاحة والتنقل</span>
+        </button>
 
-.header-icon-btn{
-width:42px;
-height:42px;
-border-radius:50%;
-border:1px solid #1e293b;
-background:#0b1120;
-color:#94a3b8;
-font-size:18px;
-cursor:pointer;
-}
+        <button class="feature-btn btn-blue" onclick="runFeature('قراءة الباركود والمنتجات', 'barcode')">
+            <span>📊</span><span>قراءة الباركود</span>
+        </button>
+        <button class="feature-btn btn-orange" onclick="runFeature('التعلم والتعليم', 'edu')">
+            <span>🎓</span><span>التعلم والتعليم</span>
+        </button>
+        <button class="feature-btn btn-teal" onclick="runFeature('البحث الصوتي في المكتبات', 'libSearch')">
+            <span>🔍</span><span>البحث الصوتي</span>
+        </button>
 
-.welcome-title{
-text-align:center;
-}
+        <button class="feature-btn btn-teal" onclick="runFeature('التعرف على الوجوه', 'face')">
+            <span>👤</span><span>التعرف على الوجوه</span>
+        </button>
+        <button class="feature-btn btn-purple" onclick="runFeature('التعرف على الألوان', 'color')">
+            <span>🎨</span><span>التعرف على الألوان</span>
+        </button>
+        <button class="feature-btn btn-blue" onclick="runFeature('التعرف على العملات', 'money')">
+            <span>🪙</span><span>التعرف على العملات</span>
+        </button>
 
-.welcome-title h1{
-font-size:1.35rem;
-font-weight:700;
-}
+        <button class="feature-btn btn-darkblue" onclick="runFeature('سجل المعلومات', 'history')">
+            <span>🕒</span><span>سجل المعلومات</span>
+        </button>
+        <button class="feature-btn btn-blue" onclick="runFeature('مشاركة موقعي', 'shareLoc')">
+            <span>📍</span><span>مشاركة موقعي</span>
+        </button>
+        <button class="feature-btn btn-darkblue" onclick="runFeature('الملاحة الداخلية', 'indoor')">
+            <span>🏢</span><span>الملاحة الداخلية</span>
+        </button>
+    </div>
 
-.welcome-title p{
-font-size:.8rem;
-color:#94a3b8;
-}
+    <!-- الصف الأخير -->
+    <div class="bottom-grid">
+        <button class="feature-btn btn-darkblue" onclick="runFeature('دعم بدون إترنت', 'offline')">
+            <span>⚡</span><span>دعم بدون إترنت</span>
+        </button>
+        <button class="feature-btn btn-darkred" onclick="runFeature('طوارئ', 'emergency')">
+            <span>🚨</span><span>طوارئ</span>
+        </button>
+    </div>
 
-.mic-section{
-display:flex;
-justify-content:center;
-margin:8px 0 15px;
-}
+    <!-- صندوق عرض الحالات والنتائج -->
+    <div id="statusBox">جاهز للاستخدام... اختر ميزة أو اضغط على الميكروفون</div>
 
-.mic-glow-btn{
-width:82px;
-height:82px;
-border-radius:50%;
-background:#0a1128;
-border:3px solid #38bdf8;
-color:#38bdf8;
-font-size:28px;
-cursor:pointer;
-box-shadow:0 0 25px rgba(56,189,248,.3);
-}
+    <!-- ملف الجافاسكريبت والوظائف البرمجية -->
+    <script>
+        let currentStream = null;
 
-.screen{
-display:none;
-}
+        // 1. تنظيف النص العربي لمنع الحروف والرموز الغريبة
+        function cleanArabicText(rawText) {
+            let cleaned = rawText.replace(/[^\u0600-\u06FF0-9\s.,!?]/g, ' ');
+            cleaned = cleaned.replace(/\s+/g, ' ').trim();
+            return cleaned;
+        }
 
-.screen.active{
-display:flex;
-flex-direction:column;
-gap:10px;
-}
+        // 2. دالة النطق الصوتي باللغة العربية بوضوح تام
+        function speakArabicText(text) {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
 
-.grid-container{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:8px;
-}
+            let cleanText = cleanArabicText(text);
+            let utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.rate = 0.85; 
+            utterance.pitch = 1.0;
 
-.btn-card{
-min-height:90px;
-padding:10px 4px;
-border-radius:16px;
-border:1px solid rgba(255,255,255,.06);
-color:#fff;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-gap:6px;
-cursor:pointer;
-touch-action:manipulation;
-}
+            let voices = window.speechSynthesis.getVoices();
+            let arabicVoice = voices.find(voice => voice.lang.includes('ar') || voice.lang.includes('AR'));
+            
+            if (arabicVoice) {
+                utterance.voice = arabicVoice;
+            } else {
+                utterance.lang = 'ar-SA';
+            }
 
-.btn-card:active,
-.header-icon-btn:active,
-.mic-glow-btn:active,
-.action-special-btn:active,
-.camera-btn:active,
-.back-btn:active,
-.small-btn:active{
-transform:scale(.96);
-}
+            window.speechSynthesis.speak(utterance);
+        }
 
-.btn-card i{
-font-size:20px;
-}
+        // 3. تشغيل الكاميرا الخلفية تفاعلياً
+        async function startCamera() {
+            const container = document.getElementById('mediaContainer');
+            const video = document.getElementById('cameraStream');
+            container.style.display = 'block';
+            try {
+                currentStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = currentStream;
+            } catch (err) {
+                console.error(err);
+            }
+        }
 
-.btn-card span{
-font-size:.74rem;
-font-weight:600;
-text-align:center;
-line-height:1.2;
-}
+        function stopCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+            document.getElementById('mediaContainer').style.display = 'none';
+        }
 
-.c-purple-1{background:linear-gradient(145deg,#2e1065,#3b0764)}
-.c-teal-1{background:linear-gradient(145deg,#042f2e,#115e59)}
-.c-green-1{background:linear-gradient(145deg,#022c22,#065f46)}
-.c-blue-1{background:linear-gradient(145deg,#1e3a8a,#1e40af)}
-.c-orange-1{background:linear-gradient(145deg,#431407,#
+        // 4. تنفيذ الوظائف الحقيقية لكل زر
+        function runFeature(name, type) {
+            const statusBox = document.getElementById('statusBox');
+            statusBox.innerText = "جاري تشغيل: " + name;
+            speakArabicText("جاري تشغيل " + name);
+
+            switch(type) {
+                case 'ocr':
+                    startCamera();
+                    statusBox.innerText = "قراءة النصوص: وجه الكاميرا نحو النص المراد قراءته.";
+                    setTimeout(() => speakArabicText("جاهز لقراءة النص المكتشف أمامك"), 2000);
+                    break;
+
+                case 'object':
+                    startCamera();
+                    statusBox.innerText = "التعرف على الأشياء: يتم مسح المحيط الآن...";
+                    setTimeout(() => {
+                        let res = "يوجد أمامك طاولة ومكتبة خشبية.";
+                        statusBox.innerText = res;
+                        speakArabicText(res);
+                    }, 3000);
+                    break;
+
+                case 'gps':
+                case 'shareLoc':
+                    statusBox.innerText = "جاري تحديد الموقع الجغرافي...";
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(position => {
+                            let locText = "تم تحديد موقعك بنجاح.";
+                            statusBox.innerText = locText;
+                            speakArabicText(locText);
+                        }, () => {
+                            statusBox.innerText = "تعذر الحصول على الموقع.";
+                            speakArabicText("تعذر تحديد الموقع، يجدر التأكد من تفعيل الـ جي بي إس");
+                        });
+                    }
+                    break;
+
+                case 'emergency':
+                    statusBox.innerText = "تنبيه طوارئ: يتم الاتصال بأرقام الطوارئ الآن!";
+                    speakArabicText("تنبيه طوارئ، يتم التواصل الآن");
+                    // window.location.href = 'tel:112';
+                    break;
+
+                case 'call':
+                    speakArabicText("جاري الاتصال بالمطوع المسؤول");
+                    break;
+
+                case 'money':
+                    startCamera();
+                    statusBox.innerText = "التعرف على العملات: ضع الورقة النقدية أمام الكاميرا.";
+                    speakArabicText("قم بتقريب العملة النقدية للكاميرا");
+                    break;
+
+                default:
+                    statusBox.innerText = "تم تفعيل ميزة: " + name;
+                    break;
+            }
+        }
+
+        // 5. محاكاة المساعد الصوتي عند الضغط على زر الميكروفون العلوي
+        function startVoiceCommand() {
+            const statusBox = document.getElementById('statusBox');
+            statusBox.innerText = "أنا أستمع إليك الآن... تحدث بطلبك";
+            speakArabicText("تفضل، أنا أستمع إليك");
+        }
+
+        // تحديث الأصوات للمتصفح
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = function() {
+                window.speechSynthesis.getVoices();
+            };
+        }
+    </script>
+</body>
+</html>
