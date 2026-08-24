@@ -622,6 +622,43 @@
         }
     });
 </script>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>تطبيق بصير</title>
+</head>
+<body>
+
+    <!-- محتوى الصفحة هنا -->
+
+    <script>
+        // 1. دالة تنظيف النص العربي لمنع الحروف والرموز الغريبة
+        function cleanArabicText(rawText) {
+            let cleaned = rawText.replace(/[^\u0600-\u06FF0-9\s.,!?]/g, '');
+            cleaned = cleaned.replace(/\s+/g, ' ').trim();
+            return cleaned;
+        }
+
+        // 2. دالة قراءة النص بوضوح باللغة العربية
+        function speakArabicText(text) {
+            let cleanText = cleanArabicText(text);
+            
+            let utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'ar-SA'; // أو 'ar-EG' للغة العربية المصرية
+            utterance.rate = 0.9;     // سرعة بطيئة وواضحة
+            utterance.pitch = 1.0;    // نبرة طبيعية
+            
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // مثال على الاستخدام: عند حصولك على النص من الكاميرا أو الـ OCR، استدعِ الدالة هكذا:
+        // let textFromOCR = "النص المستخرج من الصورة...";
+        // speakArabicText(textFromOCR);
+    </script>
+</body>
+</html>
+    
 
 </body>
 </html>
