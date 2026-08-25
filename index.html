@@ -157,17 +157,17 @@
         <button class="feature-btn btn-teal" onclick="triggerAction('الاتصال بمطوع', 'tel:01000000000', 'جاري الاتصال بالمطوع')">
             <span>📞</span><span>اتصل بمطوع</span>
         </button>
-        <button class="feature-btn btn-teal" onclick="startCameraForAI('قراءة النصوص الموجودة في الصورة بدقة، وذكر النص حرفياً إن وجد.')">
+        <button class="feature-btn btn-teal" onclick="startCameraForAI('اقرأ النصوص الموجودة في الصورة بدقة بالغة وذكر النص حرفياً إن وجد باللغة العربية.')">
             <span>📄</span><span>قراءة النصوص</span>
         </button>
-        <button class="feature-btn btn-purple" onclick="startCameraForAI('صف لي ما يوجد في هذا المشهد بشكل دقيق ومفيد لشخص مكفوف.')">
+        <button class="feature-btn btn-purple" onclick="startCameraForAI('صف لي ما يوجد في هذا المشهد بشكل دقيق ومفيد جداً لشخص مكفوف باللغة العربية.')">
             <span>📷</span><span>التعرف على الأشياء</span>
         </button>
 
         <button class="feature-btn btn-purple" onclick="notifyUnderDevelopment('المساعد الصوتي')">
             <span>🎧</span><span>المساعد الصوتي</span>
         </button>
-        <button class="feature-btn btn-orange" onclick="startCameraForAI('اقرأ لي محتوى الكتاب الظاهر في الصورة بدقة.')">
+        <button class="feature-btn btn-orange" onclick="startCameraForAI('اقرأ لي محتوى الكتاب أو المستند الظاهر في الصورة بدقة.')">
             <span>📖</span><span>الكتب والمستندات</span>
         </button>
         <button class="feature-btn btn-blue" onclick="getGPSLocation()">
@@ -206,7 +206,7 @@
     </div>
 
     <div class="bottom-grid">
-        <button class="feature-btn btn-darkblue" onclick="notifyUnderDevelopment('دعم بدون الإنترنت')">
+        <button class="feature-btn btn-darkblue" onclick="notifyUnderDevelopment('دعم بدون إنترنت')">
             <span>⚡</span><span>دعم بدون إنترنت</span>
         </button>
         <button class="feature-btn btn-darkred" onclick="triggerAction('حالة الطوارئ', 'tel:123', 'جاري الاتصال بالطوارئ')">
@@ -220,8 +220,8 @@
         let currentStream = null;
         let currentPrompt = "صف لي ما يوجد في هذا المشهد بشكل دقيق لشخص مكفوف.";
         
-        // المفتاح الحقيقي مدمج هنا بدقة واحترافية
-        const GEMINI_API_KEY = "AQ.Ab8RN6JnrvtQcVzi6PPHobCFv56kqv..."; 
+        // مفتاحك الحقيقي والمكتمل مدمج هنا بدقة
+        const GEMINI_API_KEY = "AQ.Ab8RN6JnrvtQcVzi6PPHobCFv56kqvE_8LXVtmARZZcRABPk6w"; 
 
         function speakText(text) {
             if (!('speechSynthesis' in window)) return;
@@ -269,7 +269,7 @@
             speakText("تم إغلاق الكاميرا");
         }
 
-        // دالة الاتصال المباشر بنموذج Google Gemini الحقيقي
+        // دالة الاتصال المباشر بنموذج Google Gemini مع مفتاحك الجديد
         async function analyzeWithAI() {
             const video = document.getElementById('cameraStream');
             const canvas = document.getElementById('canvas');
@@ -280,19 +280,11 @@
                 return;
             }
 
-            // التحقق من وجود المفتاح
-            if (GEMINI_API_KEY === "YOUR_API_KEY_HERE" || GEMINI_API_KEY === "") {
-                alert("يرجى إضافة مفتاح الـ API الخاص بك في الكود أولاً!");
-                speakText("يرجى إضافة مفتاح الذكاء الاصطناعي في الكود");
-                return;
-            }
-
             canvas.width = video.videoWidth || 640;
             canvas.height = video.videoHeight || 480;
             let ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             
-            // تحويل الصورة إلى صيغة base64
             let base64Image = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
 
             statusBox.innerText = "جاري إرسال الصورة وتحليلها عبر الذكاء الاصطناعي... انتظر لحظات";
@@ -325,12 +317,15 @@
                     let aiReply = data.candidates[0].content.parts[0].text.trim();
                     statusBox.innerText = "النتيجة: " + aiReply;
                     speakText(aiReply);
+                } else if (data.error) {
+                    statusBox.innerText = "خطأ من الخادم: " + data.error.message;
+                    speakText("عذراً، حدث خطأ في النظام");
                 } else {
                     statusBox.innerText = "لم يتم تلقي استجابة صحيحة من الذكاء الاصطناعي.";
                     speakText("عذراً، لم أستطع تحليل الصورة بدقة");
                 }
             } catch (err) {
-                document.getElementById('statusBox').innerText = "حدث خطأ في الاتصال بالشبكة أو المفتاح.";
+                document.getElementById('statusBox').innerText = "حدث خطأ في الاتصال بالشبكة.";
                 speakText("حدث خطأ في الاتصال");
             }
         }
