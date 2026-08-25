@@ -220,8 +220,8 @@
         let currentStream = null;
         let currentPrompt = "صف لي ما يوجد في هذا المشهد بشكل دقيق لشخص مكفوف.";
         
-        // مفتاحك الحقيقي والمكتمل مدمج هنا بدقة
-        const GEMINI_API_KEY = "AQ.Ab8RN6JnrvtQcVzi6PPHobCFv56kqvE_8LXVtmARZZcRABPk6w"; 
+        // مفتاحك الجديد المكتمل والمربوط بالمشروع من الصورة
+        const GEMINI_API_KEY = "AQ.Ab8RN6KRHN79G4AexQIEHyhTvu8aE_8LXVtmARZZcRABPk6w"; 
 
         function speakText(text) {
             if (!('speechSynthesis' in window)) return;
@@ -269,7 +269,7 @@
             speakText("تم إغلاق الكاميرا");
         }
 
-        // دالة الاتصال المباشر بنموذج Google Gemini مع مفتاحك الجديد
+        // دالة الاتصال المباشر بنموذج Google Gemini مع دعم مفاتيح المشروع
         async function analyzeWithAI() {
             const video = document.getElementById('cameraStream');
             const canvas = document.getElementById('canvas');
