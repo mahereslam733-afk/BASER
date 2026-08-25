@@ -2,721 +2,876 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تطبيق بصير الذكي - Baser AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>بصير الذكي - Baser AI</title>
 
 <style>
-body {
-    background-color: #0b0f19;
-    color: #ffffff;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 15px;
-    text-align: center;
+*{
+    box-sizing:border-box;
 }
 
-h2 {
-    font-size: 18px;
-    color: #94a3b8;
-    margin-bottom: 20px;
+body{
+    margin:0;
+    padding:15px;
+    background:#080d18;
+    color:white;
+    font-family:Arial,sans-serif;
+    text-align:center;
 }
 
-.mic-container {
-    margin-bottom: 20px;
+h1{
+    font-size:24px;
+    margin:8px 0;
+    color:#00e5ff;
 }
 
-.mic-btn {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background-color: #0f172a;
-    border: 3px solid #00f2fe;
-    color: #00f2fe;
-    font-size: 32px;
-    cursor: pointer;
-    box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+.subtitle{
+    color:#94a3b8;
+    margin-bottom:18px;
 }
 
-#mediaContainer {
-    max-width: 500px;
-    margin: 0 auto 15px auto;
-    display: none;
-    background: #000;
-    border-radius: 12px;
-    overflow: hidden;
-    position: relative;
-    border: 2px solid #00f2fe;
+.mic{
+    width:82px;
+    height:82px;
+    border-radius:50%;
+    border:3px solid #00e5ff;
+    background:#111827;
+    color:#00e5ff;
+    font-size:32px;
+    margin-bottom:15px;
 }
 
-video {
-    width: 100%;
-    max-height: 250px;
-    object-fit: cover;
-    display: block;
+#keyBox{
+    max-width:500px;
+    margin:auto;
+    background:#111827;
+    padding:12px;
+    border-radius:12px;
+    margin-bottom:15px;
 }
 
-.close-cam {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: #dc2626;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    z-index: 10;
+#apiKey{
+    width:100%;
+    padding:12px;
+    background:#020617;
+    border:1px solid #475569;
+    border-radius:8px;
+    color:white;
+    direction:ltr;
+    margin-bottom:8px;
 }
 
-.action-btn {
-    margin: 5px auto;
-    padding: 12px 20px;
-    background-color: #00f2fe;
-    color: #0b0f19;
-    border: none;
-    border-radius: 10px;
-    font-weight: bold;
-    font-size: 15px;
-    cursor: pointer;
-    display: none;
+.save{
+    width:100%;
+    padding:12px;
+    border:0;
+    border-radius:8px;
+    background:#16a34a;
+    color:white;
+    font-weight:bold;
 }
 
-.action-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+#cameraBox{
+    display:none;
+    position:relative;
+    max-width:500px;
+    margin:auto;
+    border:2px solid #00e5ff;
+    border-radius:12px;
+    overflow:hidden;
+    background:black;
 }
 
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    max-width: 500px;
-    margin: 0 auto;
+#video{
+    width:100%;
+    max-height:320px;
+    display:block;
+    object-fit:cover;
 }
 
-.feature-btn {
-    padding: 12px 5px;
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 85px;
-    transition: 0.2s;
+.close{
+    position:absolute;
+    top:10px;
+    left:10px;
+    z-index:5;
+    background:#dc2626;
+    color:white;
+    border:0;
+    border-radius:7px;
+    padding:8px 12px;
+    font-weight:bold;
 }
 
-.feature-btn:active {
-    transform: scale(0.95);
+#analyze{
+    display:none;
+    margin:12px auto;
+    padding:14px 22px;
+    border:0;
+    border-radius:10px;
+    background:#00e5ff;
+    color:#001018;
+    font-size:16px;
+    font-weight:bold;
 }
 
-.btn-teal { background-color: #115e59; }
-.btn-purple { background-color: #581c87; }
-.btn-orange { background-color: #7c2d12; }
-.btn-blue { background-color: #1e3a8a; }
-.btn-darkblue { background-color: #1e293b; }
-
-.btn-darkred {
-    background-color: #7f1d1d;
-    background-image: linear-gradient(to right, #7f1d1d, #4c1d95);
+.grid{
+    max-width:500px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:9px;
 }
 
-.feature-btn span:first-child {
-    font-size: 20px;
-    margin-bottom: 5px;
+.btn{
+    min-height:88px;
+    border:0;
+    border-radius:12px;
+    color:white;
+    font-weight:bold;
+    font-size:13px;
+    padding:8px 4px;
 }
 
-.bottom-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    max-width: 500px;
-    margin: 10px auto 0 auto;
+.btn:active{
+    transform:scale(.95);
 }
 
-#statusBox {
-    margin-top: 15px;
-    padding: 15px;
-    background: #1e293b;
-    border-radius: 8px;
-    font-size: 15px;
-    color: #38bdf8;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: right;
-    border-right: 4px solid #00f2fe;
-    line-height: 1.7;
-    word-break: break-word;
+.icon{
+    display:block;
+    font-size:23px;
+    margin-bottom:7px;
+}
+
+.teal{background:#115e59}
+.purple{background:#581c87}
+.orange{background:#9a3412}
+.blue{background:#1e3a8a}
+.dark{background:#1e293b}
+.red{background:linear-gradient(90deg,#7f1d1d,#4c1d95)}
+
+.bottom{
+    max-width:500px;
+    margin:9px auto;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+}
+
+#status{
+    max-width:500px;
+    margin:15px auto;
+    background:#172033;
+    border-right:4px solid #00e5ff;
+    padding:15px;
+    border-radius:9px;
+    color:#38bdf8;
+    text-align:right;
+    line-height:1.8;
+    white-space:pre-wrap;
 }
 </style>
 </head>
 
 <body>
 
-<h2>كيف يمكنني مساعدتك اليوم؟</h2>
+<h1>بصير الذكي</h1>
 
-<div class="mic-container">
-    <button class="mic-btn"
-        type="button"
-        onclick="speakText('مرحباً بك في تطبيق بصير الذكي')">
-        🎤
-    </button>
+<div class="subtitle">
+مساعد ذكي لمساعدة المكفوفين
 </div>
 
-<div id="mediaContainer">
-    <button class="close-cam"
-        type="button"
-        onclick="stopCamera()">
-        إغلاق الكاميرا ✕
-    </button>
-
-    <video id="cameraStream"
-        autoplay
-        playsinline
-        muted>
-    </video>
-</div>
-
-<button id="aiAnalyzeBtn"
-    class="action-btn"
-    type="button"
-    onclick="analyzeWithAI()">
-    تحليل المشهد بالذكاء الاصطناعي 🧠
+<button class="mic" onclick="welcome()">
+🎤
 </button>
 
-<canvas id="canvas" style="display:none;"></canvas>
+<div id="keyBox">
 
-<div class="grid-container">
+<input
+id="apiKey"
+type="password"
+placeholder="أدخل مفتاح Gemini API"
+>
 
-    <button class="feature-btn btn-teal"
-        onclick="triggerAction(
-            'الاتصال بمطوع',
-            'tel:01000000000',
-            'جاري الاتصال بالمطوع'
-        )">
-        <span>📞</span>
-        <span>اتصل بمطوع</span>
-    </button>
+<button class="save" onclick="saveKey()">
+حفظ مفتاح Gemini
+</button>
 
-    <button class="feature-btn btn-teal"
-        onclick="startCameraForAI(
-            'اقرأ جميع النصوص الموجودة في الصورة حرفياً باللغة العربية. حافظ على ترتيب الأسطر، واقرأ الأرقام والرموز. إذا كان النص غير واضح فقل إن النص غير واضح ولا تخمن.'
-        )">
-        <span>📄</span>
-        <span>قراءة النصوص</span>
-    </button>
-
-    <button class="feature-btn btn-purple"
-        onclick="startCameraForAI(
-            'صف لي الأشياء الموجودة أمام الكاميرا لشخص مكفوف. اذكر أهم شيء أولاً، ومكانه التقريبي، ولونه أو شكله إن كان واضحاً. لا تذكر أي شيء غير مؤكد.'
-        )">
-        <span>📷</span>
-        <span>التعرف على الأشياء</span>
-    </button>
-
-    <button class="feature-btn btn-purple"
-        onclick="notifyUnderDevelopment('المساعد الصوتي')">
-        <span>🎧</span>
-        <span>المساعد الصوتي</span>
-    </button>
-
-    <button class="feature-btn btn-orange"
-        onclick="startCameraForAI(
-            'اقرأ محتوى الكتاب أو المستند الظاهر في الصورة بدقة. ابدأ بالعنوان إن وجد ثم اقرأ النص بالترتيب. لا تلخص ولا تضف كلمات غير ظاهرة.'
-        )">
-        <span>📖</span>
-        <span>الكتب والمستندات</span>
-    </button>
-
-    <button class="feature-btn btn-blue"
-        onclick="getGPSLocation()">
-        <span>🧭</span>
-        <span>الملاحة والتنقل</span>
-    </button>
-
-    <button class="feature-btn btn-blue"
-        onclick="notifyUnderDevelopment('قراءة الباركود')">
-        <span>📊</span>
-        <span>قراءة الباركود</span>
-    </button>
-
-    <button class="feature-btn btn-orange"
-        onclick="notifyUnderDevelopment('التعلم والتعليم')">
-        <span>🎓</span>
-        <span>التعلم والتعليم</span>
-    </button>
-
-    <button class="feature-btn btn-teal"
-        onclick="notifyUnderDevelopment('البحث الصوتي')">
-        <span>🔍</span>
-        <span>البحث الصوتي</span>
-    </button>
-
-    <button class="feature-btn btn-teal"
-        onclick="notifyUnderDevelopment('التعرف على الوجوه')">
-        <span>👤</span>
-        <span>التعرف على الوجوه</span>
-    </button>
-
-    <button class="feature-btn btn-purple"
-        onclick="notifyUnderDevelopment('التعرف على الألوان')">
-        <span>🎨</span>
-        <span>التعرف على الألوان</span>
-    </button>
-
-    <button class="feature-btn btn-blue"
-        onclick="startCameraForAI(
-            'حلل الورقة النقدية الظاهرة في الصورة. حدد الدولة واسم العملة والقيمة إن أمكن. إذا لم تكن متأكداً فقل غير متأكد ولا تخمن. لا تعتمد على اللون فقط.'
-        )">
-        <span>🪙</span>
-        <span>التعرف على العملات</span>
-    </button>
-
-    <button class="feature-btn btn-darkblue"
-        onclick="notifyUnderDevelopment('سجل المعلومات')">
-        <span>🕒</span>
-        <span>سجل المعلومات</span>
-    </button>
-
-    <button class="feature-btn btn-blue"
-        onclick="getGPSLocation()">
-        <span>📍</span>
-        <span>مشاركة موقعي</span>
-    </button>
-
-    <button class="feature-btn btn-darkblue"
-        onclick="getGPSLocation()">
-        <span>🏢</span>
-        <span>الملاحة الداخلية</span>
-    </button>
 </div>
 
-<div class="bottom-grid">
-    <button class="feature-btn btn-darkblue"
-        onclick="notifyUnderDevelopment('دعم بدون إنترنت')">
-        <span>⚡</span>
-        <span>دعم بدون إنترنت</span>
-    </button>
+<div id="cameraBox">
 
-    <button class="feature-btn btn-darkred"
-        onclick="triggerAction(
-            'حالة الطوارئ',
-            'tel:123',
-            'جاري الاتصال بالطوارئ'
-        )">
-        <span>🚨</span>
-        <span>طوارئ</span>
-    </button>
+<button class="close" onclick="closeCamera()">
+إغلاق ✕
+</button>
+
+<video
+id="video"
+autoplay
+playsinline>
+</video>
+
 </div>
 
-<div id="statusBox">
-    أهلاً بك في تطبيق بصير. الكاميرا جاهزة للتحليل.
+<button
+id="analyze"
+onclick="analyzeImage()">
+
+🧠 تحليل الصورة
+
+</button>
+
+<div class="grid">
+
+<button class="btn teal"
+onclick="openCamera('اقرأ جميع النصوص الظاهرة في الصورة حرفياً باللغة العربية. إذا كان جزء من النص غير واضح فلا تخمنه.')">
+
+<span class="icon">📄</span>
+قراءة النصوص
+
+</button>
+
+<button class="btn purple"
+onclick="openCamera('صف المشهد بالتفصيل لشخص كفيف. اذكر الأشخاص والأشياء والعوائق والاتجاهات والألوان المهمة. لا تخمن المعلومات غير الواضحة.')">
+
+<span class="icon">📷</span>
+التعرف على الأشياء
+
+</button>
+
+<button class="btn orange"
+onclick="openCamera('اقرأ محتوى الكتاب أو المستند الظاهر في الصورة باللغة العربية بدقة.')">
+
+<span class="icon">📖</span>
+الكتب والمستندات
+
+</button>
+
+<button class="btn blue"
+onclick="openCamera('حدد العملة الورقية الظاهرة في الصورة والدولة والفئة إن أمكن. إذا لم تكن متأكداً قل غير متأكد ولا تخمن.')">
+
+<span class="icon">🪙</span>
+التعرف على العملات
+
+</button>
+
+<button class="btn teal"
+onclick="underDevelopment('المساعد الصوتي')">
+
+<span class="icon">🎧</span>
+المساعد الصوتي
+
+</button>
+
+<button class="btn blue"
+onclick="getLocation()">
+
+<span class="icon">🧭</span>
+الملاحة والتنقل
+
+</button>
+
+<button class="btn blue"
+onclick="underDevelopment('قراءة الباركود')">
+
+<span class="icon">📊</span>
+قراءة الباركود
+
+</button>
+
+<button class="btn orange"
+onclick="underDevelopment('التعلم والتعليم')">
+
+<span class="icon">🎓</span>
+التعلم والتعليم
+
+</button>
+
+<button class="btn teal"
+onclick="underDevelopment('البحث الصوتي')">
+
+<span class="icon">🔍</span>
+البحث الصوتي
+
+</button>
+
+<button class="btn teal"
+onclick="underDevelopment('التعرف على الوجوه')">
+
+<span class="icon">👤</span>
+التعرف على الوجوه
+
+</button>
+
+<button class="btn purple"
+onclick="underDevelopment('التعرف على الألوان')">
+
+<span class="icon">🎨</span>
+التعرف على الألوان
+
+</button>
+
+<button class="btn dark"
+onclick="underDevelopment('سجل المعلومات')">
+
+<span class="icon">🕒</span>
+سجل المعلومات
+
+</button>
+
 </div>
+
+<div class="bottom">
+
+<button class="btn dark"
+onclick="underDevelopment('الدعم بدون إنترنت')">
+
+<span class="icon">⚡</span>
+دعم بدون إنترنت
+
+</button>
+
+<button class="btn red"
+onclick="emergency()">
+
+<span class="icon">🚨</span>
+طوارئ
+
+</button>
+
+</div>
+
+<div id="status">
+أهلاً بك في تطبيق بصير. اختر الوظيفة التي تريد استخدامها.
+</div>
+
+<canvas id="canvas" style="display:none"></canvas>
 
 <script>
-let currentStream = null;
-let currentPrompt =
-    "صف لي ما يوجد في هذا المشهد بشكل دقيق ومفيد لشخص مكفوف.";
-let isAnalyzing = false;
 
-/*
-  استبدل النص بمفتاح جديد للاختبار المحلي فقط.
-  لا تنشر المفتاح داخل الموقع.
-*/
-const GEMINI_API_KEY = "ضع_مفتاح_Gemini_الجديد_هنا";
-const GEMINI_MODEL = "gemini-2.5-flash";
+let stream=null;
+let promptText="";
 
-function speakText(text) {
-    if (!("speechSynthesis" in window)) return;
+let GEMINI_API_KEY=
+localStorage.getItem("baserGeminiKey")||"";
 
-    window.speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(String(text));
-    utterance.lang = "ar-SA";
-    utterance.rate = 0.95;
-    utterance.pitch = 1;
-    utterance.volume = 1;
+function status(text){
 
-    window.speechSynthesis.speak(utterance);
+document.getElementById("status").innerText=text;
+
 }
 
-function setStatus(message, speak = false) {
-    document.getElementById("statusBox").innerText = message;
 
-    if (speak) {
-        speakText(message);
-    }
+function speak(text){
+
+if(!window.speechSynthesis)return;
+
+speechSynthesis.cancel();
+
+let u=
+new SpeechSynthesisUtterance(text);
+
+u.lang="ar-EG";
+u.rate=1;
+
+speechSynthesis.speak(u);
+
 }
 
-function stopCurrentTracks() {
-    if (!currentStream) return;
 
-    currentStream.getTracks().forEach(track => track.stop());
-    currentStream = null;
+function welcome(){
+
+speak(
+"مرحباً بك في تطبيق بصير الذكي"
+);
+
 }
 
-function waitForVideoReady(video, timeout = 10000) {
-    return new Promise((resolve, reject) => {
-        if (video.readyState >= 2 && video.videoWidth > 0) {
-            resolve();
-            return;
-        }
 
-        const startTime = Date.now();
+function saveKey(){
 
-        function checkVideo() {
-            if (video.readyState >= 2 && video.videoWidth > 0) {
-                resolve();
-            } else if (Date.now() - startTime > timeout) {
-                reject(new Error("لم تصبح الكاميرا جاهزة"));
-            } else {
-                requestAnimationFrame(checkVideo);
-            }
-        }
+let key=
+document.getElementById("apiKey").value.trim();
 
-        checkVideo();
-    });
+if(!key){
+
+status("من فضلك أدخل مفتاح Gemini.");
+
+speak(
+"من فضلك أدخل مفتاح جيميني"
+);
+
+return;
 }
 
-async function startCameraForAI(promptText) {
-    currentPrompt = promptText;
+GEMINI_API_KEY=key;
 
-    const container = document.getElementById("mediaContainer");
-    const video = document.getElementById("cameraStream");
-    const analyzeButton = document.getElementById("aiAnalyzeBtn");
+localStorage.setItem(
+"baserGeminiKey",
+key
+);
 
-    container.style.display = "block";
-    analyzeButton.style.display = "inline-block";
-    analyzeButton.disabled = true;
+status(
+"تم حفظ مفتاح Gemini بنجاح."
+);
 
-    setStatus(
-        "جارٍ فتح الكاميرا. وجّه الهاتف نحو الهدف...",
-        true
-    );
+speak(
+"تم حفظ مفتاح جيميني بنجاح"
+);
 
-    try {
-        if (
-            !navigator.mediaDevices ||
-            !navigator.mediaDevices.getUserMedia
-        ) {
-            throw new Error("المتصفح لا يدعم الكاميرا");
-        }
-
-        stopCurrentTracks();
-
-        let stream;
-
-        try {
-            stream = await navigator.mediaDevices.getUserMedia({
-                audio: false,
-                video: {
-                    facingMode: { ideal: "environment" },
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
-                }
-            });
-        } catch (error) {
-            stream = await navigator.mediaDevices.getUserMedia({
-                audio: false,
-                video: true
-            });
-        }
-
-        currentStream = stream;
-        video.srcObject = stream;
-
-        await video.play();
-        await waitForVideoReady(video);
-
-        analyzeButton.disabled = false;
-
-        setStatus(
-            "الكاميرا جاهزة. اضغط تحليل المشهد.",
-            true
-        );
-
-    } catch (error) {
-        console.error("Camera error:", error);
-
-        stopCurrentTracks();
-        container.style.display = "none";
-        analyzeButton.disabled = true;
-
-        setStatus(
-            "تعذر فتح الكاميرا. اسمح بصلاحية الكاميرا وشغّل الموقع عبر HTTPS أو localhost.",
-            true
-        );
-    }
 }
 
-function stopCamera() {
-    stopCurrentTracks();
 
-    const video = document.getElementById("cameraStream");
-    video.srcObject = null;
+async function openCamera(prompt){
 
-    document.getElementById("mediaContainer").style.display = "none";
-    document.getElementById("aiAnalyzeBtn").style.display = "none";
-    document.getElementById("aiAnalyzeBtn").disabled = false;
+promptText=prompt;
 
-    setStatus("تم إغلاق الكاميرا.", true);
+if(!navigator.mediaDevices||
+!navigator.mediaDevices.getUserMedia){
+
+status(
+"المتصفح لا يدعم تشغيل الكاميرا."
+);
+
+speak(
+"المتصفح لا يدعم تشغيل الكاميرا"
+);
+
+return;
 }
 
-function captureFrame() {
-    const video = document.getElementById("cameraStream");
-    const canvas = document.getElementById("canvas");
+document.getElementById(
+"cameraBox"
+).style.display="block";
 
-    if (
-        video.readyState < 2 ||
-        !video.videoWidth ||
-        !video.videoHeight
-    ) {
-        throw new Error("الكاميرا لم تصبح جاهزة بعد");
-    }
+document.getElementById(
+"analyze"
+).style.display="block";
 
-    const maxWidth = 1280;
-    const scale = Math.min(1, maxWidth / video.videoWidth);
+status(
+"تم فتح الكاميرا. وجهها نحو الهدف واضغط تحليل الصورة."
+);
 
-    canvas.width = Math.round(video.videoWidth * scale);
-    canvas.height = Math.round(video.videoHeight * scale);
+speak(
+"تم فتح الكاميرا. وجهها نحو الهدف واضغط تحليل الصورة"
+);
 
-    const context = canvas.getContext("2d");
-    context.drawImage(
-        video,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+try{
 
-    return canvas
-        .toDataURL("image/jpeg", 0.88)
-        .split(",")[1];
+if(stream){
+
+stream.getTracks().forEach(
+track=>track.stop()
+);
+
 }
 
-function getGeminiText(data) {
-    return data?.candidates?.[0]?.content?.parts
-        ?.map(part => part.text || "")
-        .join(" ")
-        .trim() || "";
+stream=
+await navigator.mediaDevices.getUserMedia({
+
+video:{
+facingMode:"environment"
+},
+
+audio:false
+
+});
+
+let video=
+document.getElementById("video");
+
+video.srcObject=stream;
+
+await video.play();
+
+}catch(error){
+
+console.error(error);
+
+status(
+"تعذر فتح الكاميرا. اسمح للتطبيق باستخدام الكاميرا."
+);
+
+speak(
+"تعذر فتح الكاميرا"
+);
+
 }
 
-function getErrorMessage(data, status) {
-    if (status === 400) {
-        return "الطلب غير صحيح أو الصورة غير صالحة.";
-    }
-
-    if (status === 401 || status === 403) {
-        return "مفتاح Gemini غير صالح أو غير مسموح باستخدامه.";
-    }
-
-    if (status === 429) {
-        return "تم تجاوز عدد الطلبات المسموح بها. حاول بعد قليل.";
-    }
-
-    if (status >= 500) {
-        return "خادم الذكاء الاصطناعي غير متاح حاليًا.";
-    }
-
-    return data?.error?.message ||
-        `حدث خطأ في الخادم رقم ${status}.`;
 }
 
-async function analyzeWithAI() {
-    if (isAnalyzing) return;
 
-    const video = document.getElementById("cameraStream");
-    const button = document.getElementById("aiAnalyzeBtn");
+function closeCamera(){
 
-    if (!video.srcObject) {
-        setStatus("الكاميرا غير مفعلة.", true);
-        return;
-    }
+if(stream){
 
-    if (
-        !GEMINI_API_KEY ||
-        GEMINI_API_KEY === "ضع_مفتاح_Gemini_الجديد_هنا"
-    ) {
-        setStatus(
-            "ضع مفتاح Gemini الجديد داخل الكود للاختبار.",
-            true
-        );
-        return;
-    }
+stream.getTracks().forEach(
+track=>track.stop()
+);
 
-    isAnalyzing = true;
-    button.disabled = true;
-    button.innerText = "جاري التحليل...";
+stream=null;
 
-    try {
-        await waitForVideoReady(video);
-
-        const base64Image = captureFrame();
-
-        setStatus(
-            "جاري تحليل الصورة، انتظر لحظات...",
-            true
-        );
-
-        const endpoint =
-            "https://generativelanguage.googleapis.com/" +
-            "v1beta/models/" +
-            GEMINI_MODEL +
-            ":generateContent";
-
-        const response = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "x-goog-api-key": GEMINI_API_KEY
-            },
-            body: JSON.stringify({
-                contents: [
-                    {
-                        role: "user",
-                        parts: [
-                            {
-                                text:
-                                    currentPrompt +
-                                    "
-
-أجب باللغة العربية. " +
-                                    "استخدم جملاً قصيرة وواضحة. " +
-                                    "لا تخمن، وإذا كانت الصورة غير واضحة فاذكر ذلك."
-                            },
-                            {
-                                inline_data: {
-                                    mime_type: "image/jpeg",
-                                    data: base64Image
-                                }
-                            }
-                        ]
-                    }
-                ],
-                generationConfig: {
-                    temperature: 0.2,
-                    maxOutputTokens: 500
-                }
-            })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(
-                getErrorMessage(data, response.status)
-            );
-        }
-
-        const result = getGeminiText(data);
-
-        if (!result) {
-            throw new Error(
-                "لم تصل نتيجة مفهومة من الذكاء الاصطناعي."
-            );
-        }
-
-        document.getElementById("statusBox").innerText =
-            "النتيجة: " + result;
-
-        speakText(result);
-
-    } catch (error) {
-        console.error("AI error:", error);
-
-        const message =
-            error.message === "Failed to fetch"
-                ? "تعذر الاتصال. تحقق من الإنترنت أو إعدادات الخادم."
-                : error.message;
-
-        setStatus(message, true);
-
-    } finally {
-        isAnalyzing = false;
-        button.disabled = false;
-        button.innerText =
-            "تحليل المشهد بالذكاء الاصطناعي 🧠";
-    }
 }
 
-function notifyUnderDevelopment(featureName) {
-    const message =
-        `خاصية ${featureName} قيد التطوير وسيتم تفعيلها قريبًا`;
+document.getElementById(
+"video"
+).srcObject=null;
 
-    setStatus(message, true);
+document.getElementById(
+"cameraBox"
+).style.display="none";
+
+document.getElementById(
+"analyze"
+).style.display="none";
+
+status(
+"تم إغلاق الكاميرا."
+);
+
+speak(
+"تم إغلاق الكاميرا"
+);
+
 }
 
-function triggerAction(name, link, speechMessage) {
-    setStatus("تم تفعيل: " + name);
-    speakText(speechMessage);
 
-    if (link) {
-        setTimeout(() => {
-            window.location.href = link;
-        }, 2000);
-    }
+async function analyzeImage(){
+
+if(!GEMINI_API_KEY){
+
+status(
+"أدخل مفتاح Gemini أولاً ثم اضغط حفظ مفتاح Gemini."
+);
+
+speak(
+"أدخل مفتاح جيميني أولاً"
+);
+
+return;
+
 }
 
-function getGPSLocation() {
-    setStatus(
-        "جاري تحديد الموقع الجغرافي...",
-        true
-    );
+let video=
+document.getElementById("video");
 
-    if (!navigator.geolocation) {
-        setStatus(
-            "المتصفح لا يدعم تحديد الموقع.",
-            true
-        );
-        return;
-    }
+if(!video.videoWidth){
 
-    navigator.geolocation.getCurrentPosition(
-        position => {
-            const lat =
-                position.coords.latitude.toFixed(5);
-            const lng =
-                position.coords.longitude.toFixed(5);
+status(
+"انتظر حتى تظهر صورة الكاميرا."
+);
 
-            const message =
-                `موقعك الحالي: خط العرض ${lat}، ` +
-                `خط الطول ${lng}`;
+return;
 
-            setStatus(message);
-
-            speakText(
-                `تم تحديد موقعك. خط العرض ${lat}. خط الطول ${lng}`
-            );
-        },
-        error => {
-            console.error("GPS error:", error);
-
-            setStatus(
-                "تعذر تحديد الموقع. فعّل GPS واسمح للموقع بالصلاحية.",
-                true
-            );
-        },
-        {
-            enableHighAccuracy: true,
-            timeout: 15000,
-            maximumAge: 0
-        }
-    );
 }
+
+let canvas=
+document.getElementById("canvas");
+
+canvas.width=video.videoWidth;
+canvas.height=video.videoHeight;
+
+let ctx=
+canvas.getContext("2d");
+
+ctx.drawImage(
+video,
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+let image=
+canvas.toDataURL(
+"image/jpeg",
+0.85
+).split(",")[1];
+
+status(
+"جاري تحليل الصورة... انتظر قليلاً."
+);
+
+speak(
+"جاري تحليل الصورة"
+);
+
+try{
+
+let response=
+await fetch(
+
+"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key="
++
+encodeURIComponent(GEMINI_API_KEY),
+
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":
+"application/json"
+},
+
+body:JSON.stringify({
+
+contents:[
+
+{
+
+parts:[
+
+{
+text:promptText
+},
+
+{
+
+inline_data:{
+
+mime_type:
+"image/jpeg",
+
+data:image
+
+}
+
+}
+
+]
+
+}
+
+],
+
+generationConfig:{
+
+temperature:0.2,
+maxOutputTokens:800
+
+}
+
+})
+
+}
+
+);
+
+let data=
+await response.json();
+
+console.log(data);
+
+if(!response.ok){
+
+let message=
+data?.error?.message||
+"حدث خطأ غير معروف.";
+
+status(
+"خطأ Gemini:\n"+message
+);
+
+speak(
+"حدث خطأ في جيميني"
+);
+
+return;
+
+}
+
+let result="";
+
+if(data.candidates){
+
+for(
+let candidate of data.candidates
+){
+
+if(candidate.content?.parts){
+
+for(
+let part of candidate.content.parts
+){
+
+if(part.text){
+
+result+=part.text;
+
+}
+
+}
+
+}
+
+}
+
+}
+
+result=result.trim();
+
+if(!result){
+
+status(
+"لم يتم الحصول على نتيجة."
+);
+
+speak(
+"لم يتم الحصول على نتيجة"
+);
+
+return;
+
+}
+
+status(
+"النتيجة:\n\n"+result
+);
+
+speak(result);
+
+}catch(error){
+
+console.error(error);
+
+status(
+"حدث خطأ في الاتصال. تأكد من الإنترنت ومفتاح Gemini."
+);
+
+speak(
+"حدث خطأ في الاتصال بالذكاء الاصطناعي"
+);
+
+}
+
+}
+
+
+function underDevelopment(name){
+
+let message=
+"خاصية "+
+name+
+" قيد التطوير وسيتم تفعيلها قريباً.";
+
+status(message);
+
+speak(message);
+
+}
+
+
+function emergency(){
+
+status(
+"جاري فتح اتصال الطوارئ..."
+);
+
+speak(
+"جاري الاتصال بالطوارئ"
+);
+
+setTimeout(()=>{
+
+window.location.href="tel:123";
+
+},1500);
+
+}
+
+
+function getLocation(){
+
+if(!navigator.geolocation){
+
+status(
+"تحديد الموقع غير مدعوم."
+);
+
+return;
+
+}
+
+status(
+"جاري تحديد موقعك..."
+);
+
+speak(
+"جاري تحديد موقعك"
+);
+
+navigator.geolocation.getCurrentPosition(
+
+position=>{
+
+let lat=
+position.coords.latitude
+.toFixed(5);
+
+let lng=
+position.coords.longitude
+.toFixed(5);
+
+let result=
+"تم تحديد موقعك.\n"+
+"خط العرض: "+
+lat+
+"\nخط الطول: "+
+lng;
+
+status(result);
+
+speak(
+"تم تحديد موقعك بنجاح"
+);
+
+},
+
+error=>{
+
+console.log(error);
+
+status(
+"تعذر تحديد موقعك. تأكد من تشغيل GPS والسماح للموقع."
+);
+
+speak(
+"تعذر تحديد موقعك"
+);
+
+},
+
+{
+
+enableHighAccuracy:true,
+timeout:15000,
+maximumAge:0
+
+}
+
+);
+
+
+}
+
 
 window.addEventListener(
-    "beforeunload",
-    stopCurrentTracks
+"load",
+()=>{
+
+if(GEMINI_API_KEY){
+
+status(
+"مفتاح Gemini محفوظ. تطبيق بصير جاهز."
 );
+
+}
+
+}
+);
+
 </script>
 
 </body>
