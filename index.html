@@ -16,7 +16,7 @@
     <div id="welcomeOverlay" class="fixed inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center p-6 text-center">
         <div class="bg-indigo-900 border-2 border-indigo-500 p-6 rounded-3xl max-w-sm shadow-2xl">
             <h2 class="text-2xl font-bold mb-3">مرحباً بك في تطبيق قارئ 👁️</h2>
-            <p class="text-indigo-200 text-sm mb-6">انقر على الزر أدناه لتنشيط الكاميرا والصوت والبدء الفوري.</p>
+            <p class="text-indigo-200 text-sm mb-6">انقر على الزر أدناه لتنشيط الكاميرا والصوت والبدء الفوري عبر الرابط.</p>
             <button id="startAppBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 px-6 rounded-2xl shadow-lg text-lg">
                 🚀 ابدأ التطبيق الآن
             </button>
@@ -32,19 +32,23 @@
     <!-- المحتوى الرئيسي -->
     <main class="container mx-auto p-4 flex-1 flex flex-col items-center justify-center max-w-md">
         
-        <!-- حقل إدخال مفتاح الـ API -->
-        <div class="w-full mb-4">
-            <input type="password" id="apiKeyInput" placeholder="أدخل مفتاح Gemini API الخاص بك هنا..." 
-                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+        <!-- حقل إدخال مفتاح الـ API (ظاهري وواضح دائماً لحل مشكلة اللينك) -->
+        <div class="w-full bg-slate-800 border-2 border-indigo-500/50 p-3 rounded-2xl mb-4 shadow-md">
+            <label for="apiKeyInput" class="block text-xs font-semibold text-indigo-300 mb-1">مفتاح Gemini API (مطلوب للرابط):</label>
+            <div class="flex gap-2">
+                <input type="password" id="apiKeyInput" placeholder="أدخل المفتاح هنا..." 
+                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                <button id="saveKeyBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-bold">حفظ</button>
+            </div>
         </div>
 
         <!-- نافذة الكاميرا -->
-        <div class="relative w-full aspect-[3/4] bg-slate-800 rounded-3xl overflow-hidden shadow-2xl border-4 border-indigo-500 mb-6 flex items-center justify-center">
+        <div class="relative w-full aspect-[3/4] bg-slate-800 rounded-3xl overflow-hidden shadow-2xl border-4 border-indigo-500 mb-4 flex items-center justify-center">
             <video id="cameraStream" autoplay playsinline muted class="w-full h-full object-cover"></video>
             <canvas id="snapshotCanvas" class="hidden"></canvas>
             
             <div id="cameraPlaceholder" class="absolute text-center p-4 text-slate-400">
-                <span>جاري تفعيل الكاميرا...</span>
+                <span>جاري تفعيل الكاميرا من الرابط...</span>
             </div>
         </div>
 
@@ -60,9 +64,9 @@
         </div>
 
         <!-- صندوق عرض النص المستخرج -->
-        <div class="w-full mt-6 bg-slate-800 border border-slate-700 p-4 rounded-2xl shadow-inner">
+        <div class="w-full mt-4 bg-slate-800 border border-slate-700 p-4 rounded-2xl shadow-inner">
             <h2 class="text-sm font-semibold text-indigo-300 mb-1">النتيجة والتحليل:</h2>
-            <p id="resultText" class="text-slate-100 min-h-[50px] text-lg">الكاميرا جاهزة...</p>
+            <p id="resultText" class="text-slate-100 min-h-[50px] text-lg">الكاميرا جاهزة عبر اللينك...</p>
         </div>
 
     </main>
@@ -81,16 +85,25 @@
         const repeatBtn = document.getElementById('repeatBtn');
         const resultText = document.getElementById('resultText');
         const apiKeyInput = document.getElementById('apiKeyInput');
+        const saveKeyBtn = document.getElementById('saveKeyBtn');
         const welcomeOverlay = document.getElementById('welcomeOverlay');
         const startAppBtn = document.getElementById('startAppBtn');
 
-        let lastSpokenText = "تطبيق قارئ جاهز للعمل.";
+        let lastSpokenText = "تطبيق قارئ جاهز للعمل عبر الرابط.";
 
+        // استرجاع المفتاح المحفوظ مسبقاً في متصفح الجوال
         const savedKey = localStorage.getItem('gemini_api_key');
         if (savedKey) apiKeyInput.value = savedKey;
 
-        apiKeyInput.addEventListener('input', () => {
-            localStorage.setItem('gemini_api_key', apiKeyInput.value.trim());
+        saveKeyBtn.addEventListener('click', () => {
+            const keyVal = apiKeyInput.value.trim();
+            if (keyVal) {
+                localStorage.setItem('gemini_api_key', keyVal);
+                speakArabic("تم حفظ المفتاح بنجاح.");
+                alert("تم حفظ مفتاح الـ API بنجاح في متصفحك!");
+            } else {
+                alert("الرجاء إدخال مفتاح صحيح أولاً.");
+            }
         });
 
         function speakArabic(text) {
@@ -124,7 +137,7 @@
                     video.srcObject = fallbackStream;
                     placeholder.style.display = 'none';
                 } catch (e) {
-                    placeholder.innerHTML = "⚠️ تعذر الوصول للكاميرا، تأكد من الأذونات.";
+                    placeholder.innerHTML = "⚠️ تعذر الوصول للكاميرا من الرابط، تأكد من أذونات المتصفح.";
                 }
             }
         }
@@ -133,7 +146,7 @@
             welcomeOverlay.style.display = 'none';
             initCamera();
             setTimeout(() => {
-                speakArabic("أهلاً بك في تطبيق قارئ. تم تفعيل الكاميرا والصوت بنجاح.");
+                speakArabic("أهلاً بك في تطبيق قارئ عبر الرابط. تم تفعيل الكاميرا والصوت.");
             }, 500);
         });
 
@@ -146,20 +159,18 @@
         }
 
         async function analyzeWithGemini() {
-            const apiKey = apiKeyInput.value.trim();
+            const apiKey = apiKeyInput.value.trim() || localStorage.getItem('gemini_api_key');
             if (!apiKey) {
-                const msg = "الرجاء إدخال مفتاح Gemini API في الحقل المخصص أولاً.";
+                const msg = "الرجاء إدخال وحفظ مفتاح Gemini API في حقل الإدخال أعلى الصفحة أولاً.";
                 resultText.innerText = msg;
                 speakArabic(msg);
                 return;
             }
 
-            speakArabic("جاري التقاط الصورة وتحليلها، يرجى الانتظار...");
+            speakArabic("جاري التقاط الصورة وتحليلها عبر الشبكة، يرجى الانتظار...");
             resultText.innerText = "جاري المعالجة وقراءة النص...";
 
             const base64Image = captureImageAsBase64();
-            
-            // تم تحديث اسم النموذج إلى gemini-3.5-flash المتوافق والنشط حالياً
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
 
             const promptText = "أنت مساعد ذكي للمكفوفين. انظر إلى هذه الصورة بدقة شديدة. اقرأ واستخرج أي نص مكتوب فيها بالكامل باللغة العربية أو الإنجليزية. وإذا لم يوجد نص، صف البيئة المحيطة باختصار شديد باللغة العربية الفصحى.";
@@ -190,13 +201,14 @@
                 if (!response.ok) {
                     const errReason = data.error ? data.error.message : "خطأ غير معروف";
                     resultText.innerText = "خطأ من الخادم: " + errReason;
-                    speakArabic("عذراً، حدث خطأ في استجابة الخادم.");
+                    speakArabic("عذراً، حدث خطأ في استجابة الخادم عبر الرابط.");
                     return;
                 }
 
                 if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
                     const aiDescription = data.candidates[0].content.parts[0].text;
                     resultText.innerText = aiDescription;
+                    speakAdvisor = true;
                     speakArabic(aiDescription);
                 } else {
                     resultText.innerText = "لم يتم العثور على نص أو وصف في الصورة.";
@@ -204,7 +216,7 @@
                 }
             } catch (error) {
                 console.error(error);
-                resultText.innerText = "خطأ في الاتصال بالشبكة.";
+                resultText.innerText = "خطأ في الاتصال بالشبكة عبر الرابط.";
                 speakArabic("حدث خطأ في الاتصال بالشبكة.");
             }
         }
