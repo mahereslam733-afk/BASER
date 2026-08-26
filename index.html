@@ -3,273 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق قارئ - المساعد الذكي</title>
+    <title>تطبيق قارئ - الذكاء الاصطناعي للمكفوفين</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --accent: #10b981;
-            --accent-hover: #059669;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 500px;
-            background: var(--card-bg);
-            padding: 24px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border);
-            box-sizing: border-box;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        h1 {
-            color: var(--text-main);
-            font-size: 26px;
-            margin: 0 0 8px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        p.subtitle {
-            color: var(--text-muted);
-            font-size: 15px;
-            margin: 0;
-        }
-
-        .action-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            transition: background 0.2s, transform 0.1s;
-            box-sizing: border-box;
-            text-decoration: none;
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .btn-accent {
-            background-color: var(--accent);
-            color: white;
-            display: none; /* يظهر فقط عند توفر نص للقراءة */
-        }
-
-        .btn-accent:hover {
-            background-color: var(--accent-hover);
-        }
-
-        .preview-container {
-            width: 100%;
-            max-height: 250px;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 15px;
-            display: none;
-            border: 1px solid var(--border);
-            background: #000;
-            text-align: center;
-        }
-
-        .preview-container img {
-            width: 100%;
-            height: auto;
-            max-height: 250px;
-            object-fit: contain;
-        }
-
-        .result-box {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--border);
-            padding: 16px;
-            border-radius: 12px;
-            min-height: 120px;
-            max-height: 300px;
-            overflow-y: auto;
-            text-align: right;
-            font-size: 16px;
-            line-height: 1.6;
-            color: var(--text-main);
-            box-sizing: border-box;
-        }
-
-        .status-loading {
-            color: var(--primary);
-            font-weight: bold;
-            text-align: center;
-            padding: 20px;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
+        body { font-family: 'Cairo', sans-serif; }
     </style>
 </head>
-<body>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col justify-between">
 
-    <div class="container">
-        <header>
-            <h1>👁️ تطبيق قارئ</h1>
-            <p class="subtitle">المساعد الذكي لقراءة النصوص ووصف البيئة للمكفوفين</p>
-        </header>
-
-        <div class="action-group">
-            <!-- زر الكاميرا المباشر -->
-            <label for="imageInput" class="btn btn-primary">
-                📸 التقاط صورة أو رفعها
-            </label>
-            <input type="file" id="imageInput" accept="image/*" capture="environment" onchange="handleImageSelect(event)">
-        </div>
-
-        <!-- معاينة الصورة -->
-        <div class="preview-container" id="previewContainer">
-            <img id="imagePreview" alt="معاينة الصورة">
-        </div>
-
-        <!-- صندوق النتائج -->
-        <div id="result" class="result-box">قم بالتقاط صورة أو اختيارها من جهازك لبدء التحليل وقراءة النص...</div>
-
-        <!-- زر إعادة القراءة الصوتية -->
-        <div style="margin-top: 15px;">
-            <button id="speakBtn" class="btn btn-accent" onclick="speakCurrentText()">
-                🔊 إعادة الاستماع للنص
+    <!-- نافذة البدء السريع لتنشيط الصوت والكاميرا -->
+    <div id="welcomeOverlay" class="fixed inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center p-6 text-center">
+        <div class="bg-indigo-900 border-2 border-indigo-500 p-6 rounded-3xl max-w-sm shadow-2xl">
+            <h2 class="text-2xl font-bold mb-3">مرحباً بك في تطبيق قارئ 👁️</h2>
+            <p class="text-indigo-200 text-sm mb-6">انقر على الزر أدناه لتنشيط الكاميرا والصوت والبدء الفوري عبر الرابط.</p>
+            <button id="startAppBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 px-6 rounded-2xl shadow-lg text-lg">
+                🚀 ابدأ التطبيق الآن
             </button>
         </div>
     </div>
 
-    <script>
-        // مفتاح الـ API المدمج ليعمل على جميع الأجهزة تلقائياً
-        const API_KEY = "AQ.Ab8RN6JdueyorB_VkmV_RiMW7d1RVg5srAAwezPOVGkkxg-CJQ";
-        let extractedText = "";
+    <!-- الهيدر -->
+    <header class="bg-indigo-800 shadow-lg p-4 text-center">
+        <h1 class="text-3xl font-extrabold tracking-wide">تطبيق قارئ 👁️</h1>
+        <p class="text-indigo-200 text-sm mt-1">مدعوم بالذكاء الاصطناعي لقراءة النصوص والبيئة</p>
+    </header>
 
-        async function handleImageSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+    <!-- المحتوى الرئيسي -->
+    <main class="container mx-auto p-4 flex-1 flex flex-col items-center justify-center max-w-md">
+        
+        <!-- حقل إدخال مفتاح الـ API (ظاهري وواضح دائماً لحل مشكلة اللينك) -->
+        <div class="w-full bg-slate-800 border-2 border-indigo-500/50 p-3 rounded-2xl mb-4 shadow-md">
+            <label for="apiKeyInput" class="block text-xs font-semibold text-indigo-300 mb-1">مفتاح Gemini API (مطلوب للرابط):</label>
+            <div class="flex gap-2">
+                <input type="password" id="apiKeyInput" placeholder="أدخل المفتاح هنا..." 
+                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                <button id="saveKeyBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-bold">حفظ</button>
+            </div>
+        </div>
 
-            // عرض معاينة الصورة
-            const previewContainer = document.getElementById('previewContainer');
-            const imagePreview = document.getElementById('imagePreview');
-            previewContainer.style.display = 'block';
-            imagePreview.src = URL.createObjectURL(file);
-
-            const resultDiv = document.getElementById('result');
-            const speakBtn = document.getElementById('speakBtn');
+        <!-- نافذة الكاميرا -->
+        <div class="relative w-full aspect-[3/4] bg-slate-800 rounded-3xl overflow-hidden shadow-2xl border-4 border-indigo-500 mb-4 flex items-center justify-center">
+            <video id="cameraStream" autoplay playsinline muted class="w-full h-full object-cover"></video>
+            <canvas id="snapshotCanvas" class="hidden"></canvas>
             
-            resultDiv.innerHTML = '<div class="status-loading">⏳ جاري تحليل الصورة واستخراج النصوص بدقة... يرجى الانتظار</div>';
-            speakBtn.style.display = 'none';
+            <div id="cameraPlaceholder" class="absolute text-center p-4 text-slate-400">
+                <span>جاري تفعيل الكاميرا من الرابط...</span>
+            </div>
+        </div>
+
+        <!-- أزرار التحكم -->
+        <div class="w-full space-y-3">
+            <button id="captureBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white text-xl font-bold py-4 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3">
+                <span>📸 التقاط وقراءة النص بالفصحى</span>
+            </button>
+
+            <button id="repeatBtn" class="w-full bg-amber-600 hover:bg-amber-500 active:scale-95 transition text-white text-lg font-semibold py-3 px-6 rounded-2xl shadow-md flex items-center justify-center gap-2">
+                <span>🔊 إعادة قراءة النتيجة</span>
+            </button>
+        </div>
+
+        <!-- صندوق عرض النص المستخرج -->
+        <div class="w-full mt-4 bg-slate-800 border border-slate-700 p-4 rounded-2xl shadow-inner">
+            <h2 class="text-sm font-semibold text-indigo-300 mb-1">النتيجة والتحليل:</h2>
+            <p id="resultText" class="text-slate-100 min-h-[50px] text-lg">الكاميرا جاهزة عبر اللينك...</p>
+        </div>
+
+    </main>
+
+    <!-- الفوتر -->
+    <footer class="bg-slate-950 text-center py-3 text-slate-500 text-xs">
+        تطبيق قارئ - نطق عربي فصيح ونقي
+    </footer>
+
+    <!-- سكريبت البرمجة -->
+    <script>
+        const video = document.getElementById('cameraStream');
+        const canvas = document.getElementById('snapshotCanvas');
+        const placeholder = document.getElementById('cameraPlaceholder');
+        const captureBtn = document.getElementById('captureBtn');
+        const repeatBtn = document.getElementById('repeatBtn');
+        const resultText = document.getElementById('resultText');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const saveKeyBtn = document.getElementById('saveKeyBtn');
+        const welcomeOverlay = document.getElementById('welcomeOverlay');
+        const startAppBtn = document.getElementById('startAppBtn');
+
+        let lastSpokenText = "تطبيق قارئ جاهز للعمل عبر الرابط.";
+
+        // استرجاع المفتاح المحفوظ مسبقاً في متصفح الجوال
+        const savedKey = localStorage.getItem('gemini_api_key');
+        if (savedKey) apiKeyInput.value = savedKey;
+
+        saveKeyBtn.addEventListener('click', () => {
+            const keyVal = apiKeyInput.value.trim();
+            if (keyVal) {
+                localStorage.setItem('gemini_api_key', keyVal);
+                speakArabic("تم حفظ المفتاح بنجاح.");
+                alert("تم حفظ مفتاح الـ API بنجاح في متصفحك!");
+            } else {
+                alert("الرجاء إدخال مفتاح صحيح أولاً.");
+            }
+        });
+
+        function speakArabic(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ar-SA';
+                utterance.rate = 0.88;
+                utterance.pitch = 1.0;
+
+                const voices = window.speechSynthesis.getVoices();
+                const arabicVoice = voices.find(v => v.lang.startsWith('ar') || v.includes && v.includes('ar'));
+                if (arabicVoice) utterance.voice = arabicVoice;
+
+                window.speechSynthesis.speak(utterance);
+                lastSpokenText = text;
+            }
+        }
+
+        async function initCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: { ideal: 'environment' } }, 
+                    audio: false 
+                });
+                video.srcObject = stream;
+                placeholder.style.display = 'none';
+            } catch (err) {
+                try {
+                    const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                    video.srcObject = fallbackStream;
+                    placeholder.style.display = 'none';
+                } catch (e) {
+                    placeholder.innerHTML = "⚠️ تعذر الوصول للكاميرا من الرابط، تأكد من أذونات المتصفح.";
+                }
+            }
+        }
+
+        startAppBtn.addEventListener('click', () => {
+            welcomeOverlay.style.display = 'none';
+            initCamera();
+            setTimeout(() => {
+                speakArabic("أهلاً بك في تطبيق قارئ عبر الرابط. تم تفعيل الكاميرا والصوت.");
+            }, 500);
+        });
+
+        function captureImageAsBase64() {
+            canvas.width = video.videoWidth || 1280;
+            canvas.height = video.videoHeight || 720;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+        }
+
+        async function analyzeWithGemini() {
+            const apiKey = apiKeyInput.value.trim() || localStorage.getItem('gemini_api_key');
+            if (!apiKey) {
+                const msg = "الرجاء إدخال وحفظ مفتاح Gemini API في حقل الإدخال أعلى الصفحة أولاً.";
+                resultText.innerText = msg;
+                speakArabic(msg);
+                return;
+            }
+
+            speakArabic("جاري التقاط الصورة وتحليلها عبر الشبكة، يرجى الانتظار...");
+            resultText.innerText = "جاري المعالجة وقراءة النص...";
+
+            const base64Image = captureImageAsBase64();
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
+
+            const promptText = "أنت مساعد ذكي للمكفوفين. انظر إلى هذه الصورة بدقة شديدة. اقرأ واستخرج أي نص مكتوب فيها بالكامل باللغة العربية أو الإنجليزية. وإذا لم يوجد نص، صف البيئة المحيطة باختصار شديد باللغة العربية الفصحى.";
+
+            const payload = {
+                contents: [{
+                    parts: [
+                        { text: promptText },
+                        {
+                            inline_data: {
+                                mime_type: "image/jpeg",
+                                data: base64Image
+                            }
+                        }
+                    ]
+                }]
+            };
 
             try {
-                const base64Data = await toBase64(file);
-                const pureBase64 = base64Data.split(',')[1];
-
-                // استخدام نموذج Gemini 1.5 Flash السريع والحديث
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-                
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [
-                                { text: "قم بقراءة جميع النصوص العربية والإنجليزية الظاهرة في هذه الصورة بدقة شديدة ووضوح، ثم قم بوصف محتواها باختصار ومفيد لمساعدة شخص كفيف." },
-                                { inline_data: { mime_type: file.type, data: pureBase64 } }
-                            ]
-                        }]
-                    })
+                    body: JSON.stringify(payload)
                 });
 
                 const data = await response.json();
-                
-                if (data.candidates && data.candidates[0].content.parts[0].text) {
-                    extractedText = data.candidates[0].content.parts[0].text;
-                    resultDiv.innerText = extractedText;
-                    
-                    // إظهار زر الصوت وتشغيل الناطق الآلي
-                    speakBtn.style.display = 'flex';
-                    speakCurrentText();
-                } else {
-                    resultDiv.innerText = 'عذراً، لم نتمكن من العثور على نصوص واضحة في الصورة. حاول التقاط صورة بضوء أفضل.';
+
+                if (!response.ok) {
+                    const errReason = data.error ? data.error.message : "خطأ غير معروف";
+                    resultText.innerText = "خطأ من الخادم: " + errReason;
+                    speakArabic("عذراً، حدث خطأ في استجابة الخادم عبر الرابط.");
+                    return;
                 }
 
+                if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+                    const aiDescription = data.candidates[0].content.parts[0].text;
+                    resultText.innerText = aiDescription;
+                    speakAdvisor = true;
+                    speakArabic(aiDescription);
+                } else {
+                    resultText.innerText = "لم يتم العثور على نص أو وصف في الصورة.";
+                    speakArabic("عذراً، لم أتمكن من قراءة محتوى الصورة.");
+                }
             } catch (error) {
                 console.error(error);
-                resultDiv.innerText = 'حدث خطأ في الاتصال بالشبكة أو الخادم. تأكد من اتصالك بالإنترنت.';
+                resultText.innerText = "خطأ في الاتصال بالشبكة عبر الرابط.";
+                speakArabic("حدث خطأ في الاتصال بالشبكة.");
             }
         }
 
-        function toBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
-        }
-
-        function speakCurrentText() {
-            if (!extractedText) return;
-            
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // إيقاف أي كلام قديم
-                const utterance = new SpeechSynthesisUtterance(extractedText);
-                utterance.lang = 'ar-SA'; // نطق عربي واضح
-                utterance.rate = 1.0;     // سرعة طبيعية
-                window.speechSynthesis.speak(utterance);
-            } else {
-                alert('عذراً، متصفحك لا يدعم خاصية التحدث الصوتي.');
-            }
-        }
+        captureBtn.addEventListener('click', analyzeWithGemini);
+        repeatBtn.addEventListener('click', () => speakArabic(lastSpokenText));
     </script>
-
 </body>
 </html>
