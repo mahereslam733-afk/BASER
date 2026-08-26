@@ -239,7 +239,6 @@
         let currentStream = null;
         let currentPrompt = "صف لي ما يوجد في هذا المشهد لشخص مكفوف.";
 
-        // تم دمج مفتاح TokenRa مباشرة هنا ليعمل فوراً
         const TOKENRA_API_KEY = "sk-8Wr5YxT42vvT8IcQCkH6Q5Q6N6GoolDL5JwkK6Rvu5eRt0nV";
 
         function speakText(text) {
@@ -301,7 +300,7 @@
                         "Authorization": `Bearer ${TOKENRA_API_KEY}`
                     },
                     body: JSON.stringify({
-                        model: "stealth/ox-alpha",
+                        model: "gpt-4o", 
                         messages: [
                             {
                                 role: "user",
