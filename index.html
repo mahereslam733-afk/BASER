@@ -176,7 +176,7 @@
         <button class="feature-btn b-teal" onclick="triggerAction('الاتصال بمطوع', 'tel:01000000000', 'جاري الاتصال بالمطوع لمساعدتك')">
             <span>📞</span><span>اتصل بمطوع</span>
         </button>
-        <button class="feature-btn b-teal" onclick="startCameraForAI('اقرأ بدقة بالغة جميع النصوص المكتوبة باللغة العربية أو الإنجليزية الظاهرة في الصورة. أعد فقط النصوص كما هي، كل سطر في جملة.')">
+        <button class="feature-btn b-teal" onclick="startCameraForAI('استخرج كل النصوص العربية والإنجليزية الظاهرة في الصورة. أعد النص مرتبًا في أسطر مقروءة فقط، بدون رموز أو حروف عشوائية. إذا كانت هناك كلمات غير واضحة، تجاهلها.')">
             <span>📄</span><span>قراءة النصوص</span>
         </button>
         <button class="feature-btn b-purple" onclick="startCameraForAI('صف لي ما يوجد في هذا المشهد بدقة مفصلة ومفيدة جداً لشخص مكفوف.')">
@@ -186,7 +186,7 @@
         <button class="feature-btn b-purple" onclick="notifyFeature('المساعد الصوتي')">
             <span>🎧</span><span>المساعد الصوتي</span>
         </button>
-        <button class="feature-btn b-orange" onclick="startCameraForAI('اقرأ محتوى الصفحة أو الكتاب أو المستند الظاهر في الصورة بوضوح. أعد النص كاملاً بدون شرح.')">
+        <button class="feature-btn b-orange" onclick="startCameraForAI('اقرأ الصفحة أو المستند الظاهر في الصورة. أعد النص كاملاً بأسطر واضحة ومقروءة بالعربية أو الإنجليزية فقط. لا تضيف أي رموز أو أحرف غير مفهومة.')">
             <span>📖</span><span>الكتب والمستندات</span>
         </button>
         <button class="feature-btn b-blue" onclick="getGPSLocation()">
@@ -251,6 +251,23 @@
             window.speechSynthesis.speak(utterance);
         }
 
+        function cleanText(text) {
+            if (!text) return "";
+            let cleaned = text
+                .split('
+')
+                .map(line => {
+                    const arabic = /[؀-ۿ]/.test(line);
+                    const english = /[A-Za-z]{3,}/.test(line);
+                    if (!arabic && !english) return "";
+                    return line.replace(/[^؀-ۿA-Za-z0-9s.,:;()-'"!?]/g, "").trim();
+                })
+                .filter(line => line.length > 0)
+                .join('
+');
+            return cleaned || text;
+        }
+
         async function startCameraForAI(promptText) {
             currentPrompt = promptText;
             const container = document.getElementById('mediaContainer');
@@ -298,15 +315,15 @@
                 return;
             }
 
-            // تقليل الدقة لتسريع الإرسال وتجنب الأخطاء
-            const targetWidth = 640;
-            const targetHeight = 480;
+            // تحسين الدقة والجودة للنصوص
+            const targetWidth = 800;
+            const targetHeight = 600;
             canvas.width = targetWidth;
             canvas.height = targetHeight;
             let ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, targetWidth, targetHeight);
             
-            let base64Image = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+            let base64Image = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
 
             statusBox.innerText = "جاري إرسال الصورة وتحليلها عبر Gemini...";
             speakText("جاري التحليل");
@@ -337,6 +354,7 @@
                 
                 if (data.candidates && data.candidates[0].content.parts[0].text) {
                     let aiReply = data.candidates[0].content.parts[0].text.trim();
+                    aiReply = cleanText(aiReply);
                     statusBox.innerText = "النتيجة: " + aiReply;
                     speakText(aiReply);
                 } else if (data.error) {
