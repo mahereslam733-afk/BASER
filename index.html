@@ -13,6 +13,17 @@
 </head>
 <body class="bg-slate-900 text-white min-h-screen flex flex-col justify-between">
 
+    <!-- نافذة البدء السريع لتنشيط الصوت (تختفي فور النقر عليها) -->
+    <div id="welcomeOverlay" class="fixed inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center p-6 text-center">
+        <div class="bg-indigo-900 border-2 border-indigo-500 p-6 rounded-3xl max-w-sm shadow-2xl">
+            <h2 class="text-2xl font-bold mb-3">مرحباً بك في تطبيق قارئ 👁️</h2>
+            <p class="text-indigo-200 text-sm mb-6">انقر على الزر أدناه لتنشيط الكاميرا والصوت والبدء الفوري.</p>
+            <button id="startAppBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 px-6 rounded-2xl shadow-lg text-lg">
+                🚀 ابدأ التطبيق الآن
+            </button>
+        </div>
+    </div>
+
     <!-- الهيدر -->
     <header class="bg-indigo-800 shadow-lg p-4 text-center">
         <h1 class="text-3xl font-extrabold tracking-wide">تطبيق قارئ 👁️</h1>
@@ -30,17 +41,11 @@
 
         <!-- نافذة الكاميرا -->
         <div class="relative w-full aspect-[3/4] bg-slate-800 rounded-3xl overflow-hidden shadow-2xl border-4 border-indigo-500 mb-6 flex items-center justify-center">
-            <!-- تم تفعيل الكاميرا والخصائص لتشغيل البث المباشر بدقة -->
             <video id="cameraStream" autoplay playsinline muted class="w-full h-full object-cover"></video>
-            <!-- عنصر مخفي لالتقاط الصورة وإرسالها للذكاء الاصطناعي -->
             <canvas id="snapshotCanvas" class="hidden"></canvas>
             
             <div id="cameraPlaceholder" class="absolute text-center p-4 text-slate-400">
-                <svg class="w-16 h-16 mx-auto mb-2 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                </svg>
-                <span>جاري تفعيل الكاميرا لقراءة النصوص...</span>
+                <span>جاري تفعيل الكاميرا...</span>
             </div>
         </div>
 
@@ -58,7 +63,7 @@
         <!-- صندوق عرض النص المستخرج -->
         <div class="w-full mt-6 bg-slate-800 border border-slate-700 p-4 rounded-2xl shadow-inner">
             <h2 class="text-sm font-semibold text-indigo-300 mb-1">النتيجة والتحليل:</h2>
-            <p id="resultText" class="text-slate-100 min-h-[50px] text-lg">الكاميرا جاهزة لقراءة النصوص أمامك...</p>
+            <p id="resultText" class="text-slate-100 min-h-[50px] text-lg">الكاميرا جاهزة...</p>
         </div>
 
     </main>
@@ -68,7 +73,7 @@
         تطبيق قارئ - نطق عربي فصيح ونقي
     </footer>
 
-    <!-- سكريبت البرمجة وتفعيل الكاميرا والذكاء الاصطناعي -->
+    <!-- سكريبت البرمجة المُصلح -->
     <script>
         const video = document.getElementById('cameraStream');
         const canvas = document.getElementById('snapshotCanvas');
@@ -77,10 +82,12 @@
         const repeatBtn = document.getElementById('repeatBtn');
         const resultText = document.getElementById('resultText');
         const apiKeyInput = document.getElementById('apiKeyInput');
+        const welcomeOverlay = document.getElementById('welcomeOverlay');
+        const startAppBtn = document.getElementById('startAppBtn');
 
-        let lastSpokenText = "تطبيق قارئ جاهز للعمل. وجه الكاميرا نحو النص ثم اضغط على زر التقاط.";
+        let lastSpokenText = "تطبيق قارئ جاهز للعمل.";
 
-        // حفظ واسترجاع مفتاح API محلياً
+        // حفظ واسترجاع مفتاح API
         const savedKey = localStorage.getItem('gemini_api_key');
         if (savedKey) apiKeyInput.value = savedKey;
 
@@ -88,66 +95,62 @@
             localStorage.setItem('gemini_api_key', apiKeyInput.value.trim());
         });
 
-        // دالة تفعيل وتثبيت الكاميرا الخلفية بذكاء
-        async function initCamera() {
-            try {
-                // محاولة تشغيل الكاميرا الخلفية الأساسية (للأجهزة الذكية)
-                const constraints = {
-                    video: { 
-                        facingMode: { ideal: 'environment' },
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    }, 
-                    audio: false 
-                };
-
-                const stream = await navigator.mediaDevices.getUserMedia(constraints);
-                video.srcObject = stream;
-                placeholder.style.display = 'none';
-            } catch (err) {
-                console.error("خطأ في تشغيل الكاميرا الخلفية، محاولة الكاميرا البديلة: ", err);
-                try {
-                    // كود احتياطي في حال لم تدعم الكاميرا الخلفية بشكل مباشر
-                    const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                    video.srcObject = fallbackStream;
-                    placeholder.style.display = 'none';
-                } catch (fallbackErr) {
-                    placeholder.innerHTML = "⚠️ تعذر تشغيل الكاميرا، تأكد من إعطاء إذن الوصول للكاميرا من إعدادات المتصفح.";
-                    speakArabic("عذراً، تعذر الوصول للكاميرا، يرجى السماح للمتصفح باستخدام الكاميرا.");
-                }
-            }
-        }
-
-        // دالة القراءة الصوتية باللغة العربية النقية والفصحى
+        // دالة تفعيل الصوت (Text-to-Speech) بطريقة مضمونة
         function speakArabic(text) {
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // إيقاف أي قراءة سابقة
+                window.speechSynthesis.cancel(); // إلغاء أي نطق قديم
                 
                 const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'ar-SA'; 
-                utterance.rate = 0.88; // سرعة هادئة وواضحة جداً للمكفوفين
-                utterance.pitch = 1.0; 
+                utterance.lang = 'ar-SA';
+                utterance.rate = 0.88; // سرعة مريحة جداً للمكفوفين
+                utterance.pitch = 1.0;
 
-                // اختيار أفضل صوت عربي متوفر في نظام المستخدم
+                // محاولة اختيار أفضل صوت عربي متاح في الجهاز
                 const voices = window.speechSynthesis.getVoices();
-                const arabicVoice = voices.find(voice => voice.lang.startsWith('ar') || voice.lang.includes('ar-'));
+                const arabicVoice = voices.find(v => v.lang.startsWith('ar') || v.includes && v.includes('ar'));
                 if (arabicVoice) {
                     utterance.voice = arabicVoice;
                 }
 
                 window.speechSynthesis.speak(utterance);
                 lastSpokenText = text;
+            } else {
+                console.warn("المتصفح لا يدعم ميزة النطق الصوتي.");
             }
         }
 
-        // تحديث الأصوات عند تحميل المتصفح
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = () => {
-                window.speechSynthesis.getVoices();
-            };
+        // تشغيل الكاميرا الخلفية
+        async function initCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: { ideal: 'environment' } }, 
+                    audio: false 
+                });
+                video.srcObject = stream;
+                placeholder.style.display = 'none';
+            } catch (err) {
+                try {
+                    const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                    video.srcObject = fallbackStream;
+                    placeholder.style.display = 'none';
+                } catch (e) {
+                    placeholder.innerHTML = "⚠️ تعذر الوصول للكاميرا، تأكد من الأذونات.";
+                }
+            }
         }
 
-        // التقاط الصورة من بث الكاميرا المباشر بدقة عالية
+        // عند النقر على زر البدء الأول (يحل مشكلة حظر الصوت في المتصفحات)
+        startAppBtn.addEventListener('click', () => {
+            welcomeOverlay.style.display = 'none'; // إخفاء نافذة الترحيب
+            initCamera(); // تشغيل الكاميرا
+            
+            // نطق ترحيبي بعد التفعيل المباشر من المستخدم
+            setTimeout(() => {
+                speakArabic("أهلاً بك في تطبيق قارئ. تم تفعيل الكاميرا والصوت بنجاح. أدخل مفتاحك ثم اضغط على زر التقاط وقراءة النص.");
+            }, 500);
+        });
+
+        // التقاط الصورة
         function captureImageAsBase64() {
             canvas.width = video.videoWidth || 1280;
             canvas.height = video.videoHeight || 720;
@@ -156,38 +159,26 @@
             return canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
         }
 
-        // إرسال الصورة المُلتقطة من الكاميرا إلى Gemini API وتحليل النصوص
+        // تحليل الصورة بـ Gemini API
         async function analyzeWithGemini() {
             const apiKey = apiKeyInput.value.trim();
             if (!apiKey) {
-                const msg = "الرجاء إدخال مفتاح Gemini API في الحقل المخصص أعلى الشاشة أولاً.";
+                const msg = "الرجاء إدخال مفتاح Gemini API في الحقل المخصص أولاً.";
                 resultText.innerText = msg;
                 speakArabic(msg);
                 return;
             }
 
             speakArabic("جاري التقاط الصورة وقراءة النص، يرجى الانتظار...");
-            resultText.innerText = "جاري قراءة وتحليل النص من الكاميرا...";
+            resultText.innerText = "جاري المعالجة وقراءة النص...";
 
             const base64Image = captureImageAsBase64();
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
-            const promptText = "أنت مساعد ذكي للمكفوفين. انظر إلى هذه الصورة المُلتقطة بالكاميرا بدقة. استخرج وقرأ أي نص مكتوب (بالعربية أو الإنجليزية) بداخلها حرفياً وكاملاً. وإذا لم يوجد نص مكتوب، قم بوصف الأشياء والبيئة الموجودة أمام الكاميرا بوضوح تام وبأقصر جمل ممكنة باللغة العربية الفصحى.";
+            const promptText = "أنت مساعد ذكي للمكفوفين. انظر إلى هذه الصورة المُلتقطة بالكاميرا. استخرج وقرأ أي نص مكتوب (بالعربية أو الإنجليزية) بداخلها حرفياً وكاملاً. وإذا لم يوجد نص مكتوب، قم بوصف الأشياء والبيئة الموجودة أمام الكاميرا بوضوح تام وبأقصر جمل ممكنة باللغة العربية الفصحى.";
 
             const payload = {
-                contents: [
-                    {
-                        parts: [
-                            { text: promptText },
-                            {
-                                inline_data: {
-                                    mime_type: "image/jpeg",
-                                    data: base64Image
-                                }
-                            }
-                        ]
-                    }
-                ]
+                contents: [{ parts: [{ text: promptText }, { inline_data: { mime_type: "image/jpeg", data: base64Image } }] }]
             };
 
             try {
@@ -209,27 +200,15 @@
                     speakArabic(errorMsg);
                 }
             } catch (error) {
-                console.error("خطأ في الاتصال بالخدمة:", error);
-                const netErrorMsg = "حدث خطأ في الاتصال، تأكد من صحة مفتاح واجهة البرمجة والاتصال بالإنترنت.";
-                resultText.innerText = netErrorMsg;
-                speakArabic(netErrorMsg);
+                console.error(error);
+                const netErr = "حدث خطأ في الاتصال، تأكد من صحة المفتاح والإنترنت.";
+                resultText.innerText = netErr;
+                speakArabic(netErr);
             }
         }
 
-        // ربط الأحداث بالأزرار
         captureBtn.addEventListener('click', analyzeWithGemini);
-
-        repeatBtn.addEventListener('click', () => {
-            speakArabic(lastSpokenText);
-        });
-
-        // تشغيل الكاميرا فور فتح التطبيق
-        window.addEventListener('load', () => {
-            initCamera();
-            setTimeout(() => {
-                speakArabic("أهلاً بك في تطبيق قارئ. الكاميرا مفعلة وجاهزة. أدخل مفتاحك ثم اضغط على زر التقاط وقراءة النص.");
-            }, 1200);
-        });
+        repeatBtn.addEventListener('click', () => speakArabic(lastSpokenText));
     </script>
 </body>
 </html>
