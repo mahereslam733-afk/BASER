@@ -3,125 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق قارئ - القراءة الصوتية بالذكاء الاصطناعي</title>
+    <title>تطبيق قارئ - المساعد الذكي</title>
     <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            box-sizing: border-box;
+        }
+
+        header {
             text-align: center;
-            padding: 15px;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            color: var(--text-main);
+            font-size: 26px;
+            margin: 0 0 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 15px;
             margin: 0;
         }
-        h1 {
-            color: #4CAF50;
-            font-size: 24px;
-            margin-bottom: 5px;
+
+        .action-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
         }
-        p {
-            color: #b0b0b0;
-            font-size: 14px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #1e1e1e;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
+
         input[type="file"] {
             display: none;
         }
-        .upload-btn {
-            display: block;
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             width: 100%;
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 16px;
+            border-radius: 12px;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            margin: 15px 0;
+            border: none;
+            transition: background 0.2s, transform 0.1s;
+            box-sizing: border-box;
+            text-decoration: none;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+            display: none; /* يظهر فقط عند توفر نص للقراءة */
+        }
+
+        .btn-accent:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .preview-container {
+            width: 100%;
+            max-height: 250px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            display: none;
+            border: 1px solid var(--border);
+            background: #000;
+            text-align: center;
+        }
+
+        .preview-container img {
+            width: 100%;
+            height: auto;
+            max-height: 250px;
+            object-fit: contain;
+        }
+
+        .result-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 12px;
+            min-height: 120px;
+            max-height: 300px;
+            overflow-y: auto;
+            text-align: right;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-main);
             box-sizing: border-box;
         }
-        .upload-btn:hover {
-            background-color: #45a049;
-        }
-        #result {
-            margin-top: 15px;
-            text-align: right;
-            background: #2a2a2a;
-            padding: 15px;
-            border-radius: 8px;
-            min-height: 100px;
-            font-size: 16px;
-            line-height: 1.5;
-            color: #fff;
-            border: 1px solid #444;
+
+        .status-loading {
+            color: var(--primary);
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>تطبيق قارئ 👁️</h1>
-        <p>مساعدك الذكي لقراءة النصوص ووصف الصور</p>
+        <header>
+            <h1>👁️ تطبيق قارئ</h1>
+            <p class="subtitle">المساعد الذكي لقراءة النصوص ووصف البيئة للمكفوفين</p>
+        </header>
 
-        <!-- زرار التقاط أو رفع الصورة المباشر -->
-        <label for="imageInput" class="upload-btn">📸 التقاط أو اختيار صورة</label>
-        <input type="file" id="imageInput" accept="image/*" capture="environment" onchange="analyzeImage()">
+        <div class="action-group">
+            <!-- زر الكاميرا المباشر -->
+            <label for="imageInput" class="btn btn-primary">
+                📸 التقاط صورة أو رفعها
+            </label>
+            <input type="file" id="imageInput" accept="image/*" capture="environment" onchange="handleImageSelect(event)">
+        </div>
 
-        <div id="result">قم باختاط أو التقاط صورة لتبدأ القراءة...</div>
+        <!-- معاينة الصورة -->
+        <div class="preview-container" id="previewContainer">
+            <img id="imagePreview" alt="معاينة الصورة">
+        </div>
+
+        <!-- صندوق النتائج -->
+        <div id="result" class="result-box">قم بالتقاط صورة أو اختيارها من جهازك لبدء التحليل وقراءة النص...</div>
+
+        <!-- زر إعادة القراءة الصوتية -->
+        <div style="margin-top: 15px;">
+            <button id="speakBtn" class="btn btn-accent" onclick="speakCurrentText()">
+                🔊 إعادة الاستماع للنص
+            </button>
+        </div>
     </div>
 
     <script>
         // مفتاح الـ API المدمج ليعمل على جميع الأجهزة تلقائياً
         const API_KEY = "AQ.Ab8RN6JdueyorB_VkmV_RiMW7d1RVg5srAAwezPOVGkkxg-CJQ";
+        let extractedText = "";
 
-        async function analyzeImage() {
-            const imageInput = document.getElementById('imageInput').files[0];
+        async function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // عرض معاينة الصورة
+            const previewContainer = document.getElementById('previewContainer');
+            const imagePreview = document.getElementById('imagePreview');
+            previewContainer.style.display = 'block';
+            imagePreview.src = URL.createObjectURL(file);
+
             const resultDiv = document.getElementById('result');
-
-            if (!imageInput) return;
-
-            resultDiv.innerText = '⏳ جاري تحليل الصورة وقراءة النصوص بدقة... يرجى الانتظار...';
+            const speakBtn = document.getElementById('speakBtn');
+            
+            resultDiv.innerHTML = '<div class="status-loading">⏳ جاري تحليل الصورة واستخراج النصوص بدقة... يرجى الانتظار</div>';
+            speakBtn.style.display = 'none';
 
             try {
-                const base64Image = await toBase64(imageInput);
-                const base64Data = base64Image.split(',')[1];
+                const base64Data = await toBase64(file);
+                const pureBase64 = base64Data.split(',')[1];
 
+                // استخدام نموذج Gemini 1.5 Flash السريع والحديث
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
                 
-                const res = await fetch(apiUrl, {
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{
                             parts: [
-                                { text: "قم بقراءة جميع النصوص العربية والإنجليزية الموجودة في هذه الصورة بدقة شديدة ووضوح، ثم وصف محتواها باختصار لمساعدة شخص كفيف." },
-                                { inline_data: { mime_type: imageInput.type, data: base64Data } }
+                                { text: "قم بقراءة جميع النصوص العربية والإنجليزية الظاهرة في هذه الصورة بدقة شديدة ووضوح، ثم قم بوصف محتواها باختصار ومفيد لمساعدة شخص كفيف." },
+                                { inline_data: { mime_type: file.type, data: pureBase64 } }
                             ]
                         }]
                     })
                 });
 
-                const data = await res.json();
+                const data = await response.json();
                 
                 if (data.candidates && data.candidates[0].content.parts[0].text) {
-                    const textResult = data.candidates[0].content.parts[0].text;
-                    resultDiv.innerText = textResult;
+                    extractedText = data.candidates[0].content.parts[0].text;
+                    resultDiv.innerText = extractedText;
                     
-                    // قراءة النص صوتاً تلقائياً
-                    speakText(textResult);
+                    // إظهار زر الصوت وتشغيل الناطق الآلي
+                    speakBtn.style.display = 'flex';
+                    speakCurrentText();
                 } else {
-                    resultDiv.innerText = 'عذراً، لم نتمكن من استخلاص نص واضح من الصورة. جرب التقاطها بضوء أفضل.';
+                    resultDiv.innerText = 'عذراً، لم نتمكن من العثور على نصوص واضحة في الصورة. حاول التقاط صورة بضوء أفضل.';
                 }
 
             } catch (error) {
                 console.error(error);
-                resultDiv.innerText = 'حدث خطأ أثناء الاتصال بالخادم. تحقق من الإنترنت وحاول مرة أخرى.';
+                resultDiv.innerText = 'حدث خطأ في الاتصال بالشبكة أو الخادم. تأكد من اتصالك بالإنترنت.';
             }
         }
 
@@ -134,13 +256,17 @@
             });
         }
 
-        function speakText(text) {
+        function speakCurrentText() {
+            if (!extractedText) return;
+            
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // إيقاف أي قراءة سابقة
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'ar-SA'; // لغة عربية واضحة
-                utterance.rate = 1.0; // سرعة طبيعية
+                window.speechSynthesis.cancel(); // إيقاف أي كلام قديم
+                const utterance = new SpeechSynthesisUtterance(extractedText);
+                utterance.lang = 'ar-SA'; // نطق عربي واضح
+                utterance.rate = 1.0;     // سرعة طبيعية
                 window.speechSynthesis.speak(utterance);
+            } else {
+                alert('عذراً، متصفحك لا يدعم خاصية التحدث الصوتي.');
             }
         }
     </script>
