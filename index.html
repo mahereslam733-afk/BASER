@@ -160,8 +160,8 @@
 
             const base64Image = captureImageAsBase64();
             
-            // تم التحديث لاستخدام أحدث وأسرع نموذج مدعوم للصور gemini-2.0-flash
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            // التحديث إلى أحدث نموذج مستقر gemini-3.6-flash
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
 
             const promptText = "أنت مساعد ذكي للمكفوفين. انظر إلى هذه الصورة بدقة شديدة. اقرأ واستخرج أي نص مكتوب فيها بالكامل وبالحرف الواحد باللغة العربية أو الإنجليزية. إذا لم يكن هناك نص، صف الأشياء والبيئة بوضوح تام وبجملة قصيرة بالعربية الفصحى.";
 
@@ -189,9 +189,9 @@
                 const data = await response.json();
 
                 if (data.error) {
-                    const errMessage = "خطأ من جوجل: " + (data.error.message || "تأكد من صحة المفتاح");
+                    const errMessage = "خطأ API: " + (data.error.message || "تأكد من صحة المفتاح");
                     resultText.innerText = errMessage;
-                    speakArabic("حدث خطأ في استجابة الخادم.");
+                    speakArabic("عذراً، هناك مشكلة في مفتاح الـ أي بي آي.");
                     return;
                 }
 
