@@ -139,8 +139,8 @@
         });
 
         function captureImageAsBase64() {
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
+            canvas.width = video.videoWidth || 1280;
+            canvas.height = video.videoHeight || 720;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             return canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
@@ -159,9 +159,11 @@
             resultText.innerText = "جاري المعالجة وقراءة النص...";
 
             const base64Image = captureImageAsBase64();
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            
+            // تم التحديث لاستخدام أحدث وأسرع نموذج مدعوم للصور gemini-2.0-flash
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-            const promptText = "أنت مساعد ذكي للمكفوفين. اقرأ أي نص مكتوب في هذه الصورة بالكامل وبالحرف الواحد باللغة العربية أو الإنجليزية. إذا لم يكن هناك نص، صف الأشياء والبيئة بوضوح تام وبجملة قصيرة بالعربية الفصحى.";
+            const promptText = "أنت مساعد ذكي للمكفوفين. انظر إلى هذه الصورة بدقة شديدة. اقرأ واستخرج أي نص مكتوب فيها بالكامل وبالحرف الواحد باللغة العربية أو الإنجليزية. إذا لم يكن هناك نص، صف الأشياء والبيئة بوضوح تام وبجملة قصيرة بالعربية الفصحى.";
 
             const payload = {
                 contents: [{
@@ -187,9 +189,9 @@
                 const data = await response.json();
 
                 if (data.error) {
-                    const errDetails = data.error.message || "خطأ غير معروف من خادم جوجل";
-                    resultText.innerText = "خطأ API: " + errDetails;
-                    speakArabic("عذراً، هناك مشكلة في مفتاح الـ أي بي آي أو الصلاحيات.");
+                    const errMessage = "خطأ من جوجل: " + (data.error.message || "تأكد من صحة المفتاح");
+                    resultText.innerText = errMessage;
+                    speakArabic("حدث خطأ في استجابة الخادم.");
                     return;
                 }
 
@@ -198,14 +200,13 @@
                     resultText.innerText = aiDescription;
                     speakArabic(aiDescription);
                 } else {
-                    // إذا كان الاستدعاء نجح لكن لم يرجع نصاً، نطبع الاستجابة لنفهم السبب
-                    resultText.innerText = "استجابة فارغة أو غير متوقعة من الموديل.";
-                    speakArabic("عذراً، لم يتمكن الذكاء الاصطناعي من استخراج بيانات من هذه الصورة.");
+                    resultText.innerText = "لم يتم العثور على نص أو وصف في الاستجابة.";
+                    speakArabic("عذراً، لم أتمكن من قراءة محتوى الصورة.");
                 }
             } catch (error) {
                 console.error(error);
                 resultText.innerText = "خطأ شبكة: " + error.message;
-                speakArabic("حدث خطأ في الاتصال بالإنترنت.");
+                speakArabic("حدث خطأ في الاتصال بالشبكة.");
             }
         }
 
