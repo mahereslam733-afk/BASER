@@ -13,7 +13,7 @@
 </head>
 <body class="bg-slate-900 text-white min-h-screen flex flex-col justify-between">
 
-    <!-- نافذة البدء السريع لتنشيط الصوت (تختفي فور النقر عليها) -->
+    <!-- نافذة البدء السريع لتنشيط الصوت والكاميرا -->
     <div id="welcomeOverlay" class="fixed inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center p-6 text-center">
         <div class="bg-indigo-900 border-2 border-indigo-500 p-6 rounded-3xl max-w-sm shadow-2xl">
             <h2 class="text-2xl font-bold mb-3">مرحباً بك في تطبيق قارئ 👁️</h2>
@@ -73,7 +73,7 @@
         تطبيق قارئ - نطق عربي فصيح ونقي
     </footer>
 
-    <!-- سكريبت البرمجة المُصلح -->
+    <!-- سكريبت البرمجة المُحدث -->
     <script>
         const video = document.getElementById('cameraStream');
         const canvas = document.getElementById('snapshotCanvas');
@@ -87,7 +87,6 @@
 
         let lastSpokenText = "تطبيق قارئ جاهز للعمل.";
 
-        // حفظ واسترجاع مفتاح API
         const savedKey = localStorage.getItem('gemini_api_key');
         if (savedKey) apiKeyInput.value = savedKey;
 
@@ -95,31 +94,23 @@
             localStorage.setItem('gemini_api_key', apiKeyInput.value.trim());
         });
 
-        // دالة تفعيل الصوت (Text-to-Speech) بطريقة مضمونة
         function speakArabic(text) {
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // إلغاء أي نطق قديم
-                
+                window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'ar-SA';
-                utterance.rate = 0.88; // سرعة مريحة جداً للمكفوفين
+                utterance.rate = 0.88;
                 utterance.pitch = 1.0;
 
-                // محاولة اختيار أفضل صوت عربي متاح في الجهاز
                 const voices = window.speechSynthesis.getVoices();
                 const arabicVoice = voices.find(v => v.lang.startsWith('ar') || v.includes && v.includes('ar'));
-                if (arabicVoice) {
-                    utterance.voice = arabicVoice;
-                }
+                if (arabicVoice) utterance.voice = arabicVoice;
 
                 window.speechSynthesis.speak(utterance);
                 lastSpokenText = text;
-            } else {
-                console.warn("المتصفح لا يدعم ميزة النطق الصوتي.");
             }
         }
 
-        // تشغيل الكاميرا الخلفية
         async function initCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -139,18 +130,14 @@
             }
         }
 
-        // عند النقر على زر البدء الأول (يحل مشكلة حظر الصوت في المتصفحات)
         startAppBtn.addEventListener('click', () => {
-            welcomeOverlay.style.display = 'none'; // إخفاء نافذة الترحيب
-            initCamera(); // تشغيل الكاميرا
-            
-            // نطق ترحيبي بعد التفعيل المباشر من المستخدم
+            welcomeOverlay.style.display = 'none';
+            initCamera();
             setTimeout(() => {
-                speakArabic("أهلاً بك في تطبيق قارئ. تم تفعيل الكاميرا والصوت بنجاح. أدخل مفتاحك ثم اضغط على زر التقاط وقراءة النص.");
+                speakArabic("أهلاً بك في تطبيق قارئ. تم تفعيل الكاميرا والصوت بنجاح.");
             }, 500);
         });
 
-        // التقاط الصورة
         function captureImageAsBase64() {
             canvas.width = video.videoWidth || 1280;
             canvas.height = video.videoHeight || 720;
@@ -159,7 +146,6 @@
             return canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
         }
 
-        // تحليل الصورة بـ Gemini API
         async function analyzeWithGemini() {
             const apiKey = apiKeyInput.value.trim();
             if (!apiKey) {
@@ -169,39 +155,58 @@
                 return;
             }
 
-            speakArabic("جاري التقاط الصورة وقراءة النص، يرجى الانتظار...");
+            speakArabic("جاري التقاط الصورة وتحليلها، يرجى الانتظار...");
             resultText.innerText = "جاري المعالجة وقراءة النص...";
 
             const base64Image = captureImageAsBase64();
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+            
+            // استخدام نموذج gemini-1.5-flash الأكثر استقراراً في استجابات الصور
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
-            const promptText = "أنت مساعد ذكي للمكفوفين. انظر إلى هذه الصورة المُلتقطة بالكاميرا. استخرج وقرأ أي نص مكتوب (بالعربية أو الإنجليزية) بداخلها حرفياً وكاملاً. وإذا لم يوجد نص مكتوب، قم بوصف الأشياء والبيئة الموجودة أمام الكاميرا بوضوح تام وبأقصر جمل ممكنة باللغة العربية الفصحى.";
+            const promptText = "أنت مساعد ذكي للمكفوفين. انظر إلى هذه الصورة بدقة شديدة. اقرأ واستخرج أي نص مكتوب فيها بالكامل. وإذا لم يوجد نص، صف المشهد باختصار شديد باللغة العربية الفصحى.";
 
             const payload = {
-                contents: [{ parts: [{ text: promptText }, { inline_data: { mime_type: "image/jpeg", data: base64Image } }] }]
+                contents: [{
+                    parts: [
+                        { text: promptText },
+                        {
+                            inline_data: {
+                                mime_type: "image/jpeg",
+                                data: base64Image
+                            }
+                        }
+                    ]
+                }]
             };
 
             try {
-                const responseData = await fetch(apiUrl, {
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
-                const data = await responseData.json();
+                const data = await response.json();
 
-                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                if (data.error) {
+                    const errMessage = "خطأ من الخادم: " + (data.error.message || "تأكد من صحة مفتاح الـ API");
+                    resultText.innerText = errMessage;
+                    speakArabic("حدث خطأ في النظام، يرجى مراجعة مفتاح الـ أي بي آي.");
+                    return;
+                }
+
+                if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
                     const aiDescription = data.candidates[0].content.parts[0].text;
                     resultText.innerText = aiDescription;
                     speakArabic(aiDescription);
                 } else {
-                    const errorMsg = "عذراً، لم أتمكن من العثور على نص واضح في الصورة، حاول توجيه الكاميرا بشكل أفضل.";
+                    const errorMsg = "عذراً، لم أتمكن من قراءة محتوى الصورة بوضوح.";
                     resultText.innerText = errorMsg;
                     speakArabic(errorMsg);
                 }
             } catch (error) {
                 console.error(error);
-                const netErr = "حدث خطأ في الاتصال، تأكد من صحة المفتاح والإنترنت.";
+                const netErr = "حدث خطأ في الاتصال بالشبكة.";
                 resultText.innerText = netErr;
                 speakArabic(netErr);
             }
