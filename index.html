@@ -224,5 +224,22 @@
         captureBtn.addEventListener('click', analyzeWithGemini);
         repeatBtn.addEventListener('click', () => speakArabic(lastSpokenText));
     </script>
+    <script>
+    // كود لإخفاء أي عنصر خاص بإدخال المفتاح إذا وجد في الصفحة
+    document.addEventListener("DOMContentLoaded", function() {
+        // ابحث عن الحاوية الخاصة بالـ API أو خانة الإدخال وقم بإخفائها
+        const apiBoxes = document.querySelectorAll('input[type="password"], label[for="apiKeyInput"], button');
+        apiBoxes.forEach(el => {
+            if (el.id === 'apiKeyInput' || el.innerText.includes('مفتاح') || (el.previousElementSibling && el.previousElementSibling.innerText && el.previousElementSibling.innerText.includes('مفتاح'))) {
+                // إخفاء العنصر الأب بالكامل إذا كان يحتوي على حقل المفتاح
+                let parent = el.closest('div');
+                if (parent && (parent.innerText.includes('Gemini API') || parent.innerText.includes('مفتاح'))) {
+                    parent.style.display = 'none';
+                }
+            }
+        });
+    });
+</script>
+
 </body>
 </html>
