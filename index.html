@@ -240,6 +240,30 @@
         });
     });
 </script>
+ <script>
+    // كود تهيئة وتنشيط محرك الصوت مسبقاً لمنع أي تأخير في النطق
+    document.addEventListener("DOMContentLoaded", function() {
+        if ('speechSynthesis' in window) {
+            // تشغيل أمر صامت وفارغ لجعْل المتصفح يحمل محرك الصوت في الذاكرة فوراً
+            const dummyUtterance = new SpeechSynthesisUtterance("");
+            dummyUtterance.volume = 0;
+            window.speechSynthesis.speak(dummyUtterance);
+        }
+    });
+
+    // تحسين دالة النطق لتكون فورية وسريعة جداً
+    function speakFast(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); // إلغاء أي كلام قديم فوراً
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ar-SA';
+            utterance.rate = 0.95; // سرعة ممتازة وواضحة
+            utterance.pitch = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+</script>
+   
 
 </body>
 </html>
