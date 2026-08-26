@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق قارئ - الذكاء الاصطناعي للمكفوفين</title>
-    <!-- استدعاء Tailwind CSS للتصميم -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
@@ -60,7 +59,7 @@
             </button>
         </div>
 
-        <!-- صندوق عرض النص المستخرج أو الأخطاء -->
+        <!-- صندوق عرض النص المستخرج -->
         <div class="w-full mt-6 bg-slate-800 border border-slate-700 p-4 rounded-2xl shadow-inner">
             <h2 class="text-sm font-semibold text-indigo-300 mb-1">النتيجة والتحليل:</h2>
             <p id="resultText" class="text-slate-100 min-h-[50px] text-lg">الكاميرا جاهزة...</p>
@@ -143,7 +142,7 @@
             canvas.height = video.videoHeight || 720;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            return canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+            return canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
         }
 
         async function analyzeWithGemini() {
@@ -160,10 +159,10 @@
 
             const base64Image = captureImageAsBase64();
             
-            // التحديث إلى أحدث نموذج مستقر gemini-3.6-flash
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
+            // استخدام نموذج gemini-1.5-flash الثابت والمدعوم تماماً لطلبات المتصفح
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
-            const promptText = "أنت مساعد ذكي للمكفوفين. انظر إلى هذه الصورة بدقة شديدة. اقرأ واستخرج أي نص مكتوب فيها بالكامل وبالحرف الواحد باللغة العربية أو الإنجليزية. إذا لم يكن هناك نص، صف الأشياء والبيئة بوضوح تام وبجملة قصيرة بالعربية الفصحى.";
+            const promptText = "أنت مساعد ذكي للمكفوفين. انظر إلى هذه الصورة بدقة شديدة. اقرأ واستخرج أي نص مكتوب فيها بالكامل باللغة العربية أو الإنجليزية. وإذا لم يوجد نص، صف البيئة المحيطة باختصار شديد باللغة العربية الفصحى.";
 
             const payload = {
                 contents: [{
@@ -188,10 +187,10 @@
 
                 const data = await response.json();
 
-                if (data.error) {
-                    const errMessage = "خطأ API: " + (data.error.message || "تأكد من صحة المفتاح");
-                    resultText.innerText = errMessage;
-                    speakArabic("عذراً، هناك مشكلة في مفتاح الـ أي بي آي.");
+                if (!response.ok) {
+                    const errReason = data.error ? data.error.message : "خطأ غير معروف";
+                    resultText.innerText = "خطأ من الخادم: " + errReason;
+                    speakArabic("عذراً، مفتاح الـ أي بي آي غير صالح أو تم رفض الطلب.");
                     return;
                 }
 
@@ -200,12 +199,12 @@
                     resultText.innerText = aiDescription;
                     speakArabic(aiDescription);
                 } else {
-                    resultText.innerText = "لم يتم العثور على نص أو وصف في الاستجابة.";
+                    resultText.innerText = "لم يتم العثور على نص أو وصف في الصورة.";
                     speakArabic("عذراً، لم أتمكن من قراءة محتوى الصورة.");
                 }
             } catch (error) {
                 console.error(error);
-                resultText.innerText = "خطأ شبكة: " + error.message;
+                resultText.innerText = "خطأ في الاتصال بالشبكة.";
                 speakArabic("حدث خطأ في الاتصال بالشبكة.");
             }
         }
