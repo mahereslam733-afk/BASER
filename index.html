@@ -263,6 +263,22 @@
         }
     }
 </script>
+<script>
+    // تعديل زر الالتقاط ليقوم بنطق كلمة فورية لتنشيط قناة الصوت قبل وصول رد السيرفر
+    const originalCaptureBtn = document.getElementById('captureBtn');
+    if (originalCaptureBtn) {
+        // إنشاء حدث إضافي يشتغل قبل تحليل Gemini مباشرة
+        originalCaptureBtn.addEventListener('click', function() {
+            if ('speechSynthesis' in window) {
+                // نطق فوري وصريح يلغي أي تأخير زمني ويفتح قناة الصوت في المتصفح
+                const instantUtterance = new SpeechSynthesisUtterance("ثوانٍ معدودة");
+                instantUtterance.lang = 'ar-SA';
+                instantUtterance.rate = 1.2; // نطق سريع
+                window.speechSynthesis.speak(instantUtterance);
+            }
+        }, true); // ضبط الحدث ليتنفذ أولاً
+    }
+</script>
    
 
 </body>
