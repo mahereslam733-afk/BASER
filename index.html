@@ -159,8 +159,8 @@
 
             const base64Image = captureImageAsBase64();
             
-            // استخدام نموذج gemini-1.5-flash الثابت والمدعوم تماماً لطلبات المتصفح
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            // تم تحديث اسم النموذج إلى gemini-3.5-flash المتوافق والنشط حالياً
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
 
             const promptText = "أنت مساعد ذكي للمكفوفين. انظر إلى هذه الصورة بدقة شديدة. اقرأ واستخرج أي نص مكتوب فيها بالكامل باللغة العربية أو الإنجليزية. وإذا لم يوجد نص، صف البيئة المحيطة باختصار شديد باللغة العربية الفصحى.";
 
@@ -190,7 +190,7 @@
                 if (!response.ok) {
                     const errReason = data.error ? data.error.message : "خطأ غير معروف";
                     resultText.innerText = "خطأ من الخادم: " + errReason;
-                    speakArabic("عذراً، مفتاح الـ أي بي آي غير صالح أو تم رفض الطلب.");
+                    speakArabic("عذراً، حدث خطأ في استجابة الخادم.");
                     return;
                 }
 
