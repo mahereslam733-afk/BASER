@@ -22,7 +22,7 @@
     <!-- المحتوى الرئيسي -->
     <main class="container mx-auto p-4 flex-1 flex flex-col items-center justify-center max-w-md">
         
-        <!-- حقل إدخال مفتاح الـ API (يمكن حفظه أو إدخاله مرة واحدة) -->
+        <!-- حقل إدخال مفتاح الـ API -->
         <div class="w-full mb-4">
             <input type="password" id="apiKeyInput" placeholder="أدخل مفتاح Gemini API الخاص بك هنا..." 
                 class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
@@ -64,10 +64,10 @@
 
     <!-- الفوتر -->
     <footer class="bg-slate-950 text-center py-3 text-slate-500 text-xs">
-        تطبيق قارئ - مدعوم بتقنيات الويب الحديثة
+        تطبيق قارئ - نطق عربي فصيح ونقي
     </footer>
 
-    <!-- سكريبت البرمجة والربط مع Gemini API -->
+    <!-- سكريبت البرمجة ونظام الصوت النقي -->
     <script>
         const video = document.getElementById('cameraStream');
         const canvas = document.getElementById('snapshotCanvas');
@@ -79,7 +79,7 @@
 
         let lastSpokenText = "تطبيق قارئ جاهز للعمل. أدخل مفتاح واجهة البرمجة ثم اضغط على زر التقاط.";
 
-        // حفظ واسترجاع مفتاح API محلياً لراحة الاستخدام
+        // حفظ واسترجاع مفتاح API محلياً
         const savedKey = localStorage.getItem('gemini_api_key');
         if (savedKey) apiKeyInput.value = savedKey;
 
@@ -87,7 +87,7 @@
             localStorage.setItem('gemini_api_key', apiKeyInput.value.trim());
         });
 
-        // تشغيل الكاميرا الخلفية إن وجدت
+        // تشغيل الكاميرا الخلفية
         async function initCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -102,19 +102,36 @@
             }
         }
 
-        // وظيفة التحدث الصوتي باللغة العربية (Text-to-Speech)
+        // دظيفة قراءة صوتية باللغة العربية النقية والفصحى
         function speakArabic(text) {
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // إيقاف أي نطق سابق
+                window.speechSynthesis.cancel(); // إيقاف أي قراءة سابقة فوراً
+                
                 const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'ar-SA';
-                utterance.rate = 0.9; 
-                utterance.pitch = 1.0;
+                utterance.lang = 'ar-SA'; // تعيين اللغة العربية
+                utterance.rate = 0.88; // سرعة هادئة ومناسب جداً للمكفوفين لفهم الحروف والكلمات
+                utterance.pitch = 1.0; // نبرة صوت طبيعية
+
+                // البحث عن أفضل صوت عربي نقي متاح في جهاز المستخدم (Google أو Apple أو Microsoft)
+                const voices = window.speechSynthesis.getVoices();
+                const arabicVoice = voices.find(voice => voice.lang.startsWith('ar') || voice.lang.includes('ar-'));
+                
+                if (arabicVoice) {
+                    utterance.voice = arabicVoice;
+                }
+
                 window.speechSynthesis.speak(utterance);
                 lastSpokenText = text;
             } else {
                 alert("متصفحك لا يدعم خاصية القراءة الصوتية.");
             }
+        }
+
+        // تحميل الأصوات المتاحة في المتصفح مسبقاً (بعض المتصفحات تتطلب هذا الحدث)
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
         }
 
         // التقاط الصورة من الفيديو وتحويلها إلى Base64
@@ -123,11 +140,10 @@
             canvas.height = video.videoHeight || 480;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            // استخراج البيانات بصيغة JPEG
             return canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
         }
 
-        // إرسال الصورة إلى Gemini API لتحليلها واستخراج النصوص
+        // إرسال الصورة إلى Gemini API لتحليلها واستخراج النصوص بوضوح
         async function analyzeWithGemini() {
             const apiKey = apiKeyInput.value.trim();
             if (!apiKey) {
@@ -137,15 +153,13 @@
                 return;
             }
 
-            speakArabic("جاري التقاط الصورة وتحليلها بواسطة الذكاء الاصطناعي، يرجى الانتظار...");
+            speakArabic("جاري التقاط الصورة وتحليلها بدقة، يرجى الانتظار...");
             resultText.innerText = "جاري المعالجة والتحليل...";
 
             const base64Image = captureImageAsBase64();
-
-            // استخدام نموذج gemini-2.5-flash الأسرع والأفضل في معالجة الصور والنصوص
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
-            const promptText = "أنت مساعد ذكي للمكفوفين. انظر إلى هذه الصورة بدقة. إذا كان هناك أي نص مكتوب (بالعربية أو الإنجليزية)، قم بقراءته واستخراجه حرفياً. وإلا، قم بوصف المشهد أو العناصر المهمة باختصار شديد وبشكل واضح ومباشر باللغة العربية الفصحى ليتم قراءتها صوتياً.";
+            const promptText = "أنت مساعد ذكي للمكفوفين. انظر إلى هذه الصورة بدقة. إذا كان هناك أي نص مكتوب (بالعربية أو الإنجليزية)، قم بقراءته واستخراجه كاملاً وصحيحاً. وإن لم يوجد نص، قم بوصف المشهد أو العناصر والأشياء الموجودة أمامه باختصار شديد ووضوح تام باللغة العربية الفصحى البحتة لكي تُقرأ صوتياً.";
 
             const payload = {
                 contents: [
@@ -164,7 +178,6 @@
             };
 
             try {
-                const response = لم يتم جلب استجابة;
                 const responseData = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -198,7 +211,10 @@
 
         window.addEventListener('load', () => {
             initCamera();
-            speakArabic("مرحباً بك في تطبيق قارئ. أدخل مفتاحك ثم اضغط على زر التقاط وقراءة النص.");
+            // تأخير بسيط لضمان تحميل أصوات النظام العربية بنجاح عند فتح الصفحة
+            setTimeout(() => {
+                speakArabic("مرحباً بك في تطبيق قارئ. أدخل مفتاحك ثم اضغط على زر التقاط وقراءة النص.");
+            }, 1000);
         });
     </script>
 </body>
