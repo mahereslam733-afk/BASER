@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>قارئ المستندات الذكي - الحل الجذري</title>
+    <title>تطبيق قارئ المستندات الذكي</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
@@ -12,27 +12,27 @@
 </head>
 <body class="bg-slate-900 text-white min-h-screen flex flex-col justify-between p-4">
 
-    <!-- شاشة البداية -->
+    <!-- شاشة البداية لتفعيل الصوت والتطبيق -->
     <div id="welcomeOverlay" class="fixed inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 text-center">
         <div class="bg-indigo-900 border-4 border-indigo-500 p-8 rounded-3xl max-w-sm shadow-2xl">
-            <h2 class="text-3xl font-bold mb-4">القارئ الفصيح 👁️</h2>
-            <p class="text-indigo-200 text-base mb-8">الحل النهائي لقراءة النصوص والكتابة الأكاديمية بدقة تامة.</p>
+            <h2 class="text-3xl font-bold mb-4">قارئ المستندات 👁️</h2>
+            <p class="text-indigo-200 text-base mb-8">التطبيق المطور لقراءة الكتب والأبحاث العربية بدقة متناهية.</p>
             <button id="startAppBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-5 px-6 rounded-2xl shadow-lg text-xl active:scale-95 transition">
-                🚀 ابدأ الآن
+                🚀 اضغط للبدء
             </button>
         </div>
     </div>
 
     <!-- الهيدر -->
     <header class="bg-indigo-800 shadow-lg p-4 text-center rounded-2xl mb-4">
-        <h1 class="text-2xl font-extrabold">قارئ المستندات الذكي</h1>
-        <p class="text-indigo-200 text-xs mt-1">النسخة الجذرية المطورة</p>
+        <h1 class="text-2xl font-extrabold">تطبيق قارئ المستندات</h1>
+        <p class="text-indigo-200 text-xs mt-1">الوضع الذكي المطور للأبحاث</p>
     </header>
 
     <!-- المحتوى الرئيسي -->
     <main class="container mx-auto flex-1 flex flex-col items-center justify-center max-w-md w-full">
         
-        <!-- نافذة الكاميرا -->
+        <!-- نافذة الكاميرا المباشرة -->
         <div class="relative w-full aspect-[3/4] bg-slate-800 rounded-3xl overflow-hidden shadow-2xl border-4 border-indigo-500 mb-4 flex items-center justify-center">
             <video id="cameraStream" autoplay playsinline muted class="w-full h-full object-cover"></video>
             <canvas id="snapshotCanvas" class="hidden"></canvas>
@@ -47,9 +47,9 @@
                 <span>📸 التقاط وقراءة الصفحة</span>
             </button>
 
-            <!-- زر المعرض (الخيار الأضمن 100%) -->
+            <!-- زر المعرض (لضمان جودة الصورة 100%) -->
             <label class="w-full bg-blue-600 hover:bg-blue-500 active:scale-95 transition text-white text-md font-bold py-3 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3 cursor-pointer">
-                <span>📁 اختر صورة من المعرض</span>
+                <span>📁 اختر ورقة من المعرض</span>
                 <input type="file" id="galleryInput" accept="image/*" class="hidden">
             </label>
 
@@ -59,14 +59,15 @@
             </button>
         </div>
 
-        <!-- صندوق عرض النص -->
+        <!-- صندوق عرض النص المستخرج -->
         <div class="w-full mt-4 bg-slate-800 border border-slate-700 p-4 rounded-2xl shadow-inner">
-            <h2 class="text-xs font-semibold text-indigo-300 mb-1">النص المستخرج:</h2>
-            <p id="resultText" class="text-slate-100 min-h-[50px] text-sm leading-relaxed">التقط صورة لتبدأ القراءة الصحيحة...</p>
+            <h2 class="text-xs font-semibold text-indigo-300 mb-1">النص الصحيح المستخرج:</h2>
+            <p id="resultText" class="text-slate-100 min-h-[50px] text-sm leading-relaxed">وجه الكاميرا نحو الكتاب واضغط التقاط...</p>
         </div>
 
     </main>
 
+    <!-- سكريبت التشغيل -->
     <script>
         const video = document.getElementById('cameraStream');
         const canvas = document.getElementById('snapshotCanvas');
@@ -119,29 +120,55 @@
 
         startAppBtn.addEventListener('click', () => {
             welcomeOverlay.style.display = 'none';
-            initCommand();
-        });
-
-        async function initCommand() {
-            await initCamera();
+            initCamera();
             setTimeout(() => {
                 speakArabic("التطبيق جاهز، التقط صورة الصفحة.");
             }, 600);
-        }
+        });
 
-        // محاكاة معالجة ذكية متقدمة جداً تمنع الرموز الخاطئة
-        async function processImageFinal(imageDataUrl) {
-            speakArabic("جاري فحص المستند بدقة عالية، انتظر قليلاً...");
-            resultText.innerText = "جاري تحليل وتصفية النص...";
+        // دالة الاتصال بالمحرك السحابي العالي الدقة لقراءة الكتب العربية
+        async function processImageServer(base64Image) {
+            speakArabic("جاري قراءة الصفحة بدقة عالية، انتظر لحظات...");
+            resultText.innerText = "جاري قراءة وتحليل النص العربي...";
 
-            // محاكاة استخراج نص أكاديمي سليم ونظيف من أي تشويش (بديل للمكتبات الضعيفة)
-            setTimeout(() => {
-                // نص افتراضي نظيف كمثال للحل الجذري، ويمكن ربطه بخدمة OCR سحابية مدفوعة دقيقة جداً
-                let cleanText = "يؤدي تخفيض سعر الصرف إلى ارتفاع أسعار الواردات وزيادة تنافسية الصادرات المحلية، مما يدفع الجهاز الإنتاجي نحو توفير بدائل الواردات بمرونة عالية.";
-                
-                resultText.innerText = cleanText;
-                speakArabic("النص هو: " + cleanText);
-            }, 1500);
+            try {
+                const formData = new FormData();
+                formData.append('base64Image', base64Image);
+                formData.append('language', 'ara');
+                formData.append('isOverlayRequired', 'false');
+                formData.append('OCREngine', '2'); // محرك ذكي متطور لقراءة الأبحاث
+                formData.append('apikey', 'K81877478888957');
+
+                const response = await fetch('https://api.ocr.space/parse/image', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data && data.ParsedResults && data.ParsedResults.length > 0) {
+                    let text = data.ParsedResults[0].ParsedText.trim();
+                    
+                    // تنظيف النص وترتيبه ليناسب القراءة الصوتية
+                    text = text.replace(/\r/g, '').replace(/\n+/g, '. ');
+                    text = text.replace(/[|•_~`{}\[\]\\@#$%^&*+=<>""„«»]/g, ' ');
+
+                    if (text.length > 5) {
+                        resultText.innerText = text;
+                        speakArabic("النص هو: " + text);
+                    } else {
+                        resultText.innerText = "لم يتم العثور على كلمات واضحة، حاول تصوير الصفحة بوضوح أفضل.";
+                        speakArabic("لم أتمكن من العثور على كلمات واضحة، حاول تحسين إضاءة الصفحة.");
+                    }
+                } else {
+                    resultText.innerText = "تعذر قراءة المستند، يرجى استخدام زر المعرض.";
+                    speakArabic("تعذر قراءة المستند، يرجى استخدام زر المعرض لتصوير الورقة بدقة.");
+                }
+            } catch (err) {
+                console.error(err);
+                resultText.innerText = "خطأ في الاتصال بالشبكة.";
+                speakArabic("حدث خطأ في الاتصال بالإنترنت.");
+            }
         }
 
         captureBtn.addEventListener('click', () => {
@@ -153,7 +180,7 @@
             canvas.height = video.videoHeight || 720;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            processImageFinal(canvas.toDataURL('image/jpeg', 0.95));
+            processImageServer(canvas.toDataURL('image/jpeg', 0.95));
         });
 
         galleryInput.addEventListener('change', (event) => {
@@ -161,7 +188,7 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    processImageFinal(e.target.result);
+                    processImageServer(e.target.result);
                 };
                 reader.readAsDataURL(file);
             }
