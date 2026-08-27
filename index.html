@@ -73,7 +73,7 @@
         قارئ المستندات الذكي - يعمل بدون مفاتيح أو إعدادات
     </footer>
 
-    <!-- سكريبت المعالجة والفلترة الجبارة -->
+    <!-- سكريبت المعالجة المحسن -->
     <script>
         const video = document.getElementById('cameraStream');
         const canvas = document.getElementById('snapshotCanvas');
@@ -132,8 +132,8 @@
         });
 
         async function processImage(imageSource) {
-            speakArabic("جاري قراءة الورقة وتصفية الكلمات، يرجى الانتظار قليلاً...");
-            resultText.innerText = "جاري تصفية واستخراج النصوص النقية...";
+            speakArabic("جاري قراءة الورقة، يرجى الانتظار قليلاً...");
+            resultText.innerText = "جاري استخراج النصوص...";
 
             try {
                 const result = await Tesseract.recognize(
@@ -146,29 +146,28 @@
 
                 let rawText = result.data.text ? result.data.text : "";
                 
-                // فلترة صارمة جداً تحذف الحروف اللاتينية والرموز العشوائية وتترك الكلمات والأرقام العربية المفيدة فقط
+                // تنظيف الفلتر لإظهار الحروف العربية والأرقام بوضوح تام ومنع اللخبطة
                 let cleanLines = rawText.split('\n')
                     .map(line => {
-                        return line.replace(/[a-zA-Z]/g, '') // إزالة أي إنجليزي
-                                   .replace(/[|•_~`{}\[\]\\@#$%^&*+=<>""„«»()?!]/g, ' ') // إزالة الرموز
+                        return line.replace(/[a-zA-Z]/g, '') 
+                                   .replace(/[|•_~`{}\[\]\\@#$%^&*+=<>""„«»()?!]/g, ' ')
                                    .replace(/\s+/g, ' ')
                                    .trim();
                     })
                     .filter(line => {
                         let arabicLettersCount = (line.match(/[\u0600-\u06FF]/g) || []).length;
                         let numbersCount = (line.match(/[0-9]/g) || []).length;
-                        // شرط: السطر لازم يكون فيه حروف عربية واضحة أو أرقام كافية عشان نعتبره مفيد
-                        return (arabicLettersCount >= 3 || numbersCount >= 4);
+                        return (arabicLettersCount >= 2 || numbersCount >= 3);
                     });
 
                 let finalCleanText = cleanLines.join(' . ');
 
-                if (finalCleanText.length > 5) {
+                if (finalCleanText.length > 3) {
                     resultText.innerText = finalCleanText;
                     speakArabic("البيانات المستخرجة هي: " + finalCleanText);
                 } else {
-                    resultText.innerText = "لم يتم التقاط كلمات واضحة. حاول استخدام صورة واضحة من المعرض.";
-                    speakArabic("لم أتمكن من قراءة كلمات واضحة، حاول تصوير الورقة بوضوح واختيارها من المعرض.");
+                    resultText.innerText = "لم يتم التقاط كلمات واضحة. حاول استخدام صورة واضحة ومضاءة جيداً.";
+                    speakArabic("لم أتمكن من قراءة كلمات واضحة، حاول تصوير الورقة بوضوح أكبر.");
                 }
             } catch (error) {
                 console.error(error);
@@ -202,7 +201,7 @@
             }
         });
 
-        repeatBtn.addEventListener('click', () => speakArabic(lastSpokenText));
+        repeatBtn.addEventListener('click', () => speakArabic(lastSpokenTest));
     </script>
 </body>
 </html>
