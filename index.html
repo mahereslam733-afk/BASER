@@ -12,11 +12,11 @@
 </head>
 <body class="bg-slate-900 text-white min-h-screen flex flex-col justify-between p-4">
 
-    <!-- شاشة البداية لتفعيل الصوت والتطبيق لمساعدة المكفوف -->
+    <!-- شاشة البداية لتفعيل الصوت والتطبيق -->
     <div id="welcomeOverlay" class="fixed inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 text-center">
         <div class="bg-indigo-900 border-4 border-indigo-500 p-8 rounded-3xl max-w-sm shadow-2xl">
             <h2 class="text-3xl font-bold mb-4">تطبيق قارئ 👁️</h2>
-            <p class="text-indigo-200 text-base mb-8">جاهز لتشغيل الكاميرا وقراءة أي مستند أو ورقة حكومية فوراً وبصوت واضح.</p>
+            <p class="text-indigo-200 text-base mb-8">جاهز لتشغيل الكاميرا وقراءة أي مستند أو ورقة فوراً وبصوت واضح.</p>
             <button id="startAppBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-5 px-6 rounded-2xl shadow-lg text-xl active:scale-95 transition">
                 🚀 اضغط للبدء
             </button>
@@ -41,19 +41,19 @@
             </div>
         </div>
 
-        <!-- زرار التقاط وقراءة الكاميرا (الرئيسي الكبير) -->
+        <!-- أزرار التحكم -->
         <div class="w-full space-y-3">
             <button id="captureBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white text-xl font-extrabold py-4 px-6 rounded-2xl shadow-xl flex items-center justify-center gap-3">
                 <span>📸 اضغط لالتقاط وقراءة المستند</span>
             </button>
 
-            <!-- زرار لاختيار صورة من المعرض كبديل سريع -->
+            <!-- زر المعرض (الأضمن دائماً في الهواتف) -->
             <label class="w-full bg-blue-600 hover:bg-blue-500 active:scale-95 transition text-white text-md font-bold py-3 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3 cursor-pointer">
                 <span>📁 اختر ورقة من المعرض</span>
                 <input type="file" id="galleryInput" accept="image/*" class="hidden">
             </label>
 
-            <!-- زرار إعادة النطق -->
+            <!-- زر إعادة النطق -->
             <button id="repeatBtn" class="w-full bg-amber-600 hover:bg-amber-500 active:scale-95 transition text-white text-md font-semibold py-3 px-6 rounded-2xl shadow-md flex items-center justify-center gap-2">
                 <span>🔊 إعادة قراءة آخر نص</span>
             </button>
@@ -67,7 +67,7 @@
 
     </main>
 
-    <!-- سكريبت التشغيل المتكامل -->
+    <!-- سكريبت التشغيل المحدث -->
     <script>
         const video = document.getElementById('cameraStream');
         const canvas = document.getElementById('snapshotCanvas');
@@ -81,13 +81,12 @@
 
         let lastSpokenText = "التطبيق جاهز للاستخدام.";
 
-        // وظيفة النطق الصوتي الفصيح والواضح
         function speakArabic(text) {
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // إيقاف أي صوت قديم لتجنب التداخل
+                window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'ar-SA';
-                utterance.rate = 0.85; // سرعة هادئة ومفهومة جداً
+                utterance.rate = 0.85;
                 utterance.pitch = 1.0;
 
                 const voices = window.speechSynthesis.getVoices();
@@ -99,24 +98,22 @@
             }
         }
 
-        // تشغيل كاميرا الهاتف الخلفية تلقائياً
         async function initCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: { exact: 'environment' } }, 
+                    video: { facingMode: { ideal: 'environment' } }, 
                     audio: false 
                 });
                 video.srcObject = stream;
                 placeholder.style.display = 'none';
             } catch (err) {
                 try {
-                    // محاولة بديلة لو الكاميرا الخلفية مش متاح الوصول ليها بال exact
                     const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
                     video.srcObject = fallbackStream;
                     placeholder.style.display = 'none';
                 } catch (e) {
                     placeholder.innerHTML = "⚠️ تعذر تشغيل الكاميرا، استعمل زر المعرض.";
-                    speakArabic("تعذر تشغيل الكاميرا، يجدر استخدام زر المعرض.");
+                    speakArabic("تعذر تشغيل الكاميرا، يرجى استخدام زر المعرض.");
                 }
             }
         }
@@ -125,13 +122,13 @@
             welcomeOverlay.style.display = 'none';
             initCamera();
             setTimeout(() => {
-                speakArabic("أهلاً بك يا إسلام. تم تفعيل الكاميرا، وجهها نحو المستند واضغط زر التقاط.");
+                speakArabic("أهلاً بك يا إسلام. التطبيق جاهز، التقط صورة المستند.");
             }, 600);
         });
 
-        // دالة إرسال الصورة للمحرك السحابي الفائق ودقة قراءة العربي
+        // دالة إرسال الصورة للمحرك الاحتياطي المباشر
         async function processImage(base64Image) {
-            speakArabic("جاري قراءة وتحليل المستند، يرجى الانتظار...");
+            speakArabic("جاري قراءة المستند، يرجى الانتظار...");
             resultText.innerText = "جاري قراءة المستند...";
 
             try {
@@ -139,9 +136,8 @@
                 formData.append('base64Image', base64Image);
                 formData.append('language', 'ara');
                 formData.append('isOverlayRequired', 'false');
-                formData.append('scale', 'true');
-                formData.append('OCREngine', '2'); // المحرك الثاني الأقوى للخطوط العربية والأختام
-                formData.append('apikey', 'helloworld'); 
+                // مفتاح مخصص موثوق ومستقر لتجنب خطأ الرفض
+                formData.append('apikey', 'K81877478888957'); 
 
                 const response = await fetch('https://api.ocr.space/parse/image', {
                     method: 'POST',
@@ -158,21 +154,20 @@
                         resultText.innerText = extractedText;
                         speakArabic("النص الموجود هو: " + extractedText);
                     } else {
-                        resultText.innerText = "لم يتم العثور على نص واضح، اقترب من الورقة وحسن الإضاءة.";
-                        speakArabic("لم أتمكن من قراءة كلمات واضحة، حاول تحسين الإضاءة وتصوير الورقة بوضوح.");
+                        resultText.innerText = "لم يتم العثور على نص واضح، حاول مرة أخرى.";
+                        speakArabic("لم أتمكن من قراءة كلمات واضحة، حاول تصوير الورقة بوضوح أكبر.");
                     }
                 } else {
-                    resultText.innerText = "فشلت عملية قراءة المستند.";
-                    speakArabic("تعذر قراءة المستند، حاول مرة أخرى.");
+                    resultText.innerText = "تعذر قراءة المستند، جرب اختيار صورة من المعرض.";
+                    speakArabic("تعذر قراءة المستند، جرب اختيار صورة واضحة من المعرض.");
                 }
             } catch (error) {
                 console.error(error);
-                resultText.innerText = "خطأ في الاتصال بالإنترنت.";
+                resultText.innerText = "خطأ في الاتصال بالشبكة.";
                 speakArabic("حدث خطأ في الاتصال بالإنترنت.");
             }
         }
 
-        // أخذ لقطة من الكاميرا المباشرة وقراءتها
         captureBtn.addEventListener('click', () => {
             if (!video.srcObject) {
                 speakArabic("الكاميرا غير مفعلة.");
@@ -182,10 +177,9 @@
             canvas.height = video.videoHeight || 720;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            processImage(canvas.toDataURL('image/jpeg', 0.85));
+            processImage(canvas.toDataURL('image/jpeg', 0.9));
         });
 
-        // رفع صورة من المعرض وقراءتها
         galleryInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file) {
