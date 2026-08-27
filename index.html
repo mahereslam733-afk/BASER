@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق قارئ - الذكاء الاصطناعي للمكفوفين</title>
+    <title>تطبيق قارئ - الذكاء الاصطناعي المحلي</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- مكتبة التعرف على النصوص محلياً Tesseract.js -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
         body { font-family: 'Cairo', sans-serif; }
@@ -16,7 +18,7 @@
     <div id="welcomeOverlay" class="fixed inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center p-6 text-center">
         <div class="bg-indigo-900 border-2 border-indigo-500 p-6 rounded-3xl max-w-sm shadow-2xl">
             <h2 class="text-2xl font-bold mb-3">مرحباً بك في تطبيق قارئ 👁️</h2>
-            <p class="text-indigo-200 text-sm mb-6">انقر على الزر أدناه لتنشيط الكاميرا والصوت والبدء الفوري عبر الرابط.</p>
+            <p class="text-indigo-200 text-sm mb-6">التطبيق يعمل محلياً بالكامل وبدون مفاتيح. انقر للبدء.</p>
             <button id="startAppBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 px-6 rounded-2xl shadow-lg text-lg">
                 🚀 ابدأ التطبيق الآن
             </button>
@@ -26,7 +28,7 @@
     <!-- الهيدر -->
     <header class="bg-indigo-800 shadow-lg p-4 text-center">
         <h1 class="text-3xl font-extrabold tracking-wide">تطبيق قارئ 👁️</h1>
-        <p class="text-indigo-200 text-sm mt-1">مدعوم بالذكاء الاصطناعي لقراءة النصوص والبيئة</p>
+        <p class="text-indigo-200 text-sm mt-1">قراءة محلية سريعة ومגانية 100%</p>
     </header>
 
     <!-- المحتوى الرئيسي -->
@@ -38,14 +40,14 @@
             <canvas id="snapshotCanvas" class="hidden"></canvas>
             
             <div id="cameraPlaceholder" class="absolute text-center p-4 text-slate-400">
-                <span>جاري تفعيل الكاميرا من الرابط...</span>
+                <span>جاري تفعيل الكاميرا...</span>
             </div>
         </div>
 
         <!-- أزرار التحكم -->
         <div class="w-full space-y-3">
             <button id="captureBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white text-xl font-bold py-4 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3">
-                <span>📸 التقاط وقراءة النص بالفصحى</span>
+                <span>📸 التقاط وقراءة النص محلياً</span>
             </button>
 
             <button id="repeatBtn" class="w-full bg-amber-600 hover:bg-amber-500 active:scale-95 transition text-white text-lg font-semibold py-3 px-6 rounded-2xl shadow-md flex items-center justify-center gap-2">
@@ -56,21 +58,18 @@
         <!-- صندوق عرض النص المستخرج -->
         <div class="w-full mt-4 bg-slate-800 border border-slate-700 p-4 rounded-2xl shadow-inner">
             <h2 class="text-sm font-semibold text-indigo-300 mb-1">النتيجة والتحليل:</h2>
-            <p id="resultText" class="text-slate-100 min-h-[50px] text-lg">الكاميرا جاهزة عبر اللينك...</p>
+            <p id="resultText" class="text-slate-100 min-h-[50px] text-lg">الكاميرا جاهزة للعمل...</p>
         </div>
 
     </main>
 
     <!-- الفوتر -->
     <footer class="bg-slate-950 text-center py-3 text-slate-500 text-xs">
-        تطبيق قارئ - نطق عربي فصيح ونقي
+        تطبيق قارئ - بدون أخطاء خادم أو مفاتيح
     </footer>
 
-    <!-- سكريبت البرمجة -->
+    <!-- سكريبت البرمجة المحلي -->
     <script>
-        // مفتاح OpenAI مثبت ومخفي في الخلفية بشكل آمن
-        const OPENAI_API_KEY = "Sk-proj--yqJMpGX9d4lJ5v-omexmTi2cghffqG_GOVjHO293-henqdRGownx8_yPFL59lNaC6xVXv8A_-T3BlbkFJ3vsuSRfOOj4U395QLlqwPCj7ZrUIy7ngeExxuX_WQyxsXemhlQNvfx1Ul5_243cL4aZattLpcA";
-
         const video = document.getElementById('cameraStream');
         const canvas = document.getElementById('snapshotCanvas');
         const placeholder = document.getElementById('cameraPlaceholder');
@@ -80,7 +79,7 @@
         const welcomeOverlay = document.getElementById('welcomeOverlay');
         const startAppBtn = document.getElementById('startAppBtn');
 
-        let lastSpokenText = "تطبيق قارئ جاهز للعمل عبر الرابط.";
+        let lastSpokenText = "تطبيق قارئ المحلي جاهز للعمل.";
 
         function speakArabic(text) {
             if ('speechSynthesis' in window) {
@@ -113,7 +112,7 @@
                     video.srcObject = fallbackStream;
                     placeholder.style.display = 'none';
                 } catch (e) {
-                    placeholder.innerHTML = "⚠️ تعذر الوصول للكاميرا من الرابط، تأكد من أذونات المتصفح.";
+                    placeholder.innerHTML = "⚠️ تعذر الوصول للكاميرا، تأكد من أذونات المتصفح.";
                 }
             }
         }
@@ -122,82 +121,48 @@
             welcomeOverlay.style.display = 'none';
             initCamera();
             setTimeout(() => {
-                speakArabic("أهلاً بك في تطبيق قارئ عبر الرابط. تم تفعيل الكاميرا والصوت.");
+                speakArabic("أهلاً بك. تم تفعيل الكاميرا بنجاح.");
             }, 500);
         });
 
-        function captureImageAsBase64() {
+        async function analyzeLocally() {
+            speakArabic("جاري قراءة النص من الصورة محلياً، يرجى الانتظار...");
+            resultText.innerText = "جاري استخراج النص...";
+
             canvas.width = video.videoWidth || 1280;
             canvas.height = video.videoHeight || 720;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            return canvas.toDataURL('image/jpeg', 0.85);
-        }
-
-        async function analyzeWithOpenAI() {
-            speakArabic("جاري التقاط الصورة وتحليلها، يرجى الانتظار...");
-            resultText.innerText = "جاري المعالجة وقراءة النص...";
-
-            const imageUrl = captureImageAsBase64();
-            const apiUrl = "https://api.openai.com/v1/chat/completions";
-
-            const payload = {
-                model: "gpt-4o-mini",
-                messages: [
-                    {
-                        role: "user",
-                        content: [
-                            {
-                                type: "text",
-                                text: "أنت مساعد ذكي للمكفوفين. انظر إلى هذه الصورة بدقة شديدة. اقرأ واستخرج أي نص مكتوب فيها بالكامل باللغة العربية أو الإنجليزية. وإذا لم يوجد نص، صف البيئة المحيطة باختصار شديد باللغة العربية الفصحى."
-                            },
-                            {
-                                type: "image_url",
-                                image_url: {
-                                    url: imageUrl
-                                }
-                            }
-                        ]
-                    }
-                ],
-                max_tokens: 300
-            };
+            
+            const imageDataUrl = canvas.toDataURL('image/jpeg');
 
             try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${OPENAI_API_KEY}`
-                    },
-                    body: JSON.stringify(payload)
-                });
+                // استخدام Tesseract للتعرف على اللغتين العربية والإنجليزية محلياً في المتصفح
+                const result = await Tesseract.recognize(
+                    imageDataUrl,
+                    'ara+eng',
+                    { 
+                        logger: m => console.log(m) 
+                    }
+                );
 
-                const data = await response.json();
+                const extractedText = result.data.text ? result.data.text.trim() : "";
 
-                if (!response.ok) {
-                    const errReason = data.error ? data.error.message : "خطأ غير معروف";
-                    resultText.innerText = "خطأ من الخادم: " + errReason;
-                    speakArabic("عذراً، حدث خطأ في استجابة الخادم.");
-                    return;
-                }
-
-                if (data.choices && data.choices[0] && data.choices[0].message) {
-                    const aiDescription = data.choices[0].message.content;
-                    resultText.innerText = aiDescription;
-                    speakArabic(aiDescription);
+                if (extractedText.length > 2) {
+                    resultText.innerText = extractedText;
+                    speakArabic("النص المستخرج هو: " + extractedText);
                 } else {
-                    resultText.innerText = "لم يتم العثور على رد من النموذج.";
-                    speakArabic("عذراً، لم أتمكن من قراءة محتوى الصورة.");
+                    resultText.innerText = "لم يتم العثور على نص واضح في الصورة.";
+                    speakArabic("عذراً، لم أتمكن من قراءة أي نص بوضوح.");
                 }
             } catch (error) {
                 console.error(error);
-                resultText.innerText = "خطأ في الاتصال بالشبكة.";
-                speakArabic("حدث خطأ في الاتصال بالشبكة.");
+                resultText.innerText = "حدث خطأ أثناء معالجة الصورة محلياً.";
+                speakArabic("حدث خطأ في المعالجة.");
             }
         }
 
-        captureBtn.addEventListener('click', analyzeWithOpenAI);
+        captureBtn.addEventListener('click', analyzeLocally);
         repeatBtn.addEventListener('click', () => speakArabic(lastSpokenText));
     </script>
 </body>
