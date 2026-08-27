@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق قارئ - المستندات الذكي</title>
+    <title>تطبيق قارئ - بالكاميرا والمعرض</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
@@ -17,7 +17,7 @@
     <div id="welcomeOverlay" class="fixed inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center p-6 text-center">
         <div class="bg-indigo-900 border-2 border-indigo-500 p-6 rounded-3xl max-w-sm shadow-2xl">
             <h2 class="text-2xl font-bold mb-3">مرحباً بك في تطبيق قارئ 👁️</h2>
-            <p class="text-indigo-200 text-sm mb-6">جاهز لقراءة الأوراق والمستندات بفلترة فائقة الدقة.</p>
+            <p class="text-indigo-200 text-sm mb-6">جاهز لقراءة المستندات سواء بالتصوير المباشر أو الرفع من المعرض.</p>
             <button id="startAppBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 px-6 rounded-2xl shadow-lg text-lg">
                 🚀 ابدأ التطبيق الآن
             </button>
@@ -27,13 +27,13 @@
     <!-- الهيدر -->
     <header class="bg-indigo-800 shadow-lg p-4 text-center">
         <h1 class="text-3xl font-extrabold tracking-wide">تطبيق قارئ 👁️</h1>
-        <p class="text-indigo-200 text-sm mt-1">القارئ الآلي للمستندات الرسمية</p>
+        <p class="text-indigo-200 text-sm mt-1">القارئ الآلي للمستندات والأوراق الرسمية</p>
     </header>
 
     <!-- المحتوى الرئيسي -->
     <main class="container mx-auto p-4 flex-1 flex flex-col items-center justify-center max-w-md">
         
-        <!-- نافذة الكاميرا -->
+        <!-- نافذة الكاميرا أو المعاينة -->
         <div class="relative w-full aspect-[3/4] bg-slate-800 rounded-3xl overflow-hidden shadow-2xl border-4 border-indigo-500 mb-4 flex items-center justify-center">
             <video id="cameraStream" autoplay playsinline muted class="w-full h-full object-cover"></video>
             <canvas id="snapshotCanvas" class="hidden"></canvas>
@@ -45,34 +45,41 @@
 
         <!-- أزرار التحكم -->
         <div class="w-full space-y-3">
-            <button id="captureBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white text-xl font-bold py-4 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3">
-                <span>📸 التقاط وقراءة بصفاء تام</span>
+            <button id="captureBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white text-lg font-bold py-3 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3">
+                <span>📸 التقاط من الكاميرا</span>
             </button>
 
-            <button id="repeatBtn" class="w-full bg-amber-600 hover:bg-amber-500 active:scale-95 transition text-white text-lg font-semibold py-3 px-6 rounded-2xl shadow-md flex items-center justify-center gap-2">
+            <!-- زرار رفع الصورة من المعرض -->
+            <label class="w-full bg-blue-600 hover:bg-blue-500 active:scale-95 transition text-white text-lg font-bold py-3 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3 cursor-pointer">
+                <span>📁 اختر صورة من المعرض</span>
+                <input type="file" id="galleryInput" accept="image/*" class="hidden">
+            </label>
+
+            <button id="repeatBtn" class="w-full bg-amber-600 hover:bg-amber-500 active:scale-95 transition text-white text-md font-semibold py-3 px-6 rounded-2xl shadow-md flex items-center justify-center gap-2">
                 <span>🔊 إعادة قراءة النتيجة</span>
             </button>
         </div>
 
         <!-- صندوق عرض النص المستخرج -->
         <div class="w-full mt-4 bg-slate-800 border border-slate-700 p-4 rounded-2xl shadow-inner">
-            <h2 class="text-sm font-semibold text-indigo-300 mb-1">البيانات الأساسية المستخرجة:</h2>
-            <p id="resultText" class="text-slate-100 min-h-[60px] text-base leading-relaxed">ثبت الكاميرا على الورقة واضغط التقاط...</p>
+            <h2 class="text-sm font-semibold text-indigo-300 mb-1">البيانات المستخرجة:</h2>
+            <p id="resultText" class="text-slate-100 min-h-[60px] text-base leading-relaxed">اختر صورة أو صور المستند بالوراثة...</p>
         </div>
 
     </main>
 
     <!-- الفوتر -->
     <footer class="bg-slate-950 text-center py-3 text-slate-500 text-xs">
-        تطبيق قارئ - تنقية تلقائية للأخطاء
+        تطبيق قارئ - دقة عالية بالمعرض والكاميرا
     </footer>
 
-    <!-- سكريبت الفلترة المتقدمة والنهائية -->
+    <!-- سكريبت المعالجة -->
     <script>
         const video = document.getElementById('cameraStream');
         const canvas = document.getElementById('snapshotCanvas');
         const placeholder = document.getElementById('cameraPlaceholder');
         const captureBtn = document.getElementById('captureBtn');
+        const galleryInput = document.getElementById('galleryInput');
         const repeatBtn = document.getElementById('repeatBtn');
         const resultText = document.getElementById('resultText');
         const welcomeOverlay = document.getElementById('welcomeOverlay');
@@ -111,7 +118,7 @@
                     video.srcObject = fallbackStream;
                     placeholder.style.display = 'none';
                 } catch (e) {
-                    placeholder.innerHTML = "⚠️ تعذر الوصول للكاميرا، تأكد من أذونات المتصفح.";
+                    placeholder.innerHTML = "⚠️ تعذر الوصول للكاميرا، يمكنك استخدام زر المعرض مباشرة.";
                 }
             }
         }
@@ -120,24 +127,17 @@
             welcomeOverlay.style.display = 'none';
             initCamera();
             setTimeout(() => {
-                speakArabic("أهلاً بك. الكاميرا جاهزة الآن.");
+                speakArabic("أهلاً بك. التطبيق جاهز.");
             }, 500);
         });
 
-        async function analyzeLocally() {
-            speakArabic("جاري قراءة وتصفية البيانات، يرجى الثبات قليلاً...");
-            resultText.innerText = "جاري استخراج النص النقي...";
-
-            canvas.width = video.videoWidth || 1280;
-            canvas.height = video.videoHeight || 720;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            const imageDataUrl = canvas.toDataURL('image/jpeg', 1.0);
+        async function processImageSource(imageSource) {
+            speakArabic("جاري قراءة وتصفية المستند، يرجى الانتظار...");
+            resultText.innerText = "جاري استخراج النص بدقة...";
 
             try {
                 const result = await Tesseract.recognize(
-                    imageDataUrl,
+                    imageSource,
                     'ara',
                     { 
                         logger: m => console.log(m) 
@@ -146,7 +146,6 @@
 
                 let rawText = result.data.text ? result.data.text : "";
                 
-                // تنظيف شامل للرموز الزائدة والكلمات غير المفهومة
                 let cleanLines = rawText.split('\n')
                     .map(line => {
                         return line.replace(/[a-zA-Z]/g, '') 
@@ -157,8 +156,7 @@
                     .filter(line => {
                         let arabicLettersCount = (line.match(/[\u0600-\u06FF]/g) || []).length;
                         let numbersCount = (line.match(/[0-9]/g) || []).length;
-                        // شرط إضافي لاستبعاد السطور القصيرة العشوائية
-                        return (arabicLettersCount >= 4 || numbersCount >= 5);
+                        return (arabicLettersCount >= 3 || numbersCount >= 4);
                     });
 
                 let finalCleanText = cleanLines.join(' . ');
@@ -167,17 +165,41 @@
                     resultText.innerText = finalCleanText;
                     speakArabic("البيانات المستخرجة هي: " + finalCleanText);
                 } else {
-                    resultText.innerText = "لم يتم التقاط كلمات واضحة. يرجى ضبط الإضاءة وتثبيت الكاميرا.";
-                    speakArabic("لم أتمكن من قراءة كلمات واضحة، حاول تثبيت الكاميرا أكثر.");
+                    resultText.innerText = "لم يتم التقاط كلمات واضحة. تأكد من وضوح الصورة.";
+                    speakArabic("لم أتمكن من قراءة كلمات واضحة من هذه الصورة.");
                 }
             } catch (error) {
                 console.error(error);
-                resultText.innerText = "حدث خطأ أثناء القراءة.";
-                speakArabic("حدث خطأ في القراءة.");
+                resultText.innerText = "حدث خطأ أثناء قراءة الصورة.";
+                speakArabic("حدث خطأ في قراءة الصورة.");
             }
         }
 
-        captureBtn.addEventListener('click', analyzeLocally);
+        // التقاط من الكاميرا المباشرة داخل التطبيق
+        captureBtn.addEventListener('click', () => {
+            if (!video.srcObject) {
+                speakArabic("الكاميرا غير مفعلة، يمكنك استخدام زر المعرض.");
+                return;
+            }
+            canvas.width = video.videoWidth || 1280;
+            canvas.height = video.videoHeight || 720;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            processImageSource(canvas.toDataURL('image/jpeg', 1.0));
+        });
+
+        // اختيار صورة من المعرض (وهي الطريقة الأدق والأضمن)
+        galleryInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    processImageSource(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
         repeatBtn.addEventListener('click', () => speakArabic(lastSpokenText));
     </script>
 </body>
