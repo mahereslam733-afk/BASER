@@ -13,27 +13,23 @@
 </head>
 <body class="bg-slate-900 text-white min-h-screen flex flex-col justify-between p-4">
 
-    <!-- شاشة البداية لتفعيل الصوت -->
     <div id="welcomeOverlay" class="fixed inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 text-center">
         <div class="bg-indigo-900 border-4 border-indigo-500 p-8 rounded-3xl max-w-sm shadow-2xl">
             <h2 class="text-3xl font-bold mb-4">تطبيق قارئ 👁️</h2>
-            <p class="text-indigo-200 text-base mb-8">جاهز لتشغيل الكاميرا وقراءة النصوص العربية بوضوح تام.</p>
+            <p class="text-indigo-200 text-base mb-8">جاهز لتشغيل الكاميرا وقراءة المستندات والأبحاث بوضوح تام.</p>
             <button id="startAppBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-5 px-6 rounded-2xl shadow-lg text-xl active:scale-95 transition">
                 🚀 اضغط للبدء
             </button>
         </div>
     </div>
 
-    <!-- الهيدر -->
     <header class="bg-indigo-800 shadow-lg p-4 text-center rounded-2xl mb-4">
         <h1 class="text-2xl font-extrabold">تطبيق قارئ المستندات</h1>
-        <p class="text-indigo-200 text-xs mt-1">الوضع الصوتي العربي الخالص</p>
+        <p class="text-indigo-200 text-xs mt-1">الوضع الصوتي المنظم للأبحاث</p>
     </header>
 
-    <!-- المحتوى الرئيسي -->
     <main class="container mx-auto flex-1 flex flex-col items-center justify-center max-w-md w-full">
         
-        <!-- نافذة الكاميرا المباشرة -->
         <div class="relative w-full aspect-[3/4] bg-slate-800 rounded-3xl overflow-hidden shadow-2xl border-4 border-indigo-500 mb-4 flex items-center justify-center">
             <video id="cameraStream" autoplay playsinline muted class="w-full h-full object-cover"></video>
             <canvas id="snapshotCanvas" class="hidden"></canvas>
@@ -42,33 +38,28 @@
             </div>
         </div>
 
-        <!-- أزرار التحكم -->
         <div class="w-full space-y-3">
             <button id="captureBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white text-xl font-extrabold py-4 px-6 rounded-2xl shadow-xl flex items-center justify-center gap-3">
                 <span>📸 التقاط وقراءة المستند</span>
             </button>
 
-            <!-- زر المعرض -->
             <label class="w-full bg-blue-600 hover:bg-blue-500 active:scale-95 transition text-white text-md font-bold py-3 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3 cursor-pointer">
                 <span>📁 اختر ورقة من المعرض</span>
                 <input type="file" id="galleryInput" accept="image/*" class="hidden">
             </label>
 
-            <!-- زر إعادة النطق -->
             <button id="repeatBtn" class="w-full bg-amber-600 hover:bg-amber-500 active:scale-95 transition text-white text-md font-semibold py-3 px-6 rounded-2xl shadow-md flex items-center justify-center gap-2">
                 <span>🔊 إعادة قراءة النص</span>
             </button>
         </div>
 
-        <!-- صندوق عرض النص المستخرج -->
         <div class="w-full mt-4 bg-slate-800 border border-slate-700 p-4 rounded-2xl shadow-inner">
-            <h2 class="text-xs font-semibold text-indigo-300 mb-1">النص العربي المصفى:</h2>
-            <p id="resultText" class="text-slate-100 min-h-[50px] text-sm leading-relaxed">وجه الكاميرا نحو النص العربي واضغط التقاط...</p>
+            <h2 class="text-xs font-semibold text-indigo-300 mb-1">النص المنظم والمرتب:</h2>
+            <p id="resultText" class="text-slate-100 min-h-[50px] text-sm leading-relaxed">وجه الكاميرا نحو المستند واضغط التقاط...</p>
         </div>
 
     </main>
 
-    <!-- سكريبت التشغيل والتصفية العربية -->
     <script>
         const video = document.getElementById('cameraStream');
         const canvas = document.getElementById('snapshotCanvas');
@@ -87,7 +78,7 @@
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'ar-SA';
-                utterance.rate = 0.8; // سرعة أبطأ قليلاً لضمان وضوح نطق الحروف العربية
+                utterance.rate = 0.8; // بطء هادئ ومناسب لفهم الكلمات بوضوح
                 utterance.pitch = 1.0;
 
                 const voices = window.speechSynthesis.getVoices();
@@ -123,44 +114,48 @@
             welcomeOverlay.style.display = 'none';
             initCamera();
             setTimeout(() => {
-                speakArabic("التطبيق جاهز. التقط صورة النص العربي.");
+                speakArabic("التطبيق جاهز. التقط صورة المستند.");
             }, 600);
         });
 
-        // دالة تنظيف النص وقص الرموز الغريبة والحروف اللاتينية غير المرغوبة
-        function cleanArabicText(rawText) {
+        // دالة تنظبظ وترتيب النص العربي وإزالة التشوهات
+        function organizeArabicText(rawText) {
             if (!rawText) return "";
             
-            // استبعاد الحروف الإنجليزية، والرموز المعقدة، والمسافات الزائدة، والاحتفاظ بالعربية وعلامات الترقيم الأساسية فقط
-            let cleaned = rawText
-                .replace(/[a-zA-Z0-9@#$%^&*_+=\[\]{}|\\<>~`]/g, '') // مسح الإنجليزي والأرقام والرموز
-                .replace(/[|•_~`{}\[\]\\@#$%^&*+=<>""„«»()?!]/g, ' ') // مسح الرموز الخاصة
-                .replace(/\s+/g, ' ') // توحيد المسافات
-                .trim();
+            // تقسيم النص لأسطر وتنظيف كل سطر
+            let lines = rawText.split('\n');
+            let cleanedLines = lines.map(line => {
+                return line
+                    .replace(/[a-zA-Z0-9@#$%^&*_+=\[\]{}|\\<>~`]/g, '') // إزالة اللاتيني والأرقام المشتتة
+                    .replace(/[|•_~`{}\[\]\\@#$%^&*+=<>""„«»()?!]/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+            }).filter(line => line.length > 2); // استبعاد الأسطر الفارغة أو القصيرة جداً
 
-            return cleaned;
+            // تجميع الأسطر المفيدة في نص مترابط
+            return cleanedLines.join('. ');
         }
 
         async function processImageLocal(imageSource) {
-            speakArabic("جاري قراءة النص العربي، انتظر قليلاً...");
-            resultText.innerText = "جاري معالجة وقراءة النص...";
+            speakArabic("جاري قراءة المستند وترتيب الكلمات، انتظر قليلاً...");
+            resultText.innerText = "جاري معالجة المستند وترتيبه...";
 
             try {
                 const result = await Tesseract.recognize(imageSource, 'ara');
                 let rawText = result.data.text ? result.data.text : "";
                 
-                let finalCleanText = cleanArabicText(rawText);
+                let organizedText = organizeArabicText(rawText);
 
-                if (finalCleanText.length > 2) {
-                    resultText.innerText = finalCleanText;
-                    speakArabic(" النص هو: " + finalCleanText);
+                if (organizedText.length > 5) {
+                    resultText.innerText = organizedText;
+                    speakArabic("النص هو: " + organizedText);
                 } else {
-                    resultText.innerText = "لم يتم العثور على كلمات عربية واضحة.";
-                    speakArabic("لم أتمكن من قراءة كلمات عربية واضحة، حاول تحسين الإضاءة.");
+                    resultText.innerText = "لم يتم قراءة المستند بوضوح. يفضل استخدام المعرض لتصوير الورقة بدقة.";
+                    speakArabic("لم أتمكن من قراءة المستند بوضوح، يفضل تصوير الورقة واختيارها من المعرض.");
                 }
             } catch (error) {
                 console.error(error);
-                resultText.innerText = "حدث خطأ في القراءة.";
+                resultText.innerText = "حدث خطأ أثناء المعالجة.";
                 speakArabic("حدث خطأ أثناء قراءة المستند.");
             }
         }
