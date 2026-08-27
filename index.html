@@ -67,7 +67,7 @@
         تطبيق قارئ - تنقية تلقائية للأخطاء
     </footer>
 
-    <!-- سكريبت الفلترة المتقدمة -->
+    <!-- سكريبت الفلترة المتقدمة والنهائية -->
     <script>
         const video = document.getElementById('cameraStream');
         const canvas = document.getElementById('snapshotCanvas');
@@ -146,19 +146,19 @@
 
                 let rawText = result.data.text ? result.data.text : "";
                 
-                // فلترة ذكية وصارمة جداً لإزالة أي حروف غريبة، علامات تشويش، أو رموز تالفة
+                // تنظيف شامل للرموز الزائدة والكلمات غير المفهومة
                 let cleanLines = rawText.split('\n')
                     .map(line => {
-                        return line.replace(/[a-zA-Z]/g, '') // إزالة أي إنجليزي ملخبط
-                                   .replace(/[|•_~`{}\[\]\\@#$%^&*+=<>""„«»]/g, ' ') // إزالة الرموز
+                        return line.replace(/[a-zA-Z]/g, '') 
+                                   .replace(/[|•_~`{}\[\]\\@#$%^&*+=<>""„«»]/g, ' ')
                                    .replace(/\s+/g, ' ')
                                    .trim();
                     })
                     .filter(line => {
-                        // الاحتفاظ فقط بالأسطر اللي فيها كلمات عربية حقيقية أو أرقام صحيحة مهمة
                         let arabicLettersCount = (line.match(/[\u0600-\u06FF]/g) || []).length;
                         let numbersCount = (line.match(/[0-9]/g) || []).length;
-                        return (arabicLettersCount >= 3 || numbersCount >= 4);
+                        // شرط إضافي لاستبعاد السطور القصيرة العشوائية
+                        return (arabicLettersCount >= 4 || numbersCount >= 5);
                     });
 
                 let finalCleanText = cleanLines.join(' . ');
