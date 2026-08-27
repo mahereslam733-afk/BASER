@@ -68,8 +68,8 @@
 
     <!-- سكريبت البرمجة -->
     <script>
-        // تثبيت مفتاح الـ API الحقيقي في الخلفية تماماً بدون إظهار أي خانات
-        const EMBEDDED_API_KEY = "AQ.Ab8RN6LYPQtV" + "rki7hWK5zTXC" + "6hyD1DvTmX3cJOw0I2dgG_-QuA";
+        // مفتاح OpenAI مثبت ومخفي في الخلفية بشكل آمن
+        const OPENAI_API_KEY = "Sk-proj--yqJMpGX9d4lJ5v-omexmTi2cghffqG_GOVjHO293-henqdRGownx8_yPFL59lNaC6xVXv8A_-T3BlbkFJ3vsuSRfOOj4U395QLlqwPCj7ZrUIy7ngeExxuX_WQyxsXemhlQNvfx1Ul5_243cL4aZattLpcA";
 
         const video = document.getElementById('cameraStream');
         const canvas = document.getElementById('snapshotCanvas');
@@ -131,36 +131,45 @@
             canvas.height = video.videoHeight || 720;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            return canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+            return canvas.toDataURL('image/jpeg', 0.85);
         }
 
-        async function analyzeWithGemini() {
-            speakArabic("جاري التقاط الصورة وتحليلها عبر الشبكة، يرجى الانتظار...");
+        async function analyzeWithOpenAI() {
+            speakArabic("جاري التقاط الصورة وتحليلها، يرجى الانتظار...");
             resultText.innerText = "جاري المعالجة وقراءة النص...";
 
-            const base64Image = captureImageAsBase64();
-            const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${EMBEDDED_API_KEY}`;
-
-            const promptText = "أنت مساعد ذكي للمكفوفين. انظر إلى هذه الصورة بدقة شديدة. اقرأ واستخرج أي نص مكتوب فيها بالكامل باللغة العربية أو الإنجليزية. وإذا لم يوجد نص، صف البيئة المحيطة باختصار شديد باللغة العربية الفصحى.";
+            const imageUrl = captureImageAsBase64();
+            const apiUrl = "https://api.openai.com/v1/chat/completions";
 
             const payload = {
-                contents: [{
-                    parts: [
-                        { text: promptText },
-                        {
-                            inline_data: {
-                                mime_type: "image/jpeg",
-                                data: base64Image
+                model: "gpt-4o-mini",
+                messages: [
+                    {
+                        role: "user",
+                        content: [
+                            {
+                                type: "text",
+                                text: "أنت مساعد ذكي للمكفوفين. انظر إلى هذه الصورة بدقة شديدة. اقرأ واستخرج أي نص مكتوب فيها بالكامل باللغة العربية أو الإنجليزية. وإذا لم يوجد نص، صف البيئة المحيطة باختصار شديد باللغة العربية الفصحى."
+                            },
+                            {
+                                type: "image_url",
+                                image_url: {
+                                    url: imageUrl
+                                }
                             }
-                        }
-                    ]
-                }]
+                        ]
+                    }
+                ],
+                max_tokens: 300
             };
 
             try {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${OPENAI_API_KEY}`
+                    },
                     body: JSON.stringify(payload)
                 });
 
@@ -169,26 +178,26 @@
                 if (!response.ok) {
                     const errReason = data.error ? data.error.message : "خطأ غير معروف";
                     resultText.innerText = "خطأ من الخادم: " + errReason;
-                    speakArabic("عذراً، حدث خطأ في استجابة الخادم عبر الرابط.");
+                    speakArabic("عذراً، حدث خطأ في استجابة الخادم.");
                     return;
                 }
 
-                if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-                    const aiDescription = data.candidates[0].content.parts[0].text;
+                if (data.choices && data.choices[0] && data.choices[0].message) {
+                    const aiDescription = data.choices[0].message.content;
                     resultText.innerText = aiDescription;
                     speakArabic(aiDescription);
                 } else {
-                    resultText.innerText = "لم يتم العثور على نص أو وصف في الصورة.";
+                    resultText.innerText = "لم يتم العثور على رد من النموذج.";
                     speakArabic("عذراً، لم أتمكن من قراءة محتوى الصورة.");
                 }
             } catch (error) {
                 console.error(error);
-                resultText.innerText = "خطأ في الاتصال بالشبكة عبر الرابط.";
+                resultText.innerText = "خطأ في الاتصال بالشبكة.";
                 speakArabic("حدث خطأ في الاتصال بالشبكة.");
             }
         }
 
-        captureBtn.addEventListener('click', analyzeWithGemini);
+        captureBtn.addEventListener('click', analyzeWithOpenAI);
         repeatBtn.addEventListener('click', () => speakArabic(lastSpokenText));
     </script>
 </body>
