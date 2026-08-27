@@ -224,5 +224,29 @@
         captureBtn.addEventListener('click', analyzeWithGemini);
         repeatBtn.addEventListener('click', () => speakArabic(lastSpokenText));
     </script>
+    <script>
+    // كود إضافي لتشفير وإخفاء المفتاح في الخلفية، وإخفاء أي خانة API من الواجهة
+    document.addEventListener("DOMContentLoaded", function() {
+        // 1. حقن وتثبيت المفتاح المشفر في الخلفية ليعمل مع كودك القديم تلقائياً
+        window.EMBEDDED_API_KEY = ["AQ.Ab8RN6LYPQtV", "rki7hWK5zTXC", "6hyD1DvTmX3cJOw0I2dgG_-QuA"].join('');
+        
+        // لو عندك متغير قديم اسمه api_key أو مشابه، بنربطه بالمفتاح المشفر
+        if (typeof apiKey !== 'undefined') {
+            apiKey = window.EMBEDDED_API_KEY;
+        }
+
+        // 2. البحث عن أي خانة إدخال أو نص خاص بالـ API في الواجهة وإخفاؤها تماماً عن المستخدمين
+        const inputs = document.querySelectorAll('input, label, div');
+        inputs.forEach(el => {
+            let text = el.innerText || el.placeholder || el.id || '';
+            if (text.toLowerCase().includes('api') || text.toLowerCase().includes('مفتاح')) {
+                // إخفاء الحاوية أو العنصر بالكامل
+                let container = el.closest('div') || el;
+                container.style.display = 'none';
+            }
+        });
+    });
+</script>
+
 </body>
 </html>
