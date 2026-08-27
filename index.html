@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
+
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0,
-      maximum-scale=1.0,user-scalable=no">
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
 
 <title>قارئ المستندات العربي</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 <style>
+
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
 
 body{
@@ -22,12 +28,16 @@ body{
 button,label{
     -webkit-tap-highlight-color:transparent;
 }
+
 </style>
+
 </head>
+
 
 <body class="bg-slate-900 text-white min-h-screen p-4">
 
-<!-- البداية -->
+
+<!-- شاشة البداية -->
 
 <div id="welcomeOverlay"
 class="fixed inset-0 bg-slate-950/98 z-50
@@ -41,12 +51,14 @@ p-8 rounded-3xl max-w-sm shadow-2xl">
 </h2>
 
 <p class="text-indigo-200 mb-8">
-قارئ للنصوص العربية من الكاميرا أو المعرض
+قراءة النصوص العربية بالكاميرا
 </p>
 
 <button id="startAppBtn"
-class="w-full bg-emerald-600 hover:bg-emerald-500
-font-extrabold py-5 px-6 rounded-2xl text-xl">
+class="w-full bg-emerald-600
+hover:bg-emerald-500
+font-extrabold py-5 px-6
+rounded-2xl text-xl">
 
 🚀 اضغط للبدء
 
@@ -58,20 +70,22 @@ font-extrabold py-5 px-6 rounded-2xl text-xl">
 
 <!-- العنوان -->
 
-<header class="bg-indigo-800 p-4 text-center rounded-2xl mb-4">
+<header class="bg-indigo-800 p-4
+text-center rounded-2xl mb-4">
 
 <h1 class="text-2xl font-extrabold">
 قارئ المستندات
 </h1>
 
 <p class="text-indigo-200 text-xs mt-1">
-قراءة النص العربي بالكاميرا
+قراءة النص العربي بسرعة
 </p>
 
 </header>
 
 
 <main class="max-w-md mx-auto w-full">
+
 
 <!-- الكاميرا -->
 
@@ -91,8 +105,9 @@ class="hidden">
 </canvas>
 
 <div id="cameraPlaceholder"
-class="absolute inset-0 flex items-center
-justify-center text-slate-300 text-lg">
+class="absolute inset-0
+flex items-center justify-center
+text-slate-300 text-lg">
 
 جاري تشغيل الكاميرا...
 
@@ -101,7 +116,7 @@ justify-center text-slate-300 text-lg">
 </div>
 
 
-<!-- الالتقاط -->
+<!-- زر الالتقاط -->
 
 <button id="captureBtn"
 class="w-full bg-emerald-600
@@ -183,9 +198,10 @@ leading-8 min-h-[100px]">
 
 <script>
 
-/* =========================================================
+
+/* =====================================================
    العناصر
-========================================================= */
+===================================================== */
 
 const video =
 document.getElementById("cameraStream");
@@ -223,20 +239,20 @@ let lastSpokenText = "";
 let worker = null;
 
 
-/* =========================================================
+/* =====================================================
    الحالة
-========================================================= */
+===================================================== */
 
-function status(text){
+function setStatus(text){
 
     statusBox.innerText = text;
 
 }
 
 
-/* =========================================================
+/* =====================================================
    النطق العربي
-========================================================= */
+===================================================== */
 
 function speakArabic(text){
 
@@ -246,42 +262,53 @@ function speakArabic(text){
 
     speechSynthesis.cancel();
 
-    const u =
+    const speech =
     new SpeechSynthesisUtterance(text);
 
-    u.lang = "ar-EG";
+    speech.lang = "ar-EG";
 
-    u.rate = 0.78;
+    speech.rate = 0.8;
 
-    u.pitch = 1;
+    speech.pitch = 1;
 
-    u.volume = 1;
+    speech.volume = 1;
 
 
     const voices =
     speechSynthesis.getVoices();
 
-    const voice =
-    voices.find(v => v.lang === "ar-EG") ||
-    voices.find(v => v.lang.startsWith("ar")) ||
+
+    const arabicVoice =
     voices.find(v =>
-        /Arabic|العربية|عربي/i.test(v.name)
+        v.lang === "ar-EG"
+    ) ||
+
+    voices.find(v =>
+        v.lang.startsWith("ar")
     );
 
-    if(voice){
-        u.voice = voice;
+
+    if(arabicVoice){
+
+        speech.voice =
+        arabicVoice;
+
     }
 
-    speechSynthesis.speak(u);
 
-    lastSpokenText = text;
+    speechSynthesis.speak(
+        speech
+    );
+
+    lastSpokenText =
+    text;
 
 }
 
 
-/* =========================================================
-   الكاميرا
-========================================================= */
+/* =====================================================
+   تشغيل الكاميرا
+===================================================== */
 
 async function startCamera(){
 
@@ -296,11 +323,11 @@ async function startCamera(){
                 },
 
                 width:{
-                    ideal:1920
+                    ideal:1280
                 },
 
                 height:{
-                    ideal:1080
+                    ideal:720
                 }
             },
 
@@ -308,31 +335,46 @@ async function startCamera(){
 
         });
 
-        video.srcObject = stream;
 
-        placeholder.style.display = "none";
+        video.srcObject =
+        stream;
 
-        status(
-            "الكاميرا جاهزة. ضع الصفحة كاملة أمام الكاميرا."
+
+        placeholder.style.display =
+        "none";
+
+
+        setStatus(
+            "الكاميرا جاهزة للقراءة."
         );
 
     }
 
     catch(error){
 
-        console.log(error);
+        console.log(
+            "Camera error:",
+            error
+        );
+
 
         try{
 
             const stream =
             await navigator.mediaDevices.getUserMedia({
+
                 video:true,
                 audio:false
+
             });
 
-            video.srcObject = stream;
 
-            placeholder.style.display = "none";
+            video.srcObject =
+            stream;
+
+
+            placeholder.style.display =
+            "none";
 
         }
 
@@ -341,7 +383,9 @@ async function startCamera(){
             placeholder.innerText =
             "تعذر تشغيل الكاميرا. استخدم المعرض.";
 
-            status("الكاميرا غير متاحة.");
+            setStatus(
+                "الكاميرا غير متاحة."
+            );
 
         }
 
@@ -350,45 +394,61 @@ async function startCamera(){
 }
 
 
-/* =========================================================
+/* =====================================================
    بدء التطبيق
-========================================================= */
+===================================================== */
 
 startAppBtn.addEventListener(
 "click",
 async function(){
 
-    welcomeOverlay.style.display = "none";
+    welcomeOverlay.style.display =
+    "none";
 
     await startCamera();
 
+
     setTimeout(
-        () => speakArabic(
-            "التطبيق جاهز. ضع الصفحة أمام الكاميرا واضغط التقاط."
-        ),
-        700
+        function(){
+
+            speakArabic(
+                "التطبيق جاهز. ضع الصفحة أمام الكاميرا واضغط التقاط."
+            );
+
+        },
+        500
     );
 
 });
 
 
-/* =========================================================
+/* =====================================================
    تحميل الصورة
-========================================================= */
+===================================================== */
 
 function loadImage(src){
 
     return new Promise(
-        (resolve,reject)=>{
+        function(resolve,reject){
 
-            const img = new Image();
+            const img =
+            new Image();
 
-            img.onload = () =>
-            resolve(img);
 
-            img.onerror = reject;
+            img.onload =
+            function(){
 
-            img.src = src;
+                resolve(img);
+
+            };
+
+
+            img.onerror =
+            reject;
+
+
+            img.src =
+            src;
 
         }
     );
@@ -396,50 +456,57 @@ function loadImage(src){
 }
 
 
-/* =========================================================
-   معالجة الصورة
-========================================================= */
+/* =====================================================
+   تحسين الصورة - نسخة واحدة سريعة
+===================================================== */
 
-async function preprocess(
-    source,
-    mode
-){
+async function improveImage(source){
 
     const img =
     await loadImage(source);
 
 
     /*
-       نكبر الصورة 2.5 مرة
+       التكبير 1.8 فقط
+       حتى تكون المعالجة أسرع
     */
 
-    const scale = 2.5;
+    const scale = 1.8;
+
 
     const width =
-    Math.floor(img.width * scale);
+    Math.floor(
+        img.width * scale
+    );
+
 
     const height =
-    Math.floor(img.height * scale);
+    Math.floor(
+        img.height * scale
+    );
 
 
     const c =
-    document.createElement("canvas");
+    document.createElement(
+        "canvas"
+    );
 
-    c.width = width;
 
-    c.height = height;
+    c.width =
+    width;
+
+    c.height =
+    height;
 
 
     const ctx =
     c.getContext(
         "2d",
-        {willReadFrequently:true}
+        {
+            willReadFrequently:true
+        }
     );
 
-
-    /*
-       رسم الصورة
-    */
 
     ctx.drawImage(
         img,
@@ -450,7 +517,7 @@ async function preprocess(
     );
 
 
-    const data =
+    const imageData =
     ctx.getImageData(
         0,
         0,
@@ -459,21 +526,29 @@ async function preprocess(
     );
 
 
-    const p = data.data;
+    const pixels =
+    imageData.data;
 
 
     /*
        تحويل إلى رمادي
-       وتحسين التباين
+       + تحسين التباين
     */
 
-    for(let i=0;i<p.length;i+=4){
+    for(
+        let i=0;
+        i<pixels.length;
+        i+=4
+    ){
 
-        const r=p[i];
+        const r =
+        pixels[i];
 
-        const g=p[i+1];
+        const g =
+        pixels[i+1];
 
-        const b=p[i+2];
+        const b =
+        pixels[i+2];
 
 
         let gray =
@@ -483,69 +558,40 @@ async function preprocess(
 
 
         /*
-           إزالة بعض الظلال
+           تحسين التباين
         */
 
-        if(mode === 1){
-
-            gray =
-            (gray - 128) * 1.55 + 128;
-
-        }
-
-
-        /*
-           نسخة أبيض وأسود
-        */
-
-        if(mode === 2){
-
-            gray =
-            gray > 165 ? 255 : 0;
-
-        }
-
-
-        /*
-           نسخة قوية للنصوص
-        */
-
-        if(mode === 3){
-
-            gray =
-            (gray - 128) * 2 + 128;
-
-            gray =
-            gray > 155 ? 255 : 0;
-
-        }
+        gray =
+        (gray - 128)
+        * 1.35
+        + 128;
 
 
         /*
            منع القيم الخارجة
         */
 
-        gray =
-        Math.max(
-            0,
-            Math.min(255,gray)
-        );
+        if(gray < 0)
+            gray = 0;
+
+        if(gray > 255)
+            gray = 255;
 
 
-        p[i] =
+        pixels[i] =
         gray;
 
-        p[i+1] =
+        pixels[i+1] =
         gray;
 
-        p[i+2] =
+        pixels[i+2] =
         gray;
 
     }
 
 
     ctx.putImageData(
-        data,
+        imageData,
         0,
         0
     );
@@ -556,45 +602,40 @@ async function preprocess(
 }
 
 
-/* =========================================================
-   تشغيل Tesseract
-========================================================= */
+/* =====================================================
+   إنشاء محرك OCR مرة واحدة
+===================================================== */
 
-async function getWorker(){
+async function getOCRWorker(){
 
     if(worker){
+
         return worker;
+
     }
 
 
-    status(
-        "جاري تجهيز محرك القراءة العربية..."
+    setStatus(
+        "جاري تجهيز قارئ اللغة العربية..."
     );
 
 
     worker =
-    await Tesseract.createWorker("ara");
+    await Tesseract.createWorker(
+        "ara"
+    );
 
 
     await worker.setParameters({
 
-        /*
-           صفحة تحتوي على مجموعة نصوص
-        */
+        tessedit_pageseg_mode:
+        "6",
 
-        tessedit_pageseg_mode:"6",
+        user_defined_dpi:
+        "300",
 
-        /*
-           دقة المستند
-        */
-
-        user_defined_dpi:"300",
-
-        /*
-           الحفاظ على المسافات
-        */
-
-        preserve_interword_spaces:"1"
+        preserve_interword_spaces:
+        "1"
 
     });
 
@@ -604,78 +645,43 @@ async function getWorker(){
 }
 
 
-/* =========================================================
-   OCR
-========================================================= */
-
-async function recognize(canvasImage){
-
-    const w =
-    await getWorker();
-
-    const result =
-    await w.recognize(canvasImage);
-
-    return {
-
-        text:
-        result.data.text || "",
-
-        confidence:
-        Number(result.data.confidence || 0)
-
-    };
-
-}
-
-
-/* =========================================================
+/* =====================================================
    تنظيف النص
-========================================================= */
+===================================================== */
 
-function cleanText(text){
+function cleanArabicText(text){
 
     if(!text){
+
         return "";
+
     }
 
 
     /*
-       إزالة الرموز التي تظهر بسبب OCR
+       إزالة الرموز الغريبة
     */
 
     text =
     text.replace(
-        /[|_~`{}[\]\\^<>]+/g,
+        /[|_~`{}[\]\\^<>]/g,
         " "
     );
 
 
     /*
-       إزالة النقاط الغريبة المتكررة
+       إزالة الرموز المتكررة
     */
 
     text =
     text.replace(
-        /[·•]{2,}/g,
+        /[•·]{2,}/g,
         " "
     );
 
 
     /*
-       الاحتفاظ بالحروف العربية
-       والأرقام وعلامات الترقيم
-    */
-
-    text =
-    text.replace(
-        /[^\u0600-\u06FF0-9A-Za-z\s،؛:.؟!()/\-]/g,
-        " "
-    );
-
-
-    /*
-       المسافات
+       إزالة المسافات الزائدة
     */
 
     text =
@@ -686,14 +692,20 @@ function cleanText(text){
 
 
     /*
-       الأسطر الفارغة
+       تنظيف الأسطر
     */
 
     text =
     text
     .split("\n")
-    .map(x => x.trim())
-    .filter(x => x.length > 0)
+    .map(
+        line =>
+        line.trim()
+    )
+    .filter(
+        line =>
+        line.length > 0
+    )
     .join("\n");
 
 
@@ -702,248 +714,91 @@ function cleanText(text){
 }
 
 
-/* =========================================================
-   تقييم نتيجة OCR
-========================================================= */
+/* =====================================================
+   قراءة الصورة
+===================================================== */
 
-function scoreText(text,confidence){
-
-    if(!text){
-        return -1000;
-    }
-
-
-    const arabic =
-    (text.match(/[\u0600-\u06FF]/g)||[])
-    .length;
-
-
-    const latin =
-    (text.match(/[A-Za-z]/g)||[])
-    .length;
-
-
-    const numbers =
-    (text.match(/[0-9]/g)||[])
-    .length;
-
-
-    const strange =
-    (text.match(/[|_~`{}[\]\\^<>]/g)||[])
-    .length;
-
-
-    let score =
-    confidence;
-
-
-    /*
-       نفضل العربية
-    */
-
-    score +=
-    arabic * 1.5;
-
-
-    /*
-       نعاقب الرموز
-    */
-
-    score -=
-    strange * 10;
-
-
-    /*
-       نعاقب النتائج القصيرة جداً
-    */
-
-    if(text.length < 10){
-
-        score -= 30;
-
-    }
-
-
-    /*
-       نعاقب النتائج التي معظمها أرقام
-    */
-
-    if(
-        numbers > arabic &&
-        numbers > 5
-    ){
-
-        score -= 25;
-
-    }
-
-
-    return score;
-
-}
-
-
-/* =========================================================
-   القراءة الرئيسية
-========================================================= */
-
-async function processImage(source){
-
-    captureBtn.disabled = true;
-
-    captureBtn.style.opacity = "0.5";
-
+async function readImage(source){
 
     try{
+
+        captureBtn.disabled =
+        true;
+
+
+        captureBtn.style.opacity =
+        "0.5";
+
 
         resultText.innerText =
         "جاري تجهيز الصورة...";
 
 
-        status(
-            "جاري تحسين الصورة للقراءة العربية..."
+        setStatus(
+            "جاري تحسين الصورة..."
         );
 
 
         /*
-           النسخة الأولى
+           معالجة واحدة فقط
         */
 
-        const img1 =
-        await preprocess(
-            source,
-            1
+        const improved =
+        await improveImage(
+            source
         );
 
 
-        status(
+        setStatus(
             "جاري قراءة النص العربي..."
         );
 
 
-        const r1 =
-        await recognize(img1);
+        /*
+           الحصول على OCR
+        */
+
+        const ocr =
+        await getOCRWorker();
 
 
-        let best =
-        r1;
+        /*
+           قراءة واحدة فقط
+        */
 
-
-        let bestScore =
-        scoreText(
-            cleanText(r1.text),
-            r1.confidence
+        const result =
+        await ocr.recognize(
+            improved
         );
 
 
         /*
-           النسخة الثانية
+           تنظيف النتيجة
         */
 
-        if(bestScore < 100){
-
-            status(
-                "أحاول قراءة النص بطريقة ثانية..."
-            );
-
-
-            const img2 =
-            await preprocess(
-                source,
-                2
-            );
-
-
-            const r2 =
-            await recognize(img2);
-
-
-            const t2 =
-            cleanText(r2.text);
-
-
-            const s2 =
-            scoreText(
-                t2,
-                r2.confidence
-            );
-
-
-            if(s2 > bestScore){
-
-                best = r2;
-
-                bestScore = s2;
-
-            }
-
-        }
+        const text =
+        cleanArabicText(
+            result.data.text
+        );
 
 
         /*
-           النسخة الثالثة
+           لا يوجد نص
         */
 
-        if(bestScore < 100){
-
-            status(
-                "أجرب معالجة إضافية..."
-            );
-
-
-            const img3 =
-            await preprocess(
-                source,
-                3
-            );
-
-
-            const r3 =
-            await recognize(img3);
-
-
-            const t3 =
-            cleanText(r3.text);
-
-
-            const s3 =
-            scoreText(
-                t3,
-                r3.confidence
-            );
-
-
-            if(s3 > bestScore){
-
-                best = r3;
-
-                bestScore = s3;
-
-            }
-
-        }
-
-
-        /*
-           النتيجة النهائية
-        */
-
-        const finalText =
-        cleanText(best.text);
-
-
-        if(!finalText){
+        if(!text){
 
             resultText.innerText =
             "لم يتم العثور على نص واضح.";
 
-            status(
+
+            setStatus(
                 "لم أتمكن من قراءة النص."
             );
 
 
             speakArabic(
-                "لم أتمكن من قراءة النص. حاول تقريب الكاميرا من الورقة وتحسين الإضاءة."
+                "لم أتمكن من قراءة النص. حاول تقريب الكاميرا من الصفحة."
             );
 
 
@@ -952,11 +807,15 @@ async function processImage(source){
         }
 
 
+        /*
+           عرض النص
+        */
+
         resultText.innerText =
-        finalText;
+        text;
 
 
-        status(
+        setStatus(
             "تمت قراءة الصفحة."
         );
 
@@ -966,7 +825,7 @@ async function processImage(source){
         */
 
         speakArabic(
-            finalText
+            text
         );
 
     }
@@ -980,16 +839,16 @@ async function processImage(source){
 
 
         resultText.innerText =
-        "حدث خطأ أثناء قراءة الصورة.";
+        "حدث خطأ أثناء القراءة.";
 
 
-        status(
-            "حدث خطأ أثناء القراءة."
+        setStatus(
+            "حدث خطأ أثناء قراءة الصفحة."
         );
 
 
         speakArabic(
-            "حدث خطأ أثناء قراءة الصورة. حاول مرة أخرى."
+            "حدث خطأ أثناء قراءة الصفحة. حاول مرة أخرى."
         );
 
     }
@@ -999,6 +858,7 @@ async function processImage(source){
         captureBtn.disabled =
         false;
 
+
         captureBtn.style.opacity =
         "1";
 
@@ -1007,9 +867,9 @@ async function processImage(source){
 }
 
 
-/* =========================================================
-   التقاط الكاميرا
-========================================================= */
+/* =====================================================
+   التقاط صورة
+===================================================== */
 
 captureBtn.addEventListener(
 "click",
@@ -1032,7 +892,7 @@ async function(){
     ){
 
         speakArabic(
-            "الكاميرا لم تصبح جاهزة بعد."
+            "الكاميرا لم تصبح جاهزة."
         );
 
         return;
@@ -1040,20 +900,18 @@ async function(){
     }
 
 
-    /*
-       نستخدم الدقة الحقيقية
-       للكاميرا
-    */
-
     canvas.width =
     video.videoWidth;
+
 
     canvas.height =
     video.videoHeight;
 
 
     const ctx =
-    canvas.getContext("2d");
+    canvas.getContext(
+        "2d"
+    );
 
 
     ctx.drawImage(
@@ -1068,20 +926,20 @@ async function(){
     const image =
     canvas.toDataURL(
         "image/jpeg",
-        1.0
+        0.92
     );
 
 
-    await processImage(
+    await readImage(
         image
     );
 
 });
 
 
-/* =========================================================
+/* =====================================================
    المعرض
-========================================================= */
+===================================================== */
 
 galleryInput.addEventListener(
 "change",
@@ -1092,17 +950,6 @@ function(event){
 
 
     if(!file){
-        return;
-    }
-
-
-    if(
-        !file.type.startsWith("image/")
-    ){
-
-        speakArabic(
-            "الملف ليس صورة."
-        );
 
         return;
 
@@ -1116,24 +963,27 @@ function(event){
     reader.onload =
     async function(e){
 
-        await processImage(
+        await readImage(
             e.target.result
         );
 
     };
 
 
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(
+        file
+    );
 
 
-    event.target.value = "";
+    event.target.value =
+    "";
 
 });
 
 
-/* =========================================================
+/* =====================================================
    إعادة القراءة
-========================================================= */
+===================================================== */
 
 repeatBtn.addEventListener(
 "click",
@@ -1157,11 +1007,13 @@ function(){
 });
 
 
-/* =========================================================
-   تحميل الأصوات
-========================================================= */
+/* =====================================================
+   تجهيز أصوات الهاتف
+===================================================== */
 
-if("speechSynthesis" in window){
+if(
+    "speechSynthesis" in window
+){
 
     speechSynthesis.onvoiceschanged =
     function(){
