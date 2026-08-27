@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق قارئ - النتيجة الدقيقة للمستندات</title>
+    <title>تطبيق قارئ - المستندات الذكي</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
@@ -17,7 +17,7 @@
     <div id="welcomeOverlay" class="fixed inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center p-6 text-center">
         <div class="bg-indigo-900 border-2 border-indigo-500 p-6 rounded-3xl max-w-sm shadow-2xl">
             <h2 class="text-2xl font-bold mb-3">مرحباً بك في تطبيق قارئ 👁️</h2>
-            <p class="text-indigo-200 text-sm mb-6">جاهز لقراءة المستندات والأوراق الرسمية بوضوح تام.</p>
+            <p class="text-indigo-200 text-sm mb-6">جاهز لقراءة الأوراق والمستندات بفلترة فائقة الدقة.</p>
             <button id="startAppBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 px-6 rounded-2xl shadow-lg text-lg">
                 🚀 ابدأ التطبيق الآن
             </button>
@@ -27,7 +27,7 @@
     <!-- الهيدر -->
     <header class="bg-indigo-800 shadow-lg p-4 text-center">
         <h1 class="text-3xl font-extrabold tracking-wide">تطبيق قارئ 👁️</h1>
-        <p class="text-indigo-200 text-sm mt-1">الوضع المخصص لقراءة الأوراق والتقارير الطبية</p>
+        <p class="text-indigo-200 text-sm mt-1">القارئ الآلي للمستندات الرسمية</p>
     </header>
 
     <!-- المحتوى الرئيسي -->
@@ -46,7 +46,7 @@
         <!-- أزرار التحكم -->
         <div class="w-full space-y-3">
             <button id="captureBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white text-xl font-bold py-4 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3">
-                <span>📸 التقاط وقراءة المستند بوضوح</span>
+                <span>📸 التقاط وقراءة بصفاء تام</span>
             </button>
 
             <button id="repeatBtn" class="w-full bg-amber-600 hover:bg-amber-500 active:scale-95 transition text-white text-lg font-semibold py-3 px-6 rounded-2xl shadow-md flex items-center justify-center gap-2">
@@ -56,7 +56,7 @@
 
         <!-- صندوق عرض النص المستخرج -->
         <div class="w-full mt-4 bg-slate-800 border border-slate-700 p-4 rounded-2xl shadow-inner">
-            <h2 class="text-sm font-semibold text-indigo-300 mb-1">النتيجة المنظفة للمستند:</h2>
+            <h2 class="text-sm font-semibold text-indigo-300 mb-1">البيانات الأساسية المستخرجة:</h2>
             <p id="resultText" class="text-slate-100 min-h-[60px] text-base leading-relaxed">ثبت الكاميرا على الورقة واضغط التقاط...</p>
         </div>
 
@@ -64,10 +64,10 @@
 
     <!-- الفوتر -->
     <footer class="bg-slate-950 text-center py-3 text-slate-500 text-xs">
-        تطبيق قارئ - فلترة ذكية للنصوص العربية
+        تطبيق قارئ - تنقية تلقائية للأخطاء
     </footer>
 
-    <!-- سكريبت البرمجة والفلترة -->
+    <!-- سكريبت الفلترة المتقدمة -->
     <script>
         const video = document.getElementById('cameraStream');
         const canvas = document.getElementById('snapshotCanvas');
@@ -78,14 +78,14 @@
         const welcomeOverlay = document.getElementById('welcomeOverlay');
         const startAppBtn = document.getElementById('startAppBtn');
 
-        let lastSpokenText = "تطبيق قارئ جاهز للمستندات.";
+        let lastSpokenText = "تطبيق قارئ جاهز.";
 
         function speakArabic(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'ar-SA';
-                utterance.rate = 0.85; // سرعة هادئة ومناسبة للفهم
+                utterance.rate = 0.85;
                 utterance.pitch = 1.0;
 
                 const voices = window.speechSynthesis.getVoices();
@@ -109,7 +109,7 @@
                 try {
                     const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
                     video.srcObject = fallbackStream;
-                    placeholder.style.display, 'none';
+                    placeholder.style.display = 'none';
                 } catch (e) {
                     placeholder.innerHTML = "⚠️ تعذر الوصول للكاميرا، تأكد من أذونات المتصفح.";
                 }
@@ -120,13 +120,13 @@
             welcomeOverlay.style.display = 'none';
             initCamera();
             setTimeout(() => {
-                speakArabic("أهلاً بك. الكاميرا جاهزة لتصوير الأوراق والمستندات.");
+                speakArabic("أهلاً بك. الكاميرا جاهزة الآن.");
             }, 500);
         });
 
         async function analyzeLocally() {
-            speakArabic("جاري تحليل المستند وتنقية الكلمات، يرجى ثبات التلفون...");
-            resultText.innerText = "جاري قراءة وتصفية النص...";
+            speakArabic("جاري قراءة وتصفية البيانات، يرجى الثبات قليلاً...");
+            resultText.innerText = "جاري استخراج النص النقي...";
 
             canvas.width = video.videoWidth || 1280;
             canvas.height = video.videoHeight || 720;
@@ -136,7 +136,6 @@
             const imageDataUrl = canvas.toDataURL('image/jpeg', 1.0);
 
             try {
-                // قراءة التركيز الأساسي مع تفعيل تنقية الأخطاء الشائعة
                 const result = await Tesseract.recognize(
                     imageDataUrl,
                     'ara',
@@ -147,30 +146,34 @@
 
                 let rawText = result.data.text ? result.data.text : "";
                 
-                // تعديل وتنظيف الجزئية المعنية بإزالة الحروف الإنجليزية العشوائية والرموز المتداخلة
+                // فلترة ذكية وصارمة جداً لإزالة أي حروف غريبة، علامات تشويش، أو رموز تالفة
                 let cleanLines = rawText.split('\n')
                     .map(line => {
-                        // إزالة الحروف اللاتينية والرموز الغريبة الملتصقة بالنص العربي
-                        return line.replace(/[a-zA-Z]/g, '')
-                                   .replace(/[|•_~`{}\[\]\\@#$%^&*+=<>]/g, ' ')
+                        return line.replace(/[a-zA-Z]/g, '') // إزالة أي إنجليزي ملخبط
+                                   .replace(/[|•_~`{}\[\]\\@#$%^&*+=<>""„«»]/g, ' ') // إزالة الرموز
                                    .replace(/\s+/g, ' ')
                                    .trim();
                     })
-                    .filter(line => line.length > 2); // تجاهل الأسطر الفارغة أو القصيرة جداً
+                    .filter(line => {
+                        // الاحتفاظ فقط بالأسطر اللي فيها كلمات عربية حقيقية أو أرقام صحيحة مهمة
+                        let arabicLettersCount = (line.match(/[\u0600-\u06FF]/g) || []).length;
+                        let numbersCount = (line.match(/[0-9]/g) || []).length;
+                        return (arabicLettersCount >= 3 || numbersCount >= 4);
+                    });
 
                 let finalCleanText = cleanLines.join(' . ');
 
-                if (finalCleanText.length > 6) {
+                if (finalCleanText.length > 5) {
                     resultText.innerText = finalCleanText;
-                    speakArabic("النص المستخرج هو: " + finalCleanText);
+                    speakArabic("البيانات المستخرجة هي: " + finalCleanText);
                 } else {
-                    resultText.innerText = "لم يتم التقاط نص واضح. حاول تقريب الكاميرا وضبط الإضاءة.";
-                    speakArabic("لم أتمكن من قراءة نص واضح، حاول ثبات الكاميرا وتقريبها من الورقة.");
+                    resultText.innerText = "لم يتم التقاط كلمات واضحة. يرجى ضبط الإضاءة وتثبيت الكاميرا.";
+                    speakArabic("لم أتمكن من قراءة كلمات واضحة، حاول تثبيت الكاميرا أكثر.");
                 }
             } catch (error) {
                 console.error(error);
-                resultText.innerText = "حدث خطأ أثناء معالجة المستند.";
-                speakArabic("حدث خطأ في قراءة المستند.");
+                resultText.innerText = "حدث خطأ أثناء القراءة.";
+                speakArabic("حدث خطأ في القراءة.");
             }
         }
 
