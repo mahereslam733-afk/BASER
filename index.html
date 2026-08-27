@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق قارئ المستندات للمكفوفين</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
         body { font-family: 'Cairo', sans-serif; }
@@ -67,7 +68,7 @@
 
     </main>
 
-    <!-- سكريبت التشغيل المحدث -->
+    <!-- سكريبت التشغيل المحدث بدون أي ذكر للأسماء -->
     <script>
         const video = document.getElementById('cameraStream');
         const canvas = document.getElementById('snapshotCanvas');
@@ -122,49 +123,32 @@
             welcomeOverlay.style.display = 'none';
             initCamera();
             setTimeout(() => {
-                speakArabic("أهلاً بك يا إسلام. التطبيق جاهز، التقط صورة المستند.");
+                speakArabic("التطبيق جاهز، التقط صورة المستند.");
             }, 600);
         });
 
-        // دالة إرسال الصورة للمحرك الاحتياطي المباشر
-        async function processImage(base64Image) {
+        // دالة قراءة الصورة محلياً باستخدام Tesseract لتجنب أخطاء السيرفرات والشبكة
+        async function processImageLocal(imageSource) {
             speakArabic("جاري قراءة المستند، يرجى الانتظار...");
-            resultText.innerText = "جاري قراءة المستند...";
+            resultText.innerText = "جاري قراءة المستند وتحليله...";
 
             try {
-                const formData = new FormData();
-                formData.append('base64Image', base64Image);
-                formData.append('language', 'ara');
-                formData.append('isOverlayRequired', 'false');
-                // مفتاح مخصص موثوق ومستقر لتجنب خطأ الرفض
-                formData.append('apikey', 'K81877478888957'); 
+                const result = await Tesseract.recognize(imageSource, 'ara');
+                let extractedText = result.data.text ? result.data.text.trim() : "";
+                
+                extractedText = extractedText.replace(/[|•_~`{}\[\]\\@#$%^&*+=<>""„«»()?!]/g, ' ').replace(/\s+/g, ' ');
 
-                const response = await fetch('https://api.ocr.space/parse/image', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (data && data.ParsedResults && data.ParsedResults.length > 0) {
-                    let extractedText = data.ParsedResults[0].ParsedText.trim();
-                    extractedText = extractedText.replace(/\r/g, '').replace(/\n+/g, ' . ');
-
-                    if (extractedText.length > 2) {
-                        resultText.innerText = extractedText;
-                        speakArabic("النص الموجود هو: " + extractedText);
-                    } else {
-                        resultText.innerText = "لم يتم العثور على نص واضح، حاول مرة أخرى.";
-                        speakArabic("لم أتمكن من قراءة كلمات واضحة، حاول تصوير الورقة بوضوح أكبر.");
-                    }
+                if (extractedText.length > 2) {
+                    resultText.innerText = extractedText;
+                    speakArabic("النص الموجود هو: " + extractedText);
                 } else {
-                    resultText.innerText = "تعذر قراءة المستند، جرب اختيار صورة من المعرض.";
-                    speakArabic("تعذر قراءة المستند، جرب اختيار صورة واضحة من المعرض.");
+                    resultText.innerText = "لم يتم العثور على نص واضح، حاول تصوير الورقة بوضوح.";
+                    speakArabic("لم أتمكن من قراءة كلمات واضحة، حاول تصوير الورقة بوضوح أكبر.");
                 }
             } catch (error) {
                 console.error(error);
-                resultText.innerText = "خطأ في الاتصال بالشبكة.";
-                speakArabic("حدث خطأ في الاتصال بالإنترنت.");
+                resultText.innerText = "تعذر قراءة المستند، جرب صورة أخرى.";
+                speakArabic("تعذر قراءة المستند، يرجى المحاولة مرة أخرى.");
             }
         }
 
@@ -177,7 +161,7 @@
             canvas.height = video.videoHeight || 720;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            processImage(canvas.toDataURL('image/jpeg', 0.9));
+            processImageLocal(canvas.toDataURL('image/jpeg', 0.9));
         });
 
         galleryInput.addEventListener('change', (event) => {
@@ -185,7 +169,7 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    processImage(e.target.result);
+                    processImageLocal(e.target.result);
                 };
                 reader.readAsDataURL(file);
             }
