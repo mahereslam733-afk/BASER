@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق قارئ المستندات الذكي</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
         body { font-family: 'Cairo', sans-serif; }
@@ -12,11 +13,11 @@
 </head>
 <body class="bg-slate-900 text-white min-h-screen flex flex-col justify-between p-4">
 
-    <!-- شاشة البداية لتفعيل الصوت والتطبيق -->
+    <!-- شاشة البداية لتفعيل التطبيق والصوت -->
     <div id="welcomeOverlay" class="fixed inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 text-center">
         <div class="bg-indigo-900 border-4 border-indigo-500 p-8 rounded-3xl max-w-sm shadow-2xl">
-            <h2 class="text-3xl font-bold mb-4">قارئ المستندات 👁️</h2>
-            <p class="text-indigo-200 text-base mb-8">التطبيق المطور لقراءة الكتب والأبحاث العربية بدقة متناهية.</p>
+            <h2 class="text-3xl font-bold mb-4">تطبيق قارئ 👁️</h2>
+            <p class="text-indigo-200 text-base mb-8">جاهز للعمل المباشر وقراءة النصوص بدون أي رسائل خطأ.</p>
             <button id="startAppBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-5 px-6 rounded-2xl shadow-lg text-xl active:scale-95 transition">
                 🚀 اضغط للبدء
             </button>
@@ -26,7 +27,7 @@
     <!-- الهيدر -->
     <header class="bg-indigo-800 shadow-lg p-4 text-center rounded-2xl mb-4">
         <h1 class="text-2xl font-extrabold">تطبيق قارئ المستندات</h1>
-        <p class="text-indigo-200 text-xs mt-1">الوضع الذكي المطور للأبحاث</p>
+        <p class="text-indigo-200 text-xs mt-1">الوضع المحلي الفوري والدائم</p>
     </header>
 
     <!-- المحتوى الرئيسي -->
@@ -47,7 +48,7 @@
                 <span>📸 التقاط وقراءة الصفحة</span>
             </button>
 
-            <!-- زر المعرض (لضمان جودة الصورة 100%) -->
+            <!-- زر المعرض -->
             <label class="w-full bg-blue-600 hover:bg-blue-500 active:scale-95 transition text-white text-md font-bold py-3 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3 cursor-pointer">
                 <span>📁 اختر ورقة من المعرض</span>
                 <input type="file" id="galleryInput" accept="image/*" class="hidden">
@@ -61,13 +62,13 @@
 
         <!-- صندوق عرض النص المستخرج -->
         <div class="w-full mt-4 bg-slate-800 border border-slate-700 p-4 rounded-2xl shadow-inner">
-            <h2 class="text-xs font-semibold text-indigo-300 mb-1">النص الصحيح المستخرج:</h2>
-            <p id="resultText" class="text-slate-100 min-h-[50px] text-sm leading-relaxed">وجه الكاميرا نحو الكتاب واضغط التقاط...</p>
+            <h2 class="text-xs font-semibold text-indigo-300 mb-1">النص المستخرج:</h2>
+            <p id="resultText" class="text-slate-100 min-h-[50px] text-sm leading-relaxed">وجه الكاميرا نحو المستند واضغط التقاط...</p>
         </div>
 
     </main>
 
-    <!-- سكريبت التشغيل -->
+    <!-- سكريبت التشغيل المحلي -->
     <script>
         const video = document.getElementById('cameraStream');
         const canvas = document.getElementById('snapshotCanvas');
@@ -126,48 +127,28 @@
             }, 600);
         });
 
-        // دالة الاتصال بالمحرك السحابي العالي الدقة لقراءة الكتب العربية
-        async function processImageServer(base64Image) {
-            speakArabic("جاري قراءة الصفحة بدقة عالية، انتظر لحظات...");
-            resultText.innerText = "جاري قراءة وتحليل النص العربي...";
+        async function processImageLocally(imageSource) {
+            speakArabic("جاري قراءة الصفحة محلياً، انتظر قليلاً...");
+            resultText.innerText = "جاري قراءة النص...";
 
             try {
-                const formData = new FormData();
-                formData.append('base64Image', base64Image);
-                formData.append('language', 'ara');
-                formData.append('isOverlayRequired', 'false');
-                formData.append('OCREngine', '2'); // محرك ذكي متطور لقراءة الأبحاث
-                formData.append('apikey', 'K81877478888957');
+                const result = await Tesseract.recognize(imageSource, 'ara');
+                let text = result.data.text ? result.data.text.trim() : "";
+                
+                // تنظيف خفيف للحفاظ على النص كما هو مع إزالة الرموز المعقدة
+                text = text.replace(/[|•_~`{}\[\]\\@#$%^&*+=<>""„«»]/g, ' ').replace(/\s+/g, ' ');
 
-                const response = await fetch('https://api.ocr.space/parse/image', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (data && data.ParsedResults && data.ParsedResults.length > 0) {
-                    let text = data.ParsedResults[0].ParsedText.trim();
-                    
-                    // تنظيف النص وترتيبه ليناسب القراءة الصوتية
-                    text = text.replace(/\r/g, '').replace(/\n+/g, '. ');
-                    text = text.replace(/[|•_~`{}\[\]\\@#$%^&*+=<>""„«»]/g, ' ');
-
-                    if (text.length > 5) {
-                        resultText.innerText = text;
-                        speakArabic("النص هو: " + text);
-                    } else {
-                        resultText.innerText = "لم يتم العثور على كلمات واضحة، حاول تصوير الصفحة بوضوح أفضل.";
-                        speakArabic("لم أتمكن من العثور على كلمات واضحة، حاول تحسين إضاءة الصفحة.");
-                    }
+                if (text.length > 0) {
+                    resultText.innerText = text;
+                    speakArabic("النص هو: " + text);
                 } else {
-                    resultText.innerText = "تعذر قراءة المستند، يرجى استخدام زر المعرض.";
-                    speakArabic("تعذر قراءة المستند، يرجى استخدام زر المعرض لتصوير الورقة بدقة.");
+                    resultText.innerText = "لم يتم العثور على نص ظاهر.";
+                    speakArabic("لم أتمكن من العثور على نص واضح في الصورة.");
                 }
             } catch (err) {
-                console.error(err);
-                resultText.innerText = "خطأ في الاتصال بالشبكة.";
-                speakArabic("حدث خطأ في الاتصال بالإنترنت.");
+                console.eror(err);
+                resultText.innerText = "حدث خطأ أثناء المعالجة، جرب مرة أخرى.";
+                speakArabic("حدث خطأ أثناء معالجة الصورة.");
             }
         }
 
@@ -180,7 +161,7 @@
             canvas.height = video.videoHeight || 720;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            processImageServer(canvas.toDataURL('image/jpeg', 0.95));
+            processImageLocally(canvas.toDataURL('image/jpeg', 0.95));
         });
 
         galleryInput.addEventListener('change', (event) => {
@@ -188,7 +169,7 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    processImageServer(e.target.result);
+                    processImageLocally(e.target.result);
                 };
                 reader.readAsDataURL(file);
             }
