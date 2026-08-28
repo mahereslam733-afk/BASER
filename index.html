@@ -2,536 +2,246 @@
 <html lang="ar" dir="rtl">
 
 <head>
-
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width,
-      initial-scale=1.0,
-      maximum-scale=1.0,
-      user-scalable=no">
+content="width=device-width,initial-scale=1.0,
+maximum-scale=1.0,user-scalable=no">
 
-<title>قارئ المستندات العربي - Offline</title>
-
-<!--
-========================================================
-مهم:
-هذه الملفات يجب أن تكون موجودة محليًا بجانب index.html
-
-./tesseract.min.js
-./worker.min.js
-./tessdata/ara.traineddata.gz
-========================================================
--->
+<title>قارئ عربي Offline</title>
 
 <script src="./tesseract.min.js"></script>
-
 
 <style>
 
 *{
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
-}
-
-html,
-body{
-    margin:0;
-    padding:0;
-    width:100%;
-    min-height:100%;
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
 }
 
 body{
-
-    background:#0f172a;
-
-    color:white;
-
-    font-family:
-        Arial,
-        Tahoma,
-        sans-serif;
-
-    padding:15px;
+margin:0;
+background:#0f172a;
+color:white;
+font-family:Arial,Tahoma,sans-serif;
+padding:15px;
 }
-
 
 .app{
-
-    width:100%;
-
-    max-width:600px;
-
-    margin:auto;
-
+max-width:600px;
+margin:auto;
 }
 
-
-/* ==========================================
-   العنوان
-========================================== */
-
-.header{
-
-    background:#3730a3;
-
-    border-radius:20px;
-
-    padding:18px;
-
-    text-align:center;
-
-    margin-bottom:15px;
-
+h1{
+text-align:center;
+background:#3730a3;
+padding:18px;
+border-radius:20px;
+font-size:25px;
 }
 
-.header h1{
-
-    margin:0;
-
-    font-size:25px;
-
+.camera{
+position:relative;
+height:60vh;
+min-height:350px;
+background:#000;
+border:4px solid #6366f1;
+border-radius:22px;
+overflow:hidden;
 }
 
-.header p{
-
-    margin:7px 0 0;
-
-    color:#dbeafe;
-
-    font-size:14px;
-
+video{
+width:100%;
+height:100%;
+object-fit:cover;
 }
 
-
-/* ==========================================
-   الكاميرا
-========================================== */
-
-.camera-box{
-
-    position:relative;
-
-    width:100%;
-
-    height:62vh;
-
-    min-height:380px;
-
-    max-height:700px;
-
-    background:#000;
-
-    border:4px solid #6366f1;
-
-    border-radius:22px;
-
-    overflow:hidden;
-
-    margin-bottom:15px;
-
+.message{
+position:absolute;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+font-size:18px;
 }
-
-
-#video{
-
-    width:100%;
-
-    height:100%;
-
-    object-fit:cover;
-
-}
-
-
-.camera-message{
-
-    position:absolute;
-
-    inset:0;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    text-align:center;
-
-    padding:20px;
-
-    color:#ddd;
-
-    font-size:18px;
-
-}
-
-
-/* ==========================================
-   الأزرار
-========================================== */
 
 button,
-.file-label{
-
-    width:100%;
-
-    border:0;
-
-    border-radius:18px;
-
-    padding:16px;
-
-    margin-bottom:10px;
-
-    color:white;
-
-    font-size:18px;
-
-    font-weight:bold;
-
-    cursor:pointer;
-
+label{
+display:block;
+width:100%;
+border:0;
+border-radius:18px;
+padding:17px;
+margin-top:12px;
+font-size:18px;
+font-weight:bold;
+text-align:center;
+cursor:pointer;
+color:white;
 }
-
-
-button:disabled{
-
-    opacity:.45;
-
-}
-
 
 .capture{
-
-    background:#059669;
-
+background:#059669;
 }
-
 
 .gallery{
-
-    background:#2563eb;
-
+background:#2563eb;
 }
-
 
 .repeat{
-
-    background:#d97706;
-
+background:#d97706;
 }
-
 
 .stop{
-
-    background:#dc2626;
-
+background:#dc2626;
 }
 
-
-.file-label{
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
+input{
+display:none;
 }
-
-
-.file-label input{
-
-    display:none;
-
-}
-
-
-/* ==========================================
-   الحالة
-========================================== */
 
 .status{
-
-    background:#172554;
-
-    border:1px solid #3730a3;
-
-    border-radius:15px;
-
-    padding:12px;
-
-    text-align:center;
-
-    margin-top:5px;
-
-    margin-bottom:12px;
-
-    font-size:14px;
-
+margin-top:15px;
+background:#172554;
+padding:13px;
+border-radius:15px;
+text-align:center;
 }
-
-
-/* ==========================================
-   النص
-========================================== */
 
 .result{
-
-    background:#1e293b;
-
-    border:1px solid #475569;
-
-    border-radius:20px;
-
-    padding:15px;
-
+margin-top:15px;
+background:#1e293b;
+padding:15px;
+border-radius:18px;
 }
-
 
 .result-title{
-
-    color:#a5b4fc;
-
-    font-weight:bold;
-
-    margin-bottom:10px;
-
+color:#a5b4fc;
+font-weight:bold;
+margin-bottom:10px;
 }
 
-
-#resultText{
-
-    white-space:pre-wrap;
-
-    line-height:2;
-
-    font-size:17px;
-
-    min-height:130px;
-
+#result{
+white-space:pre-wrap;
+line-height:2;
+font-size:18px;
+min-height:120px;
 }
-
-
-/* ==========================================
-   شاشة البداية
-========================================== */
-
-#welcome{
-
-    position:fixed;
-
-    inset:0;
-
-    background:#020617;
-
-    z-index:1000;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    padding:20px;
-
-}
-
-
-.welcome-box{
-
-    width:100%;
-
-    max-width:420px;
-
-    background:#312e81;
-
-    border:3px solid #6366f1;
-
-    border-radius:25px;
-
-    padding:30px 20px;
-
-    text-align:center;
-
-}
-
-
-.welcome-box h2{
-
-    font-size:30px;
-
-    margin-top:0;
-
-}
-
-
-.start{
-
-    background:#059669;
-
-    margin-top:15px;
-
-}
-
-
-/* ==========================================
-   شاشة المعالجة
-========================================== */
 
 #loading{
-
-    display:none;
-
-    position:fixed;
-
-    inset:0;
-
-    z-index:2000;
-
-    background:rgba(0,0,0,.78);
-
-    align-items:center;
-
-    justify-content:center;
-
-    text-align:center;
-
-    padding:20px;
-
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.8);
+z-index:9999;
+align-items:center;
+justify-content:center;
+text-align:center;
 }
-
 
 .loading-box{
-
-    background:#1e293b;
-
-    border-radius:22px;
-
-    padding:25px;
-
-    width:90%;
-
-    max-width:350px;
-
+background:#1e293b;
+padding:30px;
+border-radius:20px;
+width:90%;
+max-width:350px;
 }
-
 
 .spinner{
-
-    width:48px;
-
-    height:48px;
-
-    border-radius:50%;
-
-    border:5px solid #475569;
-
-    border-top-color:#22c55e;
-
-    animation:
-        spin 1s linear infinite;
-
-    margin:0 auto 15px;
-
+width:45px;
+height:45px;
+border:5px solid #475569;
+border-top-color:#22c55e;
+border-radius:50%;
+animation:spin 1s linear infinite;
+margin:auto auto 15px;
 }
-
 
 @keyframes spin{
-
-    to{
-        transform:rotate(360deg);
-    }
-
+to{
+transform:rotate(360deg);
+}
 }
 
+#welcome{
+position:fixed;
+inset:0;
+background:#020617;
+z-index:10000;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+}
 
-/* ==========================================
-   إطار التصوير
-========================================== */
+.welcome-box{
+background:#312e81;
+padding:30px 20px;
+border-radius:25px;
+width:100%;
+max-width:400px;
+text-align:center;
+border:3px solid #6366f1;
+}
 
-.scan-frame{
-
-    position:absolute;
-
-    width:86%;
-
-    height:70%;
-
-    border:2px solid rgba(255,255,255,.7);
-
-    left:7%;
-
-    top:15%;
-
-    pointer-events:none;
-
-    border-radius:10px;
-
+.start{
+background:#059669;
 }
 
 </style>
-
 </head>
 
 
 <body>
 
 
-<!-- ==========================================
-     شاشة البداية
-========================================== -->
+<!-- شاشة البداية -->
 
 <div id="welcome">
 
-    <div class="welcome-box">
+<div class="welcome-box">
 
-        <h2>
-            📖 قارئ عربي
-        </h2>
+<h2>
+📖 قارئ المستندات العربي
+</h2>
 
-        <p>
-            قارئ المستندات العربية
-        </p>
+<p>
+قارئ عربي يعمل محليًا
+</p>
 
-        <p style="font-size:14px;color:#c7d2fe;">
+<p style="color:#c7d2fe;font-size:14px">
 
-            يعمل محليًا بدون API
+بدون Gemini وبدون API
 
-        </p>
+</p>
 
-        <button
-            id="startButton"
-            class="start">
+<button
+id="start"
+class="start">
 
-            🚀 ابدأ التطبيق
+🚀 ابدأ التطبيق
 
-        </button>
+</button>
 
-    </div>
+</div>
 
 </div>
 
 
-<!-- ==========================================
-     شاشة المعالجة
-========================================== -->
+<!-- شاشة التحميل -->
 
 <div id="loading">
 
-    <div class="loading-box">
+<div class="loading-box">
 
-        <div class="spinner"></div>
+<div class="spinner"></div>
 
-        <div id="loadingText">
+<div id="loadingText">
+جاري تشغيل قارئ العربية...
+</div>
 
-            جاري قراءة الصفحة...
-
-        </div>
-
-    </div>
+</div>
 
 </div>
 
@@ -539,238 +249,160 @@ button:disabled{
 <div class="app">
 
 
-<!-- ==========================================
-     العنوان
-========================================== -->
-
-<div class="header">
-
-    <h1>
-        قارئ المستندات العربي
-    </h1>
-
-    <p>
-        قراءة النصوص العربية بدون إنترنت
-    </p>
-
-</div>
+<h1>
+📖 قارئ المستندات
+</h1>
 
 
-<!-- ==========================================
-     الكاميرا
-========================================== -->
+<!-- الكاميرا -->
 
-<div class="camera-box">
+<div class="camera">
 
-    <video
-        id="video"
-        autoplay
-        playsinline
-        muted>
-    </video>
+<video
+id="video"
+autoplay
+playsinline
+muted>
+</video>
 
+<div
+id="cameraMessage"
+class="message">
 
-    <div
-        id="cameraMessage"
-        class="camera-message">
-
-        اضغط ابدأ لتشغيل الكاميرا
-
-    </div>
-
-
-    <div class="scan-frame"></div>
+اضغط ابدأ لتشغيل الكاميرا
 
 </div>
 
+</div>
 
-<!-- Canvas -->
 
 <canvas
-    id="canvas"
-    style="display:none;">
+id="canvas"
+style="display:none">
 </canvas>
 
 
-<!-- ==========================================
-     التصوير
-========================================== -->
+<!-- التصوير -->
 
 <button
-    id="captureButton"
-    class="capture"
-    disabled>
+id="capture"
+class="capture">
 
-    📸 تصوير وقراءة الصفحة
+📸 تصوير وقراءة الصفحة
 
 </button>
 
 
-<!-- ==========================================
-     المعرض
-========================================== -->
+<!-- المعرض -->
 
-<label
-    class="file-label gallery">
+<label class="gallery">
 
-    📁 اختيار صورة من الهاتف
+📁 اختيار صورة من الهاتف
 
-    <input
-        id="fileInput"
-        type="file"
-        accept="image/*">
+<input
+id="file"
+type="file"
+accept="image/*">
 
 </label>
 
 
-<!-- ==========================================
-     إعادة القراءة
-========================================== -->
+<!-- إعادة القراءة -->
 
 <button
-    id="repeatButton"
-    class="repeat">
+id="repeat"
+class="repeat">
 
-    🔊 إعادة قراءة النص
+🔊 إعادة قراءة النص
 
 </button>
 
 
-<!-- ==========================================
-     إيقاف الصوت
-========================================== -->
+<!-- إيقاف -->
 
 <button
-    id="stopButton"
-    class="stop">
+id="stop"
+class="stop">
 
-    🔇 إيقاف القراءة
+🔇 إيقاف الصوت
 
 </button>
 
 
-<!-- ==========================================
-     الحالة
-========================================== -->
+<!-- الحالة -->
 
 <div
-    id="status"
-    class="status">
+id="status"
+class="status">
 
-    التطبيق جاهز
+جاهز
 
 </div>
 
 
-<!-- ==========================================
-     النتيجة
-========================================== -->
+<!-- النص -->
 
 <div class="result">
 
-    <div class="result-title">
+<div class="result-title">
+النص المستخرج:
+</div>
 
-        النص المستخرج:
+<div id="result">
 
-    </div>
-
-
-    <div id="resultText">
-
-        وجّه الكاميرا نحو الصفحة
-        واضغط تصوير.
-
-    </div>
+لم يتم التقاط أي نص بعد.
 
 </div>
 
+</div>
 
 </div>
 
 
 <script>
 
-
-/* =================================================
-   المتغيرات
-================================================= */
+/* ==================================================
+   العناصر
+================================================== */
 
 const video =
-    document.getElementById(
-        "video"
-    );
-
+document.getElementById("video");
 
 const canvas =
-    document.getElementById(
-        "canvas"
-    );
-
-
-const cameraMessage =
-    document.getElementById(
-        "cameraMessage"
-    );
-
-
-const captureButton =
-    document.getElementById(
-        "captureButton"
-    );
-
-
-const fileInput =
-    document.getElementById(
-        "fileInput"
-    );
-
-
-const repeatButton =
-    document.getElementById(
-        "repeatButton"
-    );
-
-
-const stopButton =
-    document.getElementById(
-        "stopButton"
-    );
-
-
-const status =
-    document.getElementById(
-        "status"
-    );
-
-
-const resultText =
-    document.getElementById(
-        "resultText"
-    );
-
-
-const welcome =
-    document.getElementById(
-        "welcome"
-    );
-
+document.getElementById("canvas");
 
 const startButton =
-    document.getElementById(
-        "startButton"
-    );
+document.getElementById("start");
 
+const captureButton =
+document.getElementById("capture");
+
+const fileInput =
+document.getElementById("file");
+
+const repeatButton =
+document.getElementById("repeat");
+
+const stopButton =
+document.getElementById("stop");
+
+const result =
+document.getElementById("result");
+
+const status =
+document.getElementById("status");
+
+const welcome =
+document.getElementById("welcome");
+
+const cameraMessage =
+document.getElementById("cameraMessage");
 
 const loading =
-    document.getElementById(
-        "loading"
-    );
-
+document.getElementById("loading");
 
 const loadingText =
-    document.getElementById(
-        "loadingText"
-    );
+document.getElementById("loadingText");
 
 
 let stream = null;
@@ -782,969 +414,679 @@ let lastText = "";
 let busy = false;
 
 
-/* =================================================
+/* ==================================================
    الحالة
-================================================= */
+================================================== */
 
 function setStatus(text){
 
-    status.textContent =
-        text;
+status.textContent = text;
 
 }
 
 
-/* =================================================
-   النطق
-================================================= */
+/* ==================================================
+   الصوت
+================================================== */
 
 function speak(text){
 
-    if(!text){
+if(!text){
 
-        return;
+return;
 
-    }
+}
 
+if(!("speechSynthesis" in window)){
 
-    if(
-        !("speechSynthesis" in window)
-    ){
+return;
 
-        return;
+}
 
-    }
-
-
-    speechSynthesis.cancel();
+speechSynthesis.cancel();
 
 
-    const utterance =
-        new SpeechSynthesisUtterance(
-            text
-        );
+const u =
+new SpeechSynthesisUtterance(text);
 
 
-    utterance.lang =
-        "ar-EG";
+u.lang = "ar-EG";
+
+u.rate = 0.78;
+
+u.pitch = 1;
+
+u.volume = 1;
 
 
-    utterance.rate =
-        0.78;
+const voices =
+speechSynthesis.getVoices();
 
 
-    utterance.pitch =
-        1;
+const voice =
+voices.find(
+v => v.lang === "ar-EG"
+)
+||
+voices.find(
+v => v.lang.startsWith("ar")
+);
 
 
-    utterance.volume =
-        1;
+if(voice){
 
-
-    const voices =
-        speechSynthesis.getVoices();
-
-
-    const arabic =
-        voices.find(
-            v =>
-            v.lang === "ar-EG"
-        )
-        ||
-        voices.find(
-            v =>
-            v.lang.startsWith("ar")
-        );
-
-
-    if(arabic){
-
-        utterance.voice =
-            arabic;
-
-    }
-
-
-    speechSynthesis.speak(
-        utterance
-    );
-
-
-    lastText =
-        text;
+u.voice = voice;
 
 }
 
 
-/* =================================================
+speechSynthesis.speak(u);
+
+lastText = text;
+
+}
+
+
+/* ==================================================
    تشغيل الكاميرا
-================================================= */
+================================================== */
 
 async function startCamera(){
 
-    try{
+try{
 
-        stream =
-            await navigator.mediaDevices
-                .getUserMedia({
+stream =
+await navigator.mediaDevices.getUserMedia({
 
-                    video:{
+video:{
+facingMode:{
+ideal:"environment"
+},
+width:{
+ideal:1920
+},
+height:{
+ideal:1080
+}
+},
 
-                        facingMode:{
-                            ideal:
-                            "environment"
-                        },
+audio:false
 
-                        width:{
-                            ideal:1920
-                        },
-
-                        height:{
-                            ideal:1080
-                        }
-
-                    },
-
-                    audio:false
-
-                });
+});
 
 
-        video.srcObject =
-            stream;
+video.srcObject = stream;
 
+cameraMessage.style.display = "none";
 
-        cameraMessage.style.display =
-            "none";
+setStatus(
+"الكاميرا جاهزة"
+);
 
+}
 
-        captureButton.disabled =
-            false;
+catch(error){
 
+console.error(error);
 
-        setStatus(
-            "الكاميرا جاهزة."
-        );
+cameraMessage.innerHTML =
+"⚠️ تعذر تشغيل الكاميرا<br><br>استخدم صورة من المعرض.";
 
+setStatus(
+"الكاميرا غير متاحة"
+);
 
-    }
-
-    catch(error){
-
-        console.error(
-            error
-        );
-
-
-        cameraMessage.innerHTML =
-            "⚠️ تعذر تشغيل الكاميرا.<br><br>يمكنك اختيار صورة من الهاتف.";
-
-        setStatus(
-            "الكاميرا غير متاحة."
-        );
-
-    }
+}
 
 }
 
 
-/* =================================================
-   تحميل محرك OCR المحلي
-================================================= */
+/* ==================================================
+   إنشاء Tesseract Worker محلي
+================================================== */
 
-async function initOCR(){
+async function loadOCR(){
 
-    if(worker){
+if(worker){
 
-        return worker;
-
-    }
-
-
-    loading.style.display =
-        "flex";
-
-
-    loadingText.textContent =
-        "جاري تحميل قارئ العربية...";
-
-
-    setStatus(
-        "جاري تجهيز محرك القراءة..."
-    );
-
-
-    try{
-
-        /*
-        ============================================
-        مهم:
-
-        Tesseract سيستخدم الملفات المحلية.
-
-        langPath:
-        مجلد نموذج اللغة العربية.
-
-        workerPath:
-        ملف worker المحلي.
-
-        corePath:
-        ملفات Tesseract المحلية.
-
-        ============================================
-        */
-
-        worker =
-            await Tesseract.createWorker(
-                "ara",
-                1,
-                {
-
-                    workerPath:
-                        "./worker.min.js",
-
-                    langPath:
-                        "./tessdata",
-
-                    corePath:
-                        "./tesseract-core/",
-
-                    logger:
-                    function(info){
-
-                        if(
-                            info.status ===
-                            "loading tesseract core"
-                        ){
-
-                            loadingText.textContent =
-                                "جاري تشغيل محرك OCR...";
-
-                        }
-
-                        else if(
-                            info.status ===
-                            "loading language traineddata"
-                        ){
-
-                            loadingText.textContent =
-                                "جاري تحميل اللغة العربية...";
-
-                        }
-
-                        else if(
-                            info.status ===
-                            "recognizing text"
-                        ){
-
-                            const percent =
-                                Math.round(
-                                    (info.progress || 0)
-                                    * 100
-                                );
-
-
-                            loadingText.textContent =
-                                "جاري قراءة النص "
-                                +
-                                percent
-                                +
-                                "%";
-
-                        }
-
-                    }
-
-                }
-            );
-
-
-        /*
-           إعداد المستند
-        */
-
-        await worker.setParameters({
-
-            tessedit_pageseg_mode:
-                "3",
-
-            preserve_interword_spaces:
-                "1",
-
-            user_defined_dpi:
-                "300"
-
-        });
-
-
-        setStatus(
-            "قارئ العربية جاهز."
-        );
-
-
-        return worker;
-
-    }
-
-    catch(error){
-
-        console.error(
-            "OCR INIT ERROR:",
-            error
-        );
-
-
-        worker =
-            null;
-
-
-        throw error;
-
-    }
-
-    finally{
-
-        loading.style.display =
-            "none";
-
-    }
+return worker;
 
 }
 
 
-/* =================================================
+loading.style.display = "flex";
+
+loadingText.textContent =
+"جاري تشغيل قارئ العربية...";
+
+
+try{
+
+worker =
+await Tesseract.createWorker(
+"ara",
+1,
+{
+
+workerPath:
+"./worker.min.js",
+
+langPath:
+"./tessdata/",
+
+corePath:
+"./",
+
+logger:
+function(info){
+
+if(
+info.status ===
+"loading tesseract core"
+){
+
+loadingText.textContent =
+"جاري تشغيل محرك OCR...";
+
+}
+
+if(
+info.status ===
+"loading language traineddata"
+){
+
+loadingText.textContent =
+"جاري تحميل اللغة العربية...";
+
+}
+
+if(
+info.status ===
+"recognizing text"
+){
+
+const p =
+Math.round(
+(info.progress || 0) * 100
+);
+
+loadingText.textContent =
+"جاري قراءة الصفحة "
++ p +
+"%";
+
+}
+
+}
+
+}
+);
+
+
+await worker.setParameters({
+
+tessedit_pageseg_mode:"6",
+
+preserve_interword_spaces:"1",
+
+user_defined_dpi:"300"
+
+});
+
+
+setStatus(
+"قارئ العربية جاهز"
+);
+
+
+return worker;
+
+}
+
+catch(error){
+
+console.error(
+"TESSERACT ERROR:",
+error
+);
+
+worker = null;
+
+setStatus(
+"خطأ في ملفات قارئ العربية"
+);
+
+result.textContent =
+"تعذر تشغيل قارئ النص العربي. تأكد من وجود ملفات Tesseract المحلية.";
+
+throw error;
+
+}
+
+finally{
+
+loading.style.display = "none";
+
+}
+
+}
+
+
+/* ==================================================
    تجهيز الصورة
-================================================= */
+================================================== */
 
 function prepareImage(source){
 
-    return new Promise(
-        function(resolve,reject){
+return new Promise(
+(resolve,reject)=>{
 
-            const img =
-                new Image();
-
-
-            img.onload =
-                function(){
-
-                    let width =
-                        img.naturalWidth;
+const img = new Image();
 
 
-                    let height =
-                        img.naturalHeight;
+img.onload = ()=>{
+
+let width =
+img.naturalWidth;
+
+let height =
+img.naturalHeight;
 
 
-                    /*
-                       لا نصغر الصورة كثيرًا.
-                    */
+/*
+   لا نسمح بصورة ضخمة جدًا
+   حتى لا يصبح الهاتف بطيئًا
+*/
 
-                    const maxWidth =
-                        1800;
-
-
-                    if(
-                        width >
-                        maxWidth
-                    ){
-
-                        const ratio =
-                            maxWidth /
-                            width;
+const maxWidth = 1800;
 
 
-                        width =
-                            Math.round(
-                                width *
-                                ratio
-                            );
+if(width > maxWidth){
 
+const ratio =
+maxWidth / width;
 
-                        height =
-                            Math.round(
-                                height *
-                                ratio
-                            );
+width =
+Math.round(
+width * ratio
+);
 
-                    }
-
-
-                    canvas.width =
-                        width;
-
-
-                    canvas.height =
-                        height;
-
-
-                    const ctx =
-                        canvas.getContext(
-                            "2d"
-                        );
-
-
-                    /*
-                       تحسين بسيط
-                    */
-
-                    ctx.filter =
-                        "contrast(1.08) brightness(1.05)";
-
-
-                    ctx.drawImage(
-                        img,
-                        0,
-                        0,
-                        width,
-                        height
-                    );
-
-
-                    /*
-                       إلغاء الفلتر
-                    */
-
-                    ctx.filter =
-                        "none";
-
-
-                    resolve(
-                        canvas
-                    );
-
-                };
-
-
-            img.onerror =
-                function(){
-
-                    reject(
-                        new Error(
-                            "تعذر فتح الصورة."
-                        )
-                    );
-
-                };
-
-
-            img.src =
-                source;
-
-        }
-    );
+height =
+Math.round(
+height * ratio
+);
 
 }
 
 
-/* =================================================
-   تحويل File إلى DataURL
-================================================= */
+canvas.width = width;
 
-function fileToDataURL(file){
-
-    return new Promise(
-        function(resolve,reject){
-
-            const reader =
-                new FileReader();
+canvas.height = height;
 
 
-            reader.onload =
-                function(){
-
-                    resolve(
-                        reader.result
-                    );
-
-                };
+const ctx =
+canvas.getContext("2d");
 
 
-            reader.onerror =
-                reject;
+/*
+   تحسين خفيف للمستند
+*/
+
+ctx.filter =
+"contrast(1.15) brightness(1.05)";
 
 
-            reader.readAsDataURL(
-                file
-            );
-
-        }
-    );
-
-}
-
-
-/* =================================================
-   تنظيف بسيط للنص
-================================================= */
-
-function cleanText(text){
-
-    if(!text){
-
-        return "";
-
-    }
+ctx.drawImage(
+img,
+0,
+0,
+width,
+height
+);
 
 
-    /*
-       لا نغير الحروف العربية.
-    */
-
-    text =
-        text.replace(
-            /\r/g,
-            ""
-        );
+ctx.filter = "none";
 
 
-    /*
-       حذف الرموز التي تكون
-       غالبًا ضوضاء OCR
-    */
+resolve(canvas);
 
-    text =
-        text.replace(
-            /[|{}[\]<>~`^]+/g,
-            " "
-        );
+};
 
 
-    /*
-       توحيد المسافات
-    */
+img.onerror =
+()=>{
 
-    text =
-        text.replace(
-            /[ \t]+/g,
-            " "
-        );
+reject(
+new Error(
+"تعذر فتح الصورة"
+)
+);
 
-
-    /*
-       تنظيف السطور
-    */
-
-    text =
-        text
-            .split("\n")
-            .map(
-                line =>
-                    line.trim()
-            )
-            .filter(
-                line =>
-                    line.length > 0
-            )
-            .join("\n");
+};
 
 
-    return text.trim();
+img.src = source;
+
+});
 
 }
 
 
-/* =================================================
+/* ==================================================
    قراءة الصورة
-================================================= */
+================================================== */
 
 async function readImage(source){
 
-    if(busy){
+if(busy){
 
-        return;
+return;
 
-    }
+}
 
+busy = true;
 
-    busy =
-        true;
+captureButton.disabled = true;
 
 
-    captureButton.disabled =
-        true;
+try{
 
+result.textContent =
+"جاري قراءة الصفحة...";
 
-    try{
 
-        loading.style.display =
-            "flex";
+setStatus(
+"جاري تجهيز الصورة..."
+);
 
 
-        loadingText.textContent =
-            "جاري تجهيز الصورة...";
+const image =
+await prepareImage(source);
 
 
-        resultText.textContent =
-            "جاري قراءة الصفحة...";
+const ocr =
+await loadOCR();
 
 
-        setStatus(
-            "جاري تجهيز المستند..."
-        );
+setStatus(
+"جاري التعرف على النص العربي..."
+);
 
 
-        /*
-           تجهيز الصورة
-        */
+const data =
+await ocr.recognize(image);
 
-        const image =
-            await prepareImage(
-                source
-            );
 
+let text =
+data.data.text || "";
 
-        /*
-           الحصول على OCR
-        */
 
-        const ocr =
-            await initOCR();
+/*
+   تنظيف الضوضاء فقط
+*/
 
+text =
+text
+.replace(/\r/g,"")
+.replace(/[|{}[\]<>~`^]+/g," ")
+.replace(/[ \t]+/g," ")
+.split("\n")
+.map(
+line => line.trim()
+)
+.filter(
+line => line.length > 0
+)
+.join("\n")
+.trim();
 
-        setStatus(
-            "جاري قراءة النص العربي..."
-        );
 
+if(!text){
 
-        /*
-           قراءة واحدة فقط
-        */
+result.textContent =
+"لم يتم العثور على نص واضح.";
 
-        const result =
-            await ocr.recognize(
-                image
-            );
+setStatus(
+"لم يتم العثور على نص"
+);
 
+speak(
+"لم أتمكن من قراءة النص. حاول تصوير الصفحة بشكل أوضح."
+);
 
-        let text =
-            result.data.text || "";
-
-
-        text =
-            cleanText(
-                text
-            );
-
-
-        if(!text){
-
-            resultText.textContent =
-                "لم يتم العثور على نص واضح.";
-
-
-            setStatus(
-                "لم يتم العثور على نص."
-            );
-
-
-            speak(
-                "لم أتمكن من قراءة النص. حاول تصوير الصفحة بشكل أوضح."
-            );
-
-
-            return;
-
-        }
-
-
-        /*
-           عرض النص
-        */
-
-        resultText.textContent =
-            text;
-
-
-        lastText =
-            text;
-
-
-        setStatus(
-            "تمت قراءة الصفحة."
-        );
-
-
-        /*
-           نطق النص
-        */
-
-        speak(
-            text
-        );
-
-    }
-
-    catch(error){
-
-        console.error(
-            error
-        );
-
-
-        resultText.textContent =
-            "حدث خطأ في قارئ النص العربي.";
-
-
-        setStatus(
-            "تعذر تشغيل قارئ العربية."
-        );
-
-
-        speak(
-            "تعذر تشغيل قارئ النص العربي."
-        );
-
-    }
-
-    finally{
-
-        busy =
-            false;
-
-
-        captureButton.disabled =
-            false;
-
-
-        loading.style.display =
-            "none";
-
-    }
+return;
 
 }
 
 
-/* =================================================
-   تصوير الصفحة
-================================================= */
+result.textContent =
+text;
 
-captureButton.addEventListener(
-    "click",
-    async function(){
-
-        if(
-            !video.videoWidth
-        ){
-
-            speak(
-                "الكاميرا غير جاهزة."
-            );
-
-            return;
-
-        }
+lastText =
+text;
 
 
-        canvas.width =
-            video.videoWidth;
-
-
-        canvas.height =
-            video.videoHeight;
-
-
-        const ctx =
-            canvas.getContext(
-                "2d"
-            );
-
-
-        ctx.filter =
-            "none";
-
-
-        ctx.drawImage(
-            video,
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-
-        const image =
-            canvas.toDataURL(
-                "image/jpeg",
-                0.95
-            );
-
-
-        await readImage(
-            image
-        );
-
-    }
+setStatus(
+"تمت قراءة الصفحة بنجاح"
 );
 
 
-/* =================================================
-   اختيار صورة
-================================================= */
+speak(text);
 
-fileInput.addEventListener(
-    "change",
-    async function(event){
+}
 
-        const file =
-            event.target.files[0];
+catch(error){
 
+console.error(error);
 
-        if(!file){
+result.textContent =
+"حدث خطأ أثناء قراءة الصفحة.";
 
-            return;
-
-        }
-
-
-        if(
-            !file.type.startsWith(
-                "image/"
-            )
-        ){
-
-            speak(
-                "الملف المختار ليس صورة."
-            );
-
-            return;
-
-        }
-
-
-        try{
-
-            const image =
-                await fileToDataURL(
-                    file
-                );
-
-
-            await readImage(
-                image
-            );
-
-        }
-
-        catch(error){
-
-            console.error(
-                error
-            );
-
-        }
-
-
-        event.target.value =
-            "";
-
-    }
+setStatus(
+"حدث خطأ في قارئ العربية"
 );
 
-
-/* =================================================
-   إعادة القراءة
-================================================= */
-
-repeatButton.addEventListener(
-    "click",
-    function(){
-
-        if(!lastText){
-
-            speak(
-                "لا يوجد نص لقراءته."
-            );
-
-            return;
-
-        }
-
-
-        speak(
-            lastText
-        );
-
-    }
+speak(
+"حدث خطأ أثناء قراءة الصفحة."
 );
 
+}
 
-/* =================================================
-   إيقاف الصوت
-================================================= */
+finally{
 
-stopButton.addEventListener(
-    "click",
-    function(){
+busy = false;
 
-        if(
-            "speechSynthesis"
-            in window
-        ){
+captureButton.disabled = false;
 
-            speechSynthesis.cancel();
+loading.style.display = "none";
 
-        }
+}
 
-    }
-);
+}
 
 
-/* =================================================
-   بدء التطبيق
-================================================= */
+/* ==================================================
+   زر البداية
+================================================== */
 
 startButton.addEventListener(
-    "click",
-    async function(){
+"click",
+async ()=>{
 
-        welcome.style.display =
-            "none";
+welcome.style.display = "none";
+
+await startCamera();
+
+setTimeout(
+()=>{
+
+speak(
+"التطبيق جاهز. ضع الصفحة أمام الكاميرا واضغط تصوير."
+);
+
+},
+500
+);
+
+});
 
 
-        /*
-           تشغيل الكاميرا
-        */
+/* ==================================================
+   التقاط الصورة
+================================================== */
 
-        await startCamera();
+captureButton.addEventListener(
+"click",
+async ()=>{
+
+if(!video.videoWidth){
+
+speak(
+"الكاميرا غير جاهزة."
+);
+
+return;
+
+}
 
 
-        /*
-           لا نحمل OCR الآن.
+canvas.width =
+video.videoWidth;
 
-           سيتم تحميله عند أول صورة
-           حتى لا نؤخر فتح التطبيق.
-        */
+canvas.height =
+video.videoHeight;
 
-        setTimeout(
-            function(){
 
-                speak(
-                    "التطبيق جاهز. ضع الصفحة أمام الكاميرا واضغط تصوير."
-                );
+const ctx =
+canvas.getContext("2d");
 
-            },
-            500
-        );
 
-    }
+ctx.drawImage(
+video,
+0,
+0,
+canvas.width,
+canvas.height
 );
 
 
-/* =================================================
-   أصوات الهاتف
-================================================= */
+const image =
+canvas.toDataURL(
+"image/jpeg",
+0.95
+);
+
+
+await readImage(image);
+
+});
+
+
+/* ==================================================
+   اختيار صورة من المعرض
+================================================== */
+
+fileInput.addEventListener(
+"change",
+async event=>{
+
+const file =
+event.target.files[0];
+
+
+if(!file){
+
+return;
+
+}
+
 
 if(
-    "speechSynthesis" in window
+!file.type.startsWith("image/")
 ){
 
-    speechSynthesis.onvoiceschanged =
-        function(){
+speak(
+"الملف ليس صورة."
+);
 
-            speechSynthesis.getVoices();
+return;
 
-        };
+}
+
+
+const reader =
+new FileReader();
+
+
+reader.onload =
+async ()=>{
+
+await readImage(
+reader.result
+);
+
+};
+
+
+reader.readAsDataURL(file);
+
+
+event.target.value = "";
+
+});
+
+
+/* ==================================================
+   إعادة القراءة
+================================================== */
+
+repeatButton.addEventListener(
+"click",
+()=>{
+
+if(lastText){
+
+speak(lastText);
+
+}
+else{
+
+speak(
+"لا يوجد نص لقراءته."
+);
+
+}
+
+});
+
+
+/* ==================================================
+   إيقاف الصوت
+================================================== */
+
+stopButton.addEventListener(
+"click",
+()=>{
+
+speechSynthesis.cancel();
+
+});
+
+
+/* ==================================================
+   تحميل الأصوات
+================================================== */
+
+if(
+"speechSynthesis" in window
+){
+
+speechSynthesis.onvoiceschanged =
+()=>{
+
+speechSynthesis.getVoices();
+
+};
 
 }
 
