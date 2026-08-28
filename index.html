@@ -37,7 +37,9 @@ button,label{
 <body class="bg-slate-900 text-white min-h-screen p-4">
 
 
-<!-- شاشة البداية -->
+<!-- =====================================================
+     شاشة البداية
+===================================================== -->
 
 <div id="welcomeOverlay"
 class="fixed inset-0 bg-slate-950/98 z-50
@@ -51,7 +53,7 @@ p-8 rounded-3xl max-w-sm shadow-2xl">
 </h2>
 
 <p class="text-indigo-200 mb-8">
-قراءة النصوص العربية بالكاميرا
+قارئ سريع للنصوص العربية
 </p>
 
 <button id="startAppBtn"
@@ -68,7 +70,9 @@ rounded-2xl text-xl">
 </div>
 
 
-<!-- العنوان -->
+<!-- =====================================================
+     العنوان
+===================================================== -->
 
 <header class="bg-indigo-800 p-4
 text-center rounded-2xl mb-4">
@@ -78,7 +82,7 @@ text-center rounded-2xl mb-4">
 </h1>
 
 <p class="text-indigo-200 text-xs mt-1">
-قراءة النص العربي بسرعة
+قراءة النصوص العربية من الكاميرا
 </p>
 
 </header>
@@ -87,7 +91,9 @@ text-center rounded-2xl mb-4">
 <main class="max-w-md mx-auto w-full">
 
 
-<!-- الكاميرا -->
+<!-- =====================================================
+     الكاميرا
+===================================================== -->
 
 <div class="relative w-full aspect-[3/4]
 bg-black rounded-3xl overflow-hidden
@@ -105,9 +111,9 @@ class="hidden">
 </canvas>
 
 <div id="cameraPlaceholder"
-class="absolute inset-0
-flex items-center justify-center
-text-slate-300 text-lg">
+class="absolute inset-0 flex
+items-center justify-center
+text-slate-300 text-lg text-center p-5">
 
 جاري تشغيل الكاميرا...
 
@@ -116,7 +122,9 @@ text-slate-300 text-lg">
 </div>
 
 
-<!-- زر الالتقاط -->
+<!-- =====================================================
+     زر الالتقاط
+===================================================== -->
 
 <button id="captureBtn"
 class="w-full bg-emerald-600
@@ -129,7 +137,9 @@ py-4 rounded-2xl mb-3">
 </button>
 
 
-<!-- المعرض -->
+<!-- =====================================================
+     المعرض
+===================================================== -->
 
 <label
 class="w-full bg-blue-600
@@ -140,7 +150,8 @@ cursor-pointer mb-3">
 
 📁 اختيار صورة من المعرض
 
-<input id="galleryInput"
+<input
+id="galleryInput"
 type="file"
 accept="image/*"
 class="hidden">
@@ -148,7 +159,9 @@ class="hidden">
 </label>
 
 
-<!-- إعادة القراءة -->
+<!-- =====================================================
+     إعادة القراءة
+===================================================== -->
 
 <button id="repeatBtn"
 class="w-full bg-amber-600
@@ -160,7 +173,9 @@ font-bold py-3 rounded-2xl">
 </button>
 
 
-<!-- الحالة -->
+<!-- =====================================================
+     الحالة
+===================================================== -->
 
 <div id="statusBox"
 class="mt-4 bg-indigo-950
@@ -172,7 +187,9 @@ rounded-2xl p-3 text-center text-sm">
 </div>
 
 
-<!-- النص -->
+<!-- =====================================================
+     النص
+===================================================== -->
 
 <div class="mt-3 bg-slate-800
 border border-slate-700
@@ -184,7 +201,7 @@ p-4 rounded-2xl">
 
 <div id="resultText"
 class="text-white text-sm
-leading-8 min-h-[100px]">
+leading-8 min-h-[120px]">
 
 وجه الكاميرا نحو الصفحة
 ثم اضغط التقاط.
@@ -234,9 +251,9 @@ const startAppBtn =
 document.getElementById("startAppBtn");
 
 
-let lastSpokenText = "";
-
 let worker = null;
+
+let lastSpokenText = "";
 
 
 /* =====================================================
@@ -256,22 +273,37 @@ function setStatus(text){
 
 function speakArabic(text){
 
-    if(!text) return;
+    if(!text){
+        return;
+    }
 
-    if(!("speechSynthesis" in window)) return;
+
+    if(!("speechSynthesis" in window)){
+        return;
+    }
+
 
     speechSynthesis.cancel();
 
-    const speech =
+
+    const utterance =
     new SpeechSynthesisUtterance(text);
 
-    speech.lang = "ar-EG";
 
-    speech.rate = 0.8;
+    utterance.lang =
+    "ar-EG";
 
-    speech.pitch = 1;
 
-    speech.volume = 1;
+    utterance.rate =
+    0.78;
+
+
+    utterance.pitch =
+    1;
+
+
+    utterance.volume =
+    1;
 
 
     const voices =
@@ -279,26 +311,29 @@ function speakArabic(text){
 
 
     const arabicVoice =
-    voices.find(v =>
-        v.lang === "ar-EG"
-    ) ||
-
-    voices.find(v =>
-        v.lang.startsWith("ar")
+    voices.find(
+        voice =>
+        voice.lang === "ar-EG"
+    )
+    ||
+    voices.find(
+        voice =>
+        voice.lang.startsWith("ar")
     );
 
 
     if(arabicVoice){
 
-        speech.voice =
+        utterance.voice =
         arabicVoice;
 
     }
 
 
     speechSynthesis.speak(
-        speech
+        utterance
     );
+
 
     lastSpokenText =
     text;
@@ -318,17 +353,19 @@ async function startCamera(){
         await navigator.mediaDevices.getUserMedia({
 
             video:{
+
                 facingMode:{
                     ideal:"environment"
                 },
 
                 width:{
-                    ideal:1280
+                    ideal:1920
                 },
 
                 height:{
-                    ideal:720
+                    ideal:1080
                 }
+
             },
 
             audio:false
@@ -345,7 +382,7 @@ async function startCamera(){
 
 
         setStatus(
-            "الكاميرا جاهزة للقراءة."
+            "الكاميرا جاهزة. ضع الصفحة كاملة أمام الكاميرا."
         );
 
     }
@@ -364,6 +401,7 @@ async function startCamera(){
             await navigator.mediaDevices.getUserMedia({
 
                 video:true,
+
                 audio:false
 
             });
@@ -381,7 +419,7 @@ async function startCamera(){
         catch(e){
 
             placeholder.innerText =
-            "تعذر تشغيل الكاميرا. استخدم المعرض.";
+            "تعذر تشغيل الكاميرا.\nاستخدم المعرض.";
 
             setStatus(
                 "الكاميرا غير متاحة."
@@ -405,6 +443,7 @@ async function(){
     welcomeOverlay.style.display =
     "none";
 
+
     await startCamera();
 
 
@@ -412,7 +451,7 @@ async function(){
         function(){
 
             speakArabic(
-                "التطبيق جاهز. ضع الصفحة أمام الكاميرا واضغط التقاط."
+                "التطبيق جاهز. وجه الكاميرا نحو الصفحة واضغط التقاط."
             );
 
         },
@@ -426,7 +465,7 @@ async function(){
    تحميل الصورة
 ===================================================== */
 
-function loadImage(src){
+function loadImage(source){
 
     return new Promise(
         function(resolve,reject){
@@ -444,11 +483,19 @@ function loadImage(src){
 
 
             img.onerror =
-            reject;
+            function(){
+
+                reject(
+                    new Error(
+                        "تعذر تحميل الصورة"
+                    )
+                );
+
+            };
 
 
             img.src =
-            src;
+            source;
 
         }
     );
@@ -457,33 +504,49 @@ function loadImage(src){
 
 
 /* =====================================================
-   تحسين الصورة - نسخة واحدة سريعة
+   تحسين خفيف للصورة
 ===================================================== */
 
-async function improveImage(source){
+async function prepareImage(source){
 
     const img =
     await loadImage(source);
 
 
     /*
-       التكبير 1.8 فقط
-       حتى تكون المعالجة أسرع
+       لا نستخدم أبيض وأسود قوي.
+       نحافظ على شكل الحروف.
     */
 
-    const scale = 1.8;
+    const maxWidth =
+    1800;
 
 
-    const width =
-    Math.floor(
-        img.width * scale
-    );
+    let width =
+    img.naturalWidth;
 
 
-    const height =
-    Math.floor(
-        img.height * scale
-    );
+    let height =
+    img.naturalHeight;
+
+
+    /*
+       تقليل الحجم إذا كان ضخمًا جدًا
+       لتسريع OCR
+    */
+
+    if(width > maxWidth){
+
+        const ratio =
+        maxWidth / width;
+
+        width =
+        Math.floor(width * ratio);
+
+        height =
+        Math.floor(height * ratio);
+
+    }
 
 
     const c =
@@ -508,6 +571,14 @@ async function improveImage(source){
     );
 
 
+    /*
+       تحسين بسيط جدًا
+    */
+
+    ctx.filter =
+    "contrast(1.12) brightness(1.03)";
+
+
     ctx.drawImage(
         img,
         0,
@@ -517,96 +588,16 @@ async function improveImage(source){
     );
 
 
-    const imageData =
-    ctx.getImageData(
-        0,
-        0,
-        width,
-        height
-    );
-
-
-    const pixels =
-    imageData.data;
-
-
-    /*
-       تحويل إلى رمادي
-       + تحسين التباين
-    */
-
-    for(
-        let i=0;
-        i<pixels.length;
-        i+=4
-    ){
-
-        const r =
-        pixels[i];
-
-        const g =
-        pixels[i+1];
-
-        const b =
-        pixels[i+2];
-
-
-        let gray =
-        0.299*r +
-        0.587*g +
-        0.114*b;
-
-
-        /*
-           تحسين التباين
-        */
-
-        gray =
-        (gray - 128)
-        * 1.35
-        + 128;
-
-
-        /*
-           منع القيم الخارجة
-        */
-
-        if(gray < 0)
-            gray = 0;
-
-        if(gray > 255)
-            gray = 255;
-
-
-        pixels[i] =
-        gray;
-
-        pixels[i+1] =
-        gray;
-
-        pixels[i+2] =
-        gray;
-
-    }
-
-
-    ctx.putImageData(
-        imageData,
-        0,
-        0
-    );
-
-
     return c;
 
 }
 
 
 /* =====================================================
-   إنشاء محرك OCR مرة واحدة
+   محرك OCR
 ===================================================== */
 
-async function getOCRWorker(){
+async function getWorker(){
 
     if(worker){
 
@@ -616,7 +607,7 @@ async function getOCRWorker(){
 
 
     setStatus(
-        "جاري تجهيز قارئ اللغة العربية..."
+        "جاري تحميل محرك اللغة العربية..."
     );
 
 
@@ -626,16 +617,21 @@ async function getOCRWorker(){
     );
 
 
+    /*
+       إعداد مناسب للصفحات
+       التي تحتوي على نص عربي
+    */
+
     await worker.setParameters({
 
         tessedit_pageseg_mode:
-        "6",
-
-        user_defined_dpi:
-        "300",
+        "3",
 
         preserve_interword_spaces:
-        "1"
+        "1",
+
+        user_defined_dpi:
+        "300"
 
     });
 
@@ -659,18 +655,18 @@ function cleanArabicText(text){
 
 
     /*
-       إزالة الرموز الغريبة
+       حذف الرموز الغريبة فقط
     */
 
     text =
     text.replace(
-        /[|_~`{}[\]\\^<>]/g,
+        /[|_~`{}[\]\\^<>]+/g,
         " "
     );
 
 
     /*
-       إزالة الرموز المتكررة
+       حذف النقاط المتكررة الغريبة
     */
 
     text =
@@ -681,7 +677,7 @@ function cleanArabicText(text){
 
 
     /*
-       إزالة المسافات الزائدة
+       توحيد المسافات
     */
 
     text =
@@ -692,7 +688,7 @@ function cleanArabicText(text){
 
 
     /*
-       تنظيف الأسطر
+       الحفاظ على فواصل الأسطر
     */
 
     text =
@@ -715,36 +711,107 @@ function cleanArabicText(text){
 
 
 /* =====================================================
+   إزالة الأسطر التالفة جدًا
+===================================================== */
+
+function removeBadLines(text){
+
+    const lines =
+    text.split("\n");
+
+
+    const goodLines = [];
+
+
+    for(
+        const line of lines
+    ){
+
+        const arabic =
+        (
+            line.match(
+                /[\u0600-\u06FF]/g
+            ) || []
+        ).length;
+
+
+        const numbers =
+        (
+            line.match(
+                /[0-9]/g
+            ) || []
+        ).length;
+
+
+        const total =
+        line.replace(
+            /\s/g,
+            ""
+        ).length;
+
+
+        /*
+           لا نحذف السطر بسهولة.
+           نحذف فقط الأسطر التي
+           تبدو ضوضاء واضحة جدًا.
+        */
+
+        if(
+            total > 2 &&
+            arabic >= 2
+        ){
+
+            goodLines.push(line);
+
+        }
+        else if(
+            total > 4 &&
+            numbers < total
+        ){
+
+            goodLines.push(line);
+
+        }
+
+    }
+
+
+    return goodLines.join("\n");
+
+}
+
+
+/* =====================================================
    قراءة الصورة
 ===================================================== */
 
 async function readImage(source){
 
+    captureBtn.disabled =
+    true;
+
+
+    captureBtn.style.opacity =
+    "0.5";
+
+
     try{
 
-        captureBtn.disabled =
-        true;
-
-
-        captureBtn.style.opacity =
-        "0.5";
-
-
         resultText.innerText =
-        "جاري تجهيز الصورة...";
+        "جاري قراءة الصفحة...";
 
 
         setStatus(
-            "جاري تحسين الصورة..."
+            "جاري تجهيز الصورة..."
         );
 
 
         /*
-           معالجة واحدة فقط
+           تحسين خفيف فقط
         */
 
-        const improved =
-        await improveImage(
+        const image =
+        await prepareImage(
             source
         );
 
@@ -754,37 +821,44 @@ async function readImage(source){
         );
 
 
-        /*
-           الحصول على OCR
-        */
-
         const ocr =
-        await getOCRWorker();
+        await getWorker();
 
 
         /*
-           قراءة واحدة فقط
+           عملية OCR واحدة فقط
         */
 
         const result =
         await ocr.recognize(
-            improved
+            image
         );
 
 
+        let text =
+        result.data.text || "";
+
+
         /*
-           تنظيف النتيجة
+           تنظيف
         */
 
-        const text =
+        text =
         cleanArabicText(
-            result.data.text
+            text
         );
 
 
         /*
-           لا يوجد نص
+           إزالة الأسطر
+           التالفة جدًا
         */
+
+        text =
+        removeBadLines(
+            text
+        );
+
 
         if(!text){
 
@@ -821,7 +895,7 @@ async function readImage(source){
 
 
         /*
-           نطق النص
+           النطق
         */
 
         speakArabic(
@@ -868,7 +942,7 @@ async function readImage(source){
 
 
 /* =====================================================
-   التقاط صورة
+   التقاط صورة الكاميرا
 ===================================================== */
 
 captureBtn.addEventListener(
@@ -892,13 +966,17 @@ async function(){
     ){
 
         speakArabic(
-            "الكاميرا لم تصبح جاهزة."
+            "انتظر حتى تصبح الكاميرا جاهزة."
         );
 
         return;
 
     }
 
+
+    /*
+       استخدام الدقة الحقيقية
+    */
 
     canvas.width =
     video.videoWidth;
@@ -926,7 +1004,7 @@ async function(){
     const image =
     canvas.toDataURL(
         "image/jpeg",
-        0.92
+        0.95
     );
 
 
@@ -938,7 +1016,7 @@ async function(){
 
 
 /* =====================================================
-   المعرض
+   صورة من المعرض
 ===================================================== */
 
 galleryInput.addEventListener(
@@ -950,6 +1028,21 @@ function(event){
 
 
     if(!file){
+
+        return;
+
+    }
+
+
+    if(
+        !file.type.startsWith(
+            "image/"
+        )
+    ){
+
+        speakArabic(
+            "الملف المختار ليس صورة."
+        );
 
         return;
 
@@ -974,6 +1067,11 @@ function(event){
         file
     );
 
+
+    /*
+       السماح باختيار نفس الصورة
+       مرة أخرى
+    */
 
     event.target.value =
     "";
@@ -1008,7 +1106,7 @@ function(){
 
 
 /* =====================================================
-   تجهيز أصوات الهاتف
+   تجهيز الأصوات
 ===================================================== */
 
 if(
