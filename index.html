@@ -606,5 +606,401 @@
             }
         }
     </script>
+  <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>قارئ النصوص والتعرف على الأشياء بالذكاء الاصطناعي</title>
+  
+  <!-- Tailwind CSS & خط القاهرة العربي -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Cairo', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased p-4 sm:p-8">
+
+  <div class="max-w-4xl mx-auto space-y-6">
+    <!-- ترويسة التطبيق -->
+    <header class="text-center space-y-2">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
+        <span>🤖 تقنية الرؤية الحاسوبية وقراءة النصوص • Gemini Vision AI</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-black text-slate-100">
+        قارئ النصوص والتعرف على الأشياء
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
+        ارفع أي صورة أو التقطها بالكاميرا للتعرف على العناصر والمحتويات المحيطة وقراءة النصوص المكتوبة مع النطق الصوتي الفوري.
+      </p>
+    </header>
+
+    <!-- إدخال مفتاح Google Gemini API -->
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-xs space-y-2">
+      <div class="flex items-center justify-between">
+        <label for="apiKeyInput" class="font-bold text-slate-300">مفتاح Google Gemini API:</label>
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-emerald-400 hover:underline">احصل على مفتاح مجاني من هنا</a>
+      </div>
+      <input
+        type="password"
+        id="apiKeyInput"
+        placeholder="ضع مفتاحك هنا: AIzaSy..."
+        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500 font-mono"
+      />
+    </div>
+
+    <!-- شبكة مساحة العمل -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+      
+      <!-- العمود الأيمن: التحكم بالصورة والمعاينة -->
+      <div class="md:col-span-6 bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-sm text-slate-200">📷 اختيار الصورة</span>
+          <span id="imageStatus" class="text-[11px] text-slate-400">بانتظار اختيار صورة</span>
+        </div>
+
+        <!-- أزرار الإدخال (رفع / كاميرا) -->
+        <div class="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onclick="document.getElementById('fileInput').click()"
+            class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold border border-slate-700 transition-colors"
+          >
+            📁 رفع من الجهاز
+          </button>
+          <button
+            type="button"
+            onclick="openCamera()"
+            class="py-2.5 px-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 rounded-xl text-xs font-bold border border-emerald-500/30 transition-colors"
+          >
+            📸 فتح الكاميرا
+          </button>
+          <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFile(this.files)" />
+        </div>
+
+        <!-- بث الكاميرا إن تم فتحها -->
+        <div id="cameraContainer" class="hidden relative rounded-xl overflow-hidden bg-black aspect-[4/3]">
+          <video id="cameraVideo" autoplay playsinline class="w-full h-full object-cover"></video>
+          <div class="absolute bottom-3 inset-x-0 flex justify-center gap-2">
+            <button onclick="captureCamera()" class="px-4 py-2 bg-emerald-500 text-slate-950 font-black rounded-xl text-xs shadow-lg">التقاط الصورة</button>
+            <button onclick="closeCamera()" class="px-4 py-2 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs">إلغاء</button>
+          </div>
+        </div>
+
+        <!-- مساحة عرض الصورة مع صناديق التحديد Bounding Boxes -->
+        <div id="previewWrapper" class="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center">
+          <img id="previewImage" src="" alt="" class="hidden w-full h-full object-contain pointer-events-none" />
+          <div id="boxesOverlay" class="absolute inset-0 pointer-events-none"></div>
+          
+          <div id="placeholderPrompt" class="text-center p-6 text-slate-500 text-xs">
+            <p class="font-bold text-slate-400 mb-1">اختر صورة أو التقطها بالكاميرا</p>
+            <p>يدعم المستندات واللافتات وقوائم الطعام والأشياء</p>
+          </div>
+        </div>
+
+        <!-- زر التحليل -->
+        <button
+          id="btnAnalyze"
+          onclick="runAnalysis()"
+          disabled
+          class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-800 disabled:text-slate-600 text-slate-950 font-black rounded-xl text-sm transition-all shadow-lg active:scale-98 cursor-pointer"
+        >
+          🔍 فحص الصورة واستخراج النصوص والأشياء
+        </button>
+      </div>
+
+      <!-- العمود الأيسر: النتائج وقراءة الصوت -->
+      <div class="md:col-span-6 space-y-4">
+        
+        <!-- النطق الصوتي المباشر -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-xs text-slate-300">🔊 النطق الصوتي باللغة العربية</span>
+            <button
+              id="btnSpeak"
+              onclick="speakCurrentText()"
+              disabled
+              class="px-3 py-1 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-slate-950 font-extrabold rounded-lg text-xs"
+            >
+              استمع للنص
+            </button>
+          </div>
+          <p id="speechBox" class="text-xs text-slate-400 bg-slate-950 p-3 rounded-xl border border-slate-800 min-h-[48px] leading-relaxed">
+            سيظهر هنا الوصف الصوتي الشامل للمشهد فور الانتهاء من الفحص.
+          </p>
+        </div>
+
+        <!-- التبويبات لعرض النتائج -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+          <div class="flex border-b border-slate-800 pb-2 gap-2 text-xs font-bold">
+            <button onclick="switchTab('tabObjects')" id="btnTabObjects" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+              الأشياء المكتشفة (<span id="countObjects">0</span>)
+            </button>
+            <button onclick="switchTab('tabTexts')" id="btnTabTexts" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200">
+              النصوص المستخرجة (<span id="countTexts">0</span>)
+            </button>
+          </div>
+
+          <!-- قائمة الأشياء -->
+          <div id="tabObjects" class="space-y-2 max-h-72 overflow-y-auto pr-1">
+            <div id="objectsList" class="text-xs text-slate-500 text-center py-6">
+              لم يتم فحص أي صورة بعد.
+            </div>
+          </div>
+
+          <!-- قائمة النصوص المقروءة -->
+          <div id="tabTexts" class="hidden space-y-2 max-h-72 overflow-y-auto pr-1">
+            <div id="textsList" class="text-xs text-slate-500 text-center py-6">
+              لم يتم العثور على نصوص حتى الآن.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let currentImageBase64 = null;
+    let cameraStream = null;
+    let lastSpokenText = "";
+
+    function handleFile(files) {
+      if (!files || !files[0]) return;
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => setImage(e.target.result);
+      reader.readAsDataURL(file);
+    }
+
+    function setImage(dataUrl) {
+      currentImageBase64 = dataUrl;
+      const preview = document.getElementById('previewImage');
+      preview.src = dataUrl;
+      preview.classList.remove('hidden');
+      document.getElementById('placeholderPrompt').classList.add('hidden');
+      document.getElementById('btnAnalyze').disabled = false;
+      document.getElementById('imageStatus').innerText = 'الصورة جاهزة للتحليل';
+      document.getElementById('boxesOverlay').innerHTML = '';
+    }
+
+    async function openCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        cameraStream = stream;
+        const video = document.getElementById('cameraVideo');
+        video.srcObject = stream;
+        document.getElementById('cameraContainer').classList.remove('hidden');
+      } catch (err) {
+        alert('تعذر الوصول للكاميرا: ' + err.message);
+      }
+    }
+
+    function captureCamera() {
+      const video = document.getElementById('cameraVideo');
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0);
+      setImage(canvas.toDataURL('image/jpeg'));
+      closeCamera();
+    }
+
+    function closeCamera() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(t => t.stop());
+        cameraStream = null;
+      }
+      document.getElementById('cameraContainer').classList.add('hidden');
+    }
+
+    function switchTab(tabId) {
+      document.getElementById('tabObjects').classList.add('hidden');
+      document.getElementById('tabTexts').classList.add('hidden');
+      document.getElementById(tabId).classList.remove('hidden');
+
+      const isObj = tabId === 'tabObjects';
+      document.getElementById('btnTabObjects').className = isObj
+        ? 'px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+        : 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200';
+      document.getElementById('btnTabTexts').className = !isObj
+        ? 'px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+        : 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200';
+    }
+
+    async function runAnalysis() {
+      if (!currentImageBase64) return;
+      const btn = document.getElementById('btnAnalyze');
+      btn.disabled = true;
+      btn.innerText = '⏳ جاري الفحص واستخراج النصوص والأشياء...';
+
+      const apiKey = document.getElementById('apiKeyInput').value.trim();
+      if (!apiKey) {
+        alert('يرجى إدخال مفتاح Google Gemini API أولاً في الحقل المخصص بالأعلى.');
+        btn.disabled = false;
+        btn.innerText = '🔍 فحص الصورة واستخراج النصوص والأشياء';
+        return;
+      }
+
+      let mimeType = 'image/jpeg';
+      let cleanData = currentImageBase64;
+      if (cleanData.includes(';base64,')) {
+        const parts = cleanData.split(';base64,');
+        mimeType = parts[0].replace('data:', '');
+        cleanData = parts[1];
+      }
+
+      const prompt = `أنت خبير ذكاء اصطناعي لقراءة النصوص وتحديد الأشياء باللغة العربية.
+قم بتحليل الصورة المرفقة بدقة وأرجع النتيجة بتنسيق JSON حصراً بهذا المخطط:
+{
+  "speechSummary": "ملخص وصفي صوتي جميل باللغة العربية الفصحى ينطق للمستخدم",
+  "extractedTexts": [
+    {"text": "النص المكتوب بدقة", "language": "ar/en", "location": "موقعه في الصورة"}
+  ],
+  "detectedObjects": [
+    {
+      "name": "اسم الشيء بالعربية",
+      "category": "فئته (طعام، إلكترونيات، لافتة، أثاث...)",
+      "description": "وصف دقيق له ولونه وحالته",
+      "box_2d": [ymin, xmin, ymax, xmax] // أرقام صحيحة من 0 إلى 1000
+    }
+  ]
+}`;
+
+      try {
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [
+                { text: prompt },
+                { inline_data: { mime_type: mimeType, data: cleanData } }
+              ]
+            }],
+            generationConfig: { responseMimeType: "application/json" }
+          })
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error?.message || 'فشل الاتصال بـ Gemini API');
+        }
+
+        const data = await res.json();
+        const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        const resultData = JSON.parse(rawText);
+
+        renderResults(resultData);
+      } catch (err) {
+        alert('خطأ أثناء الفحص: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = '🔍 فحص الصورة واستخراج النصوص والأشياء';
+      }
+    }
+
+    function renderResults(res) {
+      // 1. الملخص الصوتي والنطق التلقائي
+      const speech = res.speechSummary || "تم فحص الصورة بنجاح.";
+      document.getElementById('speechBox').innerText = speech;
+      document.getElementById('btnSpeak').disabled = false;
+      lastSpokenText = speech;
+      speakText(speech);
+
+      // 2. عرض الأشياء المكتشفة مع صناديق الإحداثيات Bounding Boxes
+      const objects = res.detectedObjects || [];
+      document.getElementById('countObjects').innerText = objects.length;
+      const objList = document.getElementById('objectsList');
+      objList.innerHTML = '';
+
+      const overlay = document.getElementById('boxesOverlay');
+      overlay.innerHTML = '';
+
+      if (objects.length === 0) {
+        objList.innerHTML = '<p class="text-slate-500 text-center py-4">لم يتم رصد عناصر واضحة.</p>';
+      } else {
+        objects.forEach((obj, idx) => {
+          const card = document.createElement('div');
+          card.className = 'p-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between hover:border-emerald-500 cursor-pointer transition-colors';
+          card.innerHTML = `
+            <div>
+              <div class="flex items-center gap-1.5 font-bold text-slate-200">
+                <span>${obj.name}</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">${obj.category || 'عام'}</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5">${obj.description || ''}</p>
+            </div>
+            <button onclick="event.stopPropagation(); speakText('${obj.name}: ${obj.description || ''}')" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs" title="نطق">🔊</button>
+          `;
+          objList.appendChild(card);
+
+          // رسم الصندوق المحيط فوق الصورة [ymin, xmin, ymax, xmax]
+          if (obj.box_2d && obj.box_2d.length === 4) {
+            const [ymin, xmin, ymax, xmax] = obj.box_2d;
+            const top = (ymin / 10).toFixed(1);
+            const left = (xmin / 10).toFixed(1);
+            const height = ((ymax - ymin) / 10).toFixed(1);
+            const width = ((xmax - xmin) / 10).toFixed(1);
+
+            const box = document.createElement('div');
+            box.style.top = top + '%';
+            box.style.left = left + '%';
+            box.style.width = width + '%';
+            box.style.height = height + '%';
+            box.className = 'absolute border-2 border-emerald-400 bg-emerald-500/15 pointer-events-auto rounded flex items-start justify-start cursor-pointer hover:border-amber-400 hover:bg-amber-500/20';
+            box.innerHTML = `<span class="bg-emerald-600 text-white text-[10px] font-bold px-1 rounded-br">${obj.name}</span>`;
+            box.onclick = () => speakText(`${obj.name}: ${obj.description || ''}`);
+            overlay.appendChild(box);
+          }
+        });
+      }
+
+      // 3. عرض النصوص المستخرجة OCR
+      const texts = res.extractedTexts || [];
+      document.getElementById('countTexts').innerText = texts.length;
+      const textList = document.getElementById('textsList');
+      textList.innerHTML = '';
+
+      if (texts.length === 0) {
+        textList.innerHTML = '<p class="text-slate-500 text-center py-4">لم يتم العثور على كلمات أو نصوص.</p>';
+      } else {
+        texts.forEach((item) => {
+          const card = document.createElement('div');
+          card.className = 'p-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between';
+          card.innerHTML = `
+            <div>
+              <p class="font-bold text-slate-100 text-xs">${item.text}</p>
+              ${item.location ? `<p class="text-[10px] text-slate-500">الموقع: ${item.location}</p>` : ''}
+            </div>
+            <button onclick="speakText('${item.text}')" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs" title="نطق">🔊</button>
+          `;
+          textList.appendChild(card);
+        });
+      }
+    }
+
+    // النطق الصوتي بالمتصفح العربي (Web Speech API)
+    function speakText(text) {
+      if (!window.speechSynthesis || !text) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ar-SA';
+      utterance.rate = 1.0;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function speakCurrentText() {
+      if (lastSpokenText) speakText(lastSpokenText);
+    }
+  </script>
+</body>
+</html>  
 </body>
 </html>
