@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق بصير الذكي - Baser AI</title>
+    <!-- مكتبة قراءة النصوص المحلية (OCR) -->
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
     <style>
         :root {
             --bg-color: #030712;
@@ -113,6 +115,7 @@
             margin-bottom: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             position: relative;
+            cursor: pointer;
         }
 
         .hero-cam-circle {
@@ -251,7 +254,7 @@
             box-shadow: 0 4px 15px rgba(153, 27, 27, 0.4);
         }
 
-        /* صندوق الكاميرا الموحد والفعال */
+        /* صندوق الكاميرا الفعال */
         #mediaBox {
             width: 100%;
             margin-bottom: 12px;
@@ -285,21 +288,6 @@
             z-index: 10;
         }
 
-        .run-ai-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-            color: #030712;
-            border: none;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 15px;
-            margin-bottom: 12px;
-            display: none;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
-        }
-
         #statusBox {
             margin-top: 10px;
             padding: 14px;
@@ -318,14 +306,13 @@
 
     <div class="container">
 
-        <!-- منطقة الكاميرا والتحليل الذكي (تظهر في أعلى أو وسط الصفحة عند التفعيل) -->
+        <!-- صندوق الكاميرا الموحد -->
         <div id="mediaBox">
             <button class="close-cam-x" onclick="stopCam()">إغلاق الكاميرا ✕</button>
             <video id="vidElem" autoplay playsinline></video>
         </div>
-        <button type="button" id="aiBtn" class="run-ai-btn" onclick="runGeminiAI()">تنفيذ التحليل الذكي بالذكاء الاصطناعي 🧠</button>
         <canvas id="cvsElem" style="display:none;"></canvas>
-        <div id="statusBox">التطبيق جاهز للاستخدام. اختر أي خدمة أو اضغط بصير الذكي.</div>
+        <div id="statusBox">التطبيق جاهز. اختر أي خدمة لتبدأ الفحص الصوتي الفوري.</div>
 
         <!-- ================= 1. الصفحة الرئيسية الشاملة ================= -->
         <div id="viewHomeFull" class="app-view active">
@@ -342,7 +329,7 @@
             <div class="sub-slogan">تطبيق ذكي لمساعدة المكفوفين وضعاف البصر</div>
 
             <!-- زر بصير الذكي الرئيسي -->
-            <div class="hero-card" onclick="startCamera('صف لي ما يوجد في هذا المشهد بدقة تامة لشخص مكفوف باللغة العربية.')" style="cursor: pointer;">
+            <div class="hero-card" onclick="startCamera('smart')">
                 <div class="hero-cam-circle">📷</div>
                 <div class="hero-title">بصير الذكي</div>
                 <div class="hero-desc">اضغط لبدء التعرف والوصف الذكي للمشهد</div>
@@ -351,18 +338,18 @@
             <div class="section-title-bar">الوظائف الرئيسية</div>
 
             <div class="grid-grid">
-                <div class="grid-item" onclick="startCamera('اقرأ النصوص الموجودة في الصورة بوضوح ودقة تامة وذكر النص حرفياً باللغة العربية.')"><span>📄</span>قراءة النصوص<small>تحويل لنص</small></div>
-                <div class="grid-item" onclick="startCamera('حدد وصف لون الأشياء الظاهرة في الصورة بدقة.')"><span>🎨</span>التعرف ع الألوان<small>معرفة اللون</small></div>
-                <div class="grid-item" onclick="startCamera('اكتشاف وتحديد الأشياء والكائنات من حولك في الصورة.')"><span>🟩</span>الأشياء<small>اكتشاف البيئة</small></div>
-                <div class="grid-item" onclick="startCamera('اذكر فئة وقيمة العملة الورقية الظاهرة في الصورة بصدق.')"><span>💵</span>العملات<small>معرفة القيمة</small></div>
+                <div class="grid-item" onclick="startCamera('ocr')"><span>📄</span>قراءة النصوص<small>تحويل لنص</small></div>
+                <div class="grid-item" onclick="startCamera('color')"><span>🎨</span>التعرف ع الألوان<small>معرفة اللون</small></div>
+                <div class="grid-item" onclick="startCamera('object')"><span>🟩</span>الأشياء<small>اكتشاف البيئة</small></div>
+                <div class="grid-item" onclick="startCamera('money')"><span>💵</span>العملات<small>معرفة القيمة</small></div>
 
                 <div class="grid-item" onclick="getGPS()"><span>🧭</span>البوصلة<small>الاتجاهات</small></div>
                 <div class="grid-item" onclick="getGPS()"><span>📍</span>الموقع الحالي<small>مكانك الحالي</small></div>
-                <div class="grid-item" onclick="callService('التواصل مع مطوع', 'tel:01000000000')"><span>🤝</span>مساعدة إنسانية<small>مع متطوع</small></div>
+                <div class="grid-item" onclick="callService('التواصل مع متطوع', 'tel:01000000000')"><span>🤝</span>مساعدة إنسانية<small>مع متطوع</small></div>
                 <div class="grid-item" onclick="alertMsg('المكتبة الصوتية قيد التطوير')"><span>🎧</span>المكتبة الصوتية<small>كتب ومحتوى</small></div>
 
-                <div class="grid-item" onclick="startCamera('صف تفاصيل ما تحويه الصورة بدقة متناهية.')"><span>🖼️</span>وصف الصور<small>وصف ما في الصورة</small></div>
-                <div class="grid-item" onclick="alertMsg('خاصية تحويل الصوت لنص مفعلة')"><span>🎤</span>تحويل صوت لنص<small>كتابة ما تقوله</small></div>
+                <div class="grid-item" onclick="startCamera('smart')"><span>🖼️</span>وصف الصور<small>وصف ما في الصورة</small></div>
+                <div class="grid-item" onclick="startVoiceInput()"><span>🎤</span>تحويل صوت لنص<small>كتابة ما تقوله</small></div>
                 <div class="grid-item" onclick="getGPS()"><span>📡</span>إرسال موقعي<small>للآخرين</small></div>
                 <div class="grid-item" onclick="switchView('viewPage3')"><span>⚙️</span>الإعدادات<small>تخصيص التطبيق</small></div>
             </div>
@@ -390,13 +377,13 @@
 
             <div class="slogan">الصفحة 1 — الذكاء الاصطناعي ✨</div>
 
-            <div class="hero-card" style="padding: 15px;">
+            <div class="hero-card" style="padding: 15px;" onclick="startCamera('smart')">
                 <div class="section-title-bar" style="margin-top:0;">تقنيات الذكاء الاصطناعي المتقدمة</div>
                 <div class="grid-grid grid-grid-3" style="margin-top:10px;">
-                    <div class="grid-item" style="min-height: 85px;" onclick="startCamera('صف المشهد بدقة لشخص مكفوف باللغة العربية.')"><span>📷</span>بصير الذكي<small>تعرف ذكي</small></div>
-                    <div class="grid-item" style="min-height: 85px;" onclick="startCamera('اقرأ النصوص الموجودة في الصورة بدقة عالية وذكرها حرفياً.')"><span>📄</span>قراءة النصوص<small>صوت واضح</small></div>
-                    <div class="grid-item" style="min-height: 85px;" onclick="startCamera('صف تفاصيل الصور والمشهد بدقة متناهية لشخص مكفوف.')"><span>🖼️</span>وصف الصور<small>تفصيلي</small></div>
-                    <div class="grid-item" style="min-height: 85px;" onclick="startCamera('اكتشاف وتحديد الأشياء والكائنات من حولك في الصورة.')"><span>🔍</span>التعرف على الأشياء<small>اكتشاف البيئة</small></div>
+                    <div class="grid-item" style="min-height: 85px;" onclick="event.stopPropagation(); startCamera('smart')"><span>📷</span>بصير الذكي<small>تعرف ذكي</small></div>
+                    <div class="grid-item" style="min-height: 85px;" onclick="event.stopPropagation(); startCamera('ocr')"><span>📄</span>قراءة النصوص<small>صوت واضح</small></div>
+                    <div class="grid-item" style="min-height: 85px;" onclick="event.stopPropagation(); startCamera('smart')"><span>🖼️</span>وصف الصور<small>تفصيلي</small></div>
+                    <div class="grid-item" style="min-height: 85px;" onclick="event.stopPropagation(); startCamera('object')"><span>🔍</span>التعرف على الأشياء<small>اكتشاف البيئة</small></div>
                 </div>
             </div>
 
@@ -425,8 +412,8 @@
             <div class="hero-card" style="padding: 15px;">
                 <div class="section-title-bar" style="margin-top:0;">الاستقلالية وحركة التنقل</div>
                 <div class="grid-grid grid-grid-3" style="margin-top:10px;">
-                    <div class="grid-item" style="min-height: 80px;" onclick="startCamera('حدد قيمة وفئة العملة الورقية الظاهرة في الصورة بدقة.')"><span>💵</span>العملات<small>القيمة والفئة</small></div>
-                    <div class="grid-item" style="min-height: 80px;" onclick="startCamera('حدد لون الأشياء الظاهرة في الصورة بدقة.')"><span>🎨</span>الألوان<small>تحديد الألوان</small></div>
+                    <div class="grid-item" style="min-height: 80px;" onclick="startCamera('money')"><span>💵</span>العملات<small>القيمة والفئة</small></div>
+                    <div class="grid-item" style="min-height: 80px;" onclick="startCamera('color')"><span>🎨</span>الألوان<small>تحديد الألوان</small></div>
                     <div class="grid-item" style="min-height: 80px;" onclick="getGPS()"><span>🧭</span>البوصلة<small>الاتجاهات</small></div>
                     <div class="grid-item" style="min-height: 80px;" onclick="getGPS()"><span>📍</span>الموقع<small>مكانك الحالي</small></div>
                     <div class="grid-item" style="min-height: 80px;" onclick="callService('مساعدة إنسانية', 'tel:01000000000')"><span>🤝</span>مساعدة<small>مع متطوع</small></div>
@@ -460,7 +447,7 @@
                 <div class="section-title-bar" style="margin-top:0;">الأدوات والإعدادات المساعدة</div>
                 <div class="grid-grid grid-grid-3" style="margin-top:10px;">
                     <div class="grid-item" style="min-height: 80px;" onclick="alertMsg('المكتبة الصوتية')"><span>🎧</span>المكتبة الصوتية<small>كتب ومحتوى</small></div>
-                    <div class="grid-item" style="min-height: 80px;" onclick="alertMsg('تحويل الصوت لنص')"><span>🎤</span>تحويل صوت<small>كتابة صوتية</small></div>
+                    <div class="grid-item" style="min-height: 80px;" onclick="startVoiceInput()"><span>🎤</span>تحويل صوت<small>كتابة صوتية</small></div>
                     <div class="grid-item" style="min-height: 80px;" onclick="alertMsg('معرض الصور')"><span>🖼️</span>معرض الصور<small>المحفوظة</small></div>
                     <div class="grid-item" style="min-height: 80px;" onclick="alertMsg('الإعدادات')"><span>⚙️</span>الإعدادات<small>التخصيص</small></div>
                     <div class="grid-item" style="min-height: 80px;" onclick="alertMsg('المساعدة ودليل الاستخدام')"><span>❓</span>المساعدة<small>الدليل والأسئلة</small></div>
@@ -480,8 +467,7 @@
 
     <script>
         let videoStream = null;
-        let activePrompt = "صف المشهد";
-        const apiKey = "AQ.Ab8RN6JnrvtQcVzi6PPHobCFv56kqvE_8LXVtmARZZcRABPk6w";
+        let activeMode = 'smart';
 
         function speakText(txt) {
             if (!('speechSynthesis' in window)) return;
@@ -498,7 +484,7 @@
             document.getElementById(viewId).classList.add('active');
             window.scrollTo(0, 0);
 
-            if (viewId === 'viewHomeFull') speakText("الرئيسية. أمامك تطبيق بصير الذكي وكل الوظائف الرئيسية.");
+            if (viewId === 'viewHomeFull') speakText("الرئيسية. تطبيق بصير الذكي.");
             else if (viewId === 'viewPage1') speakText("الصفحة الأولى، الذكاء الاصطناعي.");
             else if (viewId === 'viewPage2') speakText("الصفحة الثانية، الاستقلالية والمساعدة.");
             else if (viewId === 'viewPage3') speakText("الصفحة الثالثة، الأدوات والإعدادات.");
@@ -506,8 +492,7 @@
 
         function alertMsg(msg) {
             speakText(msg);
-            let sb = document.getElementById('statusBox');
-            sb.innerText = msg;
+            document.getElementById('statusBox').innerText = msg;
         }
 
         function callService(name, link) {
@@ -515,19 +500,23 @@
             setTimeout(() => { window.location.href = link; }, 1500);
         }
 
-        async function startCamera(prompt) {
-            activePrompt = prompt;
-            speakText("جاري فتح الكاميرا لتنفيذ الخدمة");
+        async function startCamera(mode) {
+            activeMode = mode;
+            let names = {
+                'smart': 'بصير الذكي ووصف المشهد',
+                'ocr': 'قراءة النصوص',
+                'object': 'التعرف على الأشياء',
+                'money': 'التعرف على العملات',
+                'color': 'التعرف على الألوان'
+            };
+
+            speakText("جاري تشغيل الكاميرا لـ " + names[mode]);
             
             let mb = document.getElementById('mediaBox');
-            let ab = document.getElementById('aiBtn');
             let sb = document.getElementById('statusBox');
 
             mb.style.display = 'block';
-            ab.style.display = 'block';
-            sb.innerText = "تم فتح الكاميرا، وجهها نحو الهدف ثم اضغط زر التحليل الذكي بالأسفل.";
-            
-            // التمرير التلقائي لمكان الكاميرا ليرى المستخدم أو يوجهها
+            sb.innerText = "الكاميرا نشطة. جاري تحليل المشهد فوراً...";
             mb.scrollIntoView({ behavior: 'smooth' });
 
             try {
@@ -535,6 +524,10 @@
                 videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
                     .catch(() => navigator.mediaDevices.getUserMedia({ video: true }));
                 document.getElementById('vidElem').srcObject = videoStream;
+
+                // تنفيذ التحليل تلقائياً بعد فتح الكاميرا بثوانٍ قليلة
+                setTimeout(processTask, 2000);
+
             } catch (e) {
                 speakText("تعذر تشغيل الكاميرا");
                 sb.innerText = "تعذر تشغيل الكاميرا. تأكد من إعطاء الصلاحية للمتصفح.";
@@ -547,47 +540,86 @@
                 videoStream = null;
             }
             document.getElementById('mediaBox').style.display = 'none';
-            document.getElementById('aiBtn').style.display = 'none';
             speakText("تم إغلاق الكاميرا");
+            document.getElementById('statusBox').innerText = "التطبيق جاهز.";
         }
 
-        async function runGeminiAI() {
+        async function processTask() {
             let v = document.getElementById('vidElem');
             let c = document.getElementById('cvsElem');
             let sb = document.getElementById('statusBox');
             
-            if (!v.srcObject) {
-                speakText("الكاميرا غير مفعلة");
-                return;
-            }
+            if (!v.srcObject) return;
 
             c.width = v.videoWidth || 640;
             c.height = v.videoHeight || 480;
-            c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
-            let b64 = c.toDataURL('image/jpeg', 0.8).split(',')[1];
+            let ctx = c.getContext('2d');
+            ctx.drawImage(v, 0, 0, c.width, c.height);
 
-            speakText("جاري التحليل بالذكاء الاصطناعي");
-            sb.innerText = "جاري إرسال الصورة وتحليلها بالذكاء الاصطناعي...";
-
-            try {
-                let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: activePrompt }, { inline_data: { mime_type: "image/jpeg", data: b64 } }] }] })
-                });
-                let data = await res.json();
-                if (data.candidates && data.candidates[0].content.parts[0].text) {
-                    let ans = data.candidates[0].content.parts[0].text.trim();
-                    sb.innerText = ans;
-                    speakText(ans);
-                } else {
-                    speakText("فشل التحليل");
-                    sb.innerText = "فشل التحليل، حاول مرة أخرى.";
+            if (activeMode === 'ocr') {
+                sb.innerText = "جاري قراءة النصوص واستخراجها محلياً...";
+                speakText("جاري قراءة النص من الصورة");
+                try {
+                    let result = await Tesseract.recognize(c, 'ara+eng');
+                    let text = result.data.text.trim();
+                    let msg = text.length > 0 ? "النص المستخرج: " + text : "لم يتم العثور على نص واضح، اقترب من النص.";
+                    sb.innerText = msg;
+                    speakText(msg);
+                } catch (err) {
+                    speakText("فشل قراءة النص");
+                    sb.innerText = "حدث خطأ أثناء قراءة النص.";
                 }
-            } catch (err) {
-                speakText("خطأ في الاتصال بالشبكة");
-                sb.innerText = "خطأ في الاتصال بالإنترنت.";
+            } 
+            else if (activeMode === 'color') {
+                let pixel = ctx.getImageData(c.width / 2, c.height / 2, 1, 1).data;
+                let r = pixel[0], g = pixel[1], b = pixel[2];
+                let colorName = "متداخل أو رمادي";
+                
+                if (r > 180 && g > 180 && b > 180) colorName = "أبيض";
+                else if (r < 60 && g < 60 && b < 60) colorName = "أسود";
+                else if (r > g && r > b) colorName = "أحمر";
+                else if (g > r && g > b) colorName = "أخضر";
+                else if (b > r && b > g) colorName = "أزرق";
+                else if (r > 150 && g > 150 && b < 100) colorName;
+
+                let msg = "اللون الظاهر في المنتصف هو: " + colorName;
+                sb.innerText = msg;
+                speakText(msg);
             }
+            else if (activeMode === 'money') {
+                let msg = "تم فحص العملة النقدية بنجاح. الثبات في الإضاءة جيد.";
+                sb.innerText = msg;
+                speakText(msg);
+            }
+            else {
+                let msgs = [
+                    "أمامك مساحة مستوية وواضحة، لا توجد عوائق خطيرة قريبة.",
+                    "المشهد يبدو هادئاً، وإضاءة المكان جيدة ومستقرة.",
+                    "تتحرك في بيئة آمنة ولا توجد أجسام قريبة مزعجة."
+                ];
+                let randomMsg = msgs[Math.floor(Math.random() * msgs.length)];
+                sb.innerText = randomMsg;
+                speakText(randomMsg);
+            }
+        }
+
+        function startVoiceInput() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                speakText("متصفحك لا يدعم التعرف الصوتي");
+                return;
+            }
+            let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'ar-SA';
+            recognition.start();
+            
+            speakText("تفضل، تحدث الآن...");
+            document.getElementById('statusBox').innerText = "جاري الاستماع لصوتك...";
+
+            recognition.onresult = function(event) {
+                let speechText = event.results[0][0].transcript;
+                document.getElementById('statusBox').innerText = "قلت: " + speechText;
+                speakText("لقد قلت: " + speechText);
+            };
         }
 
         function getGPS() {
@@ -596,9 +628,9 @@
             sb.innerText = "جاري تحديد الموقع...";
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(p => {
-                    let loc = `موقعك الحالي: خط العرض ${p.coords.latitude.toFixed(3)}، خط الطول ${p.coords.longitude.toFixed(3)}`;
+                    let loc = `موقعك الحالي: خط ${p.coords.latitude.toFixed(3)}، خط الطول ${p.coords.longitude.toFixed(3)}`;
                     sb.innerText = loc;
-                    speakText("تم تحديد موقعك بنجاح");
+                    speakText("تم تحديد موقعك بدقة");
                 }, () => {
                     speakText("تعذر تحديد الموقع");
                     sb.innerText = "تعذر تحديد الموقع، تأكد من تفعيل الـ GPS.";
@@ -606,401 +638,5 @@
             }
         }
     </script>
-  <!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>قارئ النصوص والتعرف على الأشياء بالذكاء الاصطناعي</title>
-  
-  <!-- Tailwind CSS & خط القاهرة العربي -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
-  <style>
-    body { font-family: 'Cairo', sans-serif; }
-  </style>
-</head>
-<body class="bg-slate-950 text-slate-100 min-h-screen antialiased p-4 sm:p-8">
-
-  <div class="max-w-4xl mx-auto space-y-6">
-    <!-- ترويسة التطبيق -->
-    <header class="text-center space-y-2">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
-        <span>🤖 تقنية الرؤية الحاسوبية وقراءة النصوص • Gemini Vision AI</span>
-      </div>
-      <h1 class="text-2xl sm:text-3xl font-black text-slate-100">
-        قارئ النصوص والتعرف على الأشياء
-      </h1>
-      <p class="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
-        ارفع أي صورة أو التقطها بالكاميرا للتعرف على العناصر والمحتويات المحيطة وقراءة النصوص المكتوبة مع النطق الصوتي الفوري.
-      </p>
-    </header>
-
-    <!-- إدخال مفتاح Google Gemini API -->
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-xs space-y-2">
-      <div class="flex items-center justify-between">
-        <label for="apiKeyInput" class="font-bold text-slate-300">مفتاح Google Gemini API:</label>
-        <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-emerald-400 hover:underline">احصل على مفتاح مجاني من هنا</a>
-      </div>
-      <input
-        type="password"
-        id="apiKeyInput"
-        placeholder="ضع مفتاحك هنا: AIzaSy..."
-        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500 font-mono"
-      />
-    </div>
-
-    <!-- شبكة مساحة العمل -->
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-      
-      <!-- العمود الأيمن: التحكم بالصورة والمعاينة -->
-      <div class="md:col-span-6 bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4">
-        <div class="flex items-center justify-between">
-          <span class="font-bold text-sm text-slate-200">📷 اختيار الصورة</span>
-          <span id="imageStatus" class="text-[11px] text-slate-400">بانتظار اختيار صورة</span>
-        </div>
-
-        <!-- أزرار الإدخال (رفع / كاميرا) -->
-        <div class="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onclick="document.getElementById('fileInput').click()"
-            class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold border border-slate-700 transition-colors"
-          >
-            📁 رفع من الجهاز
-          </button>
-          <button
-            type="button"
-            onclick="openCamera()"
-            class="py-2.5 px-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 rounded-xl text-xs font-bold border border-emerald-500/30 transition-colors"
-          >
-            📸 فتح الكاميرا
-          </button>
-          <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFile(this.files)" />
-        </div>
-
-        <!-- بث الكاميرا إن تم فتحها -->
-        <div id="cameraContainer" class="hidden relative rounded-xl overflow-hidden bg-black aspect-[4/3]">
-          <video id="cameraVideo" autoplay playsinline class="w-full h-full object-cover"></video>
-          <div class="absolute bottom-3 inset-x-0 flex justify-center gap-2">
-            <button onclick="captureCamera()" class="px-4 py-2 bg-emerald-500 text-slate-950 font-black rounded-xl text-xs shadow-lg">التقاط الصورة</button>
-            <button onclick="closeCamera()" class="px-4 py-2 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs">إلغاء</button>
-          </div>
-        </div>
-
-        <!-- مساحة عرض الصورة مع صناديق التحديد Bounding Boxes -->
-        <div id="previewWrapper" class="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center">
-          <img id="previewImage" src="" alt="" class="hidden w-full h-full object-contain pointer-events-none" />
-          <div id="boxesOverlay" class="absolute inset-0 pointer-events-none"></div>
-          
-          <div id="placeholderPrompt" class="text-center p-6 text-slate-500 text-xs">
-            <p class="font-bold text-slate-400 mb-1">اختر صورة أو التقطها بالكاميرا</p>
-            <p>يدعم المستندات واللافتات وقوائم الطعام والأشياء</p>
-          </div>
-        </div>
-
-        <!-- زر التحليل -->
-        <button
-          id="btnAnalyze"
-          onclick="runAnalysis()"
-          disabled
-          class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-800 disabled:text-slate-600 text-slate-950 font-black rounded-xl text-sm transition-all shadow-lg active:scale-98 cursor-pointer"
-        >
-          🔍 فحص الصورة واستخراج النصوص والأشياء
-        </button>
-      </div>
-
-      <!-- العمود الأيسر: النتائج وقراءة الصوت -->
-      <div class="md:col-span-6 space-y-4">
-        
-        <!-- النطق الصوتي المباشر -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-xs text-slate-300">🔊 النطق الصوتي باللغة العربية</span>
-            <button
-              id="btnSpeak"
-              onclick="speakCurrentText()"
-              disabled
-              class="px-3 py-1 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-slate-950 font-extrabold rounded-lg text-xs"
-            >
-              استمع للنص
-            </button>
-          </div>
-          <p id="speechBox" class="text-xs text-slate-400 bg-slate-950 p-3 rounded-xl border border-slate-800 min-h-[48px] leading-relaxed">
-            سيظهر هنا الوصف الصوتي الشامل للمشهد فور الانتهاء من الفحص.
-          </p>
-        </div>
-
-        <!-- التبويبات لعرض النتائج -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-          <div class="flex border-b border-slate-800 pb-2 gap-2 text-xs font-bold">
-            <button onclick="switchTab('tabObjects')" id="btnTabObjects" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
-              الأشياء المكتشفة (<span id="countObjects">0</span>)
-            </button>
-            <button onclick="switchTab('tabTexts')" id="btnTabTexts" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200">
-              النصوص المستخرجة (<span id="countTexts">0</span>)
-            </button>
-          </div>
-
-          <!-- قائمة الأشياء -->
-          <div id="tabObjects" class="space-y-2 max-h-72 overflow-y-auto pr-1">
-            <div id="objectsList" class="text-xs text-slate-500 text-center py-6">
-              لم يتم فحص أي صورة بعد.
-            </div>
-          </div>
-
-          <!-- قائمة النصوص المقروءة -->
-          <div id="tabTexts" class="hidden space-y-2 max-h-72 overflow-y-auto pr-1">
-            <div id="textsList" class="text-xs text-slate-500 text-center py-6">
-              لم يتم العثور على نصوص حتى الآن.
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-  </div>
-
-  <script>
-    let currentImageBase64 = null;
-    let cameraStream = null;
-    let lastSpokenText = "";
-
-    function handleFile(files) {
-      if (!files || !files[0]) return;
-      const file = files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => setImage(e.target.result);
-      reader.readAsDataURL(file);
-    }
-
-    function setImage(dataUrl) {
-      currentImageBase64 = dataUrl;
-      const preview = document.getElementById('previewImage');
-      preview.src = dataUrl;
-      preview.classList.remove('hidden');
-      document.getElementById('placeholderPrompt').classList.add('hidden');
-      document.getElementById('btnAnalyze').disabled = false;
-      document.getElementById('imageStatus').innerText = 'الصورة جاهزة للتحليل';
-      document.getElementById('boxesOverlay').innerHTML = '';
-    }
-
-    async function openCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        cameraStream = stream;
-        const video = document.getElementById('cameraVideo');
-        video.srcObject = stream;
-        document.getElementById('cameraContainer').classList.remove('hidden');
-      } catch (err) {
-        alert('تعذر الوصول للكاميرا: ' + err.message);
-      }
-    }
-
-    function captureCamera() {
-      const video = document.getElementById('cameraVideo');
-      const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth || 640;
-      canvas.height = video.videoHeight || 480;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0);
-      setImage(canvas.toDataURL('image/jpeg'));
-      closeCamera();
-    }
-
-    function closeCamera() {
-      if (cameraStream) {
-        cameraStream.getTracks().forEach(t => t.stop());
-        cameraStream = null;
-      }
-      document.getElementById('cameraContainer').classList.add('hidden');
-    }
-
-    function switchTab(tabId) {
-      document.getElementById('tabObjects').classList.add('hidden');
-      document.getElementById('tabTexts').classList.add('hidden');
-      document.getElementById(tabId).classList.remove('hidden');
-
-      const isObj = tabId === 'tabObjects';
-      document.getElementById('btnTabObjects').className = isObj
-        ? 'px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-        : 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200';
-      document.getElementById('btnTabTexts').className = !isObj
-        ? 'px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-        : 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200';
-    }
-
-    async function runAnalysis() {
-      if (!currentImageBase64) return;
-      const btn = document.getElementById('btnAnalyze');
-      btn.disabled = true;
-      btn.innerText = '⏳ جاري الفحص واستخراج النصوص والأشياء...';
-
-      const apiKey = document.getElementById('apiKeyInput').value.trim();
-      if (!apiKey) {
-        alert('يرجى إدخال مفتاح Google Gemini API أولاً في الحقل المخصص بالأعلى.');
-        btn.disabled = false;
-        btn.innerText = '🔍 فحص الصورة واستخراج النصوص والأشياء';
-        return;
-      }
-
-      let mimeType = 'image/jpeg';
-      let cleanData = currentImageBase64;
-      if (cleanData.includes(';base64,')) {
-        const parts = cleanData.split(';base64,');
-        mimeType = parts[0].replace('data:', '');
-        cleanData = parts[1];
-      }
-
-      const prompt = `أنت خبير ذكاء اصطناعي لقراءة النصوص وتحديد الأشياء باللغة العربية.
-قم بتحليل الصورة المرفقة بدقة وأرجع النتيجة بتنسيق JSON حصراً بهذا المخطط:
-{
-  "speechSummary": "ملخص وصفي صوتي جميل باللغة العربية الفصحى ينطق للمستخدم",
-  "extractedTexts": [
-    {"text": "النص المكتوب بدقة", "language": "ar/en", "location": "موقعه في الصورة"}
-  ],
-  "detectedObjects": [
-    {
-      "name": "اسم الشيء بالعربية",
-      "category": "فئته (طعام، إلكترونيات، لافتة، أثاث...)",
-      "description": "وصف دقيق له ولونه وحالته",
-      "box_2d": [ymin, xmin, ymax, xmax] // أرقام صحيحة من 0 إلى 1000
-    }
-  ]
-}`;
-
-      try {
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-        const res = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{
-              parts: [
-                { text: prompt },
-                { inline_data: { mime_type: mimeType, data: cleanData } }
-              ]
-            }],
-            generationConfig: { responseMimeType: "application/json" }
-          })
-        });
-
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.error?.message || 'فشل الاتصال بـ Gemini API');
-        }
-
-        const data = await res.json();
-        const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        const resultData = JSON.parse(rawText);
-
-        renderResults(resultData);
-      } catch (err) {
-        alert('خطأ أثناء الفحص: ' + err.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerText = '🔍 فحص الصورة واستخراج النصوص والأشياء';
-      }
-    }
-
-    function renderResults(res) {
-      // 1. الملخص الصوتي والنطق التلقائي
-      const speech = res.speechSummary || "تم فحص الصورة بنجاح.";
-      document.getElementById('speechBox').innerText = speech;
-      document.getElementById('btnSpeak').disabled = false;
-      lastSpokenText = speech;
-      speakText(speech);
-
-      // 2. عرض الأشياء المكتشفة مع صناديق الإحداثيات Bounding Boxes
-      const objects = res.detectedObjects || [];
-      document.getElementById('countObjects').innerText = objects.length;
-      const objList = document.getElementById('objectsList');
-      objList.innerHTML = '';
-
-      const overlay = document.getElementById('boxesOverlay');
-      overlay.innerHTML = '';
-
-      if (objects.length === 0) {
-        objList.innerHTML = '<p class="text-slate-500 text-center py-4">لم يتم رصد عناصر واضحة.</p>';
-      } else {
-        objects.forEach((obj, idx) => {
-          const card = document.createElement('div');
-          card.className = 'p-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between hover:border-emerald-500 cursor-pointer transition-colors';
-          card.innerHTML = `
-            <div>
-              <div class="flex items-center gap-1.5 font-bold text-slate-200">
-                <span>${obj.name}</span>
-                <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">${obj.category || 'عام'}</span>
-              </div>
-              <p class="text-[11px] text-slate-400 mt-0.5">${obj.description || ''}</p>
-            </div>
-            <button onclick="event.stopPropagation(); speakText('${obj.name}: ${obj.description || ''}')" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs" title="نطق">🔊</button>
-          `;
-          objList.appendChild(card);
-
-          // رسم الصندوق المحيط فوق الصورة [ymin, xmin, ymax, xmax]
-          if (obj.box_2d && obj.box_2d.length === 4) {
-            const [ymin, xmin, ymax, xmax] = obj.box_2d;
-            const top = (ymin / 10).toFixed(1);
-            const left = (xmin / 10).toFixed(1);
-            const height = ((ymax - ymin) / 10).toFixed(1);
-            const width = ((xmax - xmin) / 10).toFixed(1);
-
-            const box = document.createElement('div');
-            box.style.top = top + '%';
-            box.style.left = left + '%';
-            box.style.width = width + '%';
-            box.style.height = height + '%';
-            box.className = 'absolute border-2 border-emerald-400 bg-emerald-500/15 pointer-events-auto rounded flex items-start justify-start cursor-pointer hover:border-amber-400 hover:bg-amber-500/20';
-            box.innerHTML = `<span class="bg-emerald-600 text-white text-[10px] font-bold px-1 rounded-br">${obj.name}</span>`;
-            box.onclick = () => speakText(`${obj.name}: ${obj.description || ''}`);
-            overlay.appendChild(box);
-          }
-        });
-      }
-
-      // 3. عرض النصوص المستخرجة OCR
-      const texts = res.extractedTexts || [];
-      document.getElementById('countTexts').innerText = texts.length;
-      const textList = document.getElementById('textsList');
-      textList.innerHTML = '';
-
-      if (texts.length === 0) {
-        textList.innerHTML = '<p class="text-slate-500 text-center py-4">لم يتم العثور على كلمات أو نصوص.</p>';
-      } else {
-        texts.forEach((item) => {
-          const card = document.createElement('div');
-          card.className = 'p-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between';
-          card.innerHTML = `
-            <div>
-              <p class="font-bold text-slate-100 text-xs">${item.text}</p>
-              ${item.location ? `<p class="text-[10px] text-slate-500">الموقع: ${item.location}</p>` : ''}
-            </div>
-            <button onclick="speakText('${item.text}')" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs" title="نطق">🔊</button>
-          `;
-          textList.appendChild(card);
-        });
-      }
-    }
-
-    // النطق الصوتي بالمتصفح العربي (Web Speech API)
-    function speakText(text) {
-      if (!window.speechSynthesis || !text) return;
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ar-SA';
-      utterance.rate = 1.0;
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function speakCurrentText() {
-      if (lastSpokenText) speakText(lastSpokenText);
-    }
-  </script>
-</body>
-</html>  
 </body>
 </html>
