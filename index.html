@@ -1,1346 +1,365 @@
-<!DOCTYPE html><html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"><title>بصير - قارئ المستندات العربي</title><script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script><style>
-*{
-box-sizing:border-box;
--webkit-tap-highlight-color:transparent;
-}
-
-body{
-margin:0;
-padding:15px;
-background:#0f172a;
-color:#fff;
-font-family:Arial,Tahoma,sans-serif;
-}
-
-.app{
-max-width:650px;
-margin:auto;
-}
-
-h1{
-text-align:center;
-background:#3730a3;
-padding:18px;
-border-radius:20px;
-margin-top:0;
-font-size:24px;
-}
-
-.camera{
-position:relative;
-height:55vh;
-min-height:330px;
-background:#000;
-border:4px solid #6366f1;
-border-radius:22px;
-overflow:hidden;
-}
-
-video{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-.cameraMessage{
-position:absolute;
-inset:0;
-display:flex;
-align-items:center;
-justify-content:center;
-text-align:center;
-font-size:18px;
-padding:20px;
-}
-
-button,
-.fileButton{
-width:100%;
-border:0;
-border-radius:18px;
-padding:17px;
-margin-top:12px;
-color:white;
-font-size:18px;
-font-weight:bold;
-text-align:center;
-cursor:pointer;
-}
-
-button:disabled{
-opacity:.5;
-}
-
-.capture{
-background:#059669;
-}
-
-.gallery{
-background:#2563eb;
-}
-
-.repeat{
-background:#d97706;
-}
-
-.stop{
-background:#dc2626;
-}
-
-input{
-display:none;
-}
-
-.status{
-margin-top:15px;
-padding:14px;
-border-radius:15px;
-background:#172554;
-text-align:center;
-font-size:17px;
-}
-
-.result{
-margin-top:15px;
-padding:18px;
-border-radius:18px;
-background:#1e293b;
-}
-
-.resultTitle{
-color:#a5b4fc;
-font-weight:bold;
-margin-bottom:12px;
-font-size:18px;
-}
-
-#result{
-white-space:pre-wrap;
-line-height:2;
-font-size:19px;
-min-height:150px;
-}
-
-#loading{
-display:none;
-position:fixed;
-inset:0;
-z-index:9999;
-background:rgba(0,0,0,.88);
-align-items:center;
-justify-content:center;
-}
-
-.loadingBox{
-width:90%;
-max-width:380px;
-background:#1e293b;
-border-radius:22px;
-padding:30px 20px;
-text-align:center;
-}
-
-.spinner{
-width:48px;
-height:48px;
-border:5px solid #475569;
-border-top-color:#22c55e;
-border-radius:50%;
-animation:spin 1s linear infinite;
-margin:0 auto 18px;
-}
-
-@keyframes spin{
-to{
-transform:rotate(360deg);
-}
-}
-
-#loadingText{
-font-size:18px;
-line-height:1.8;
-}
-
-#welcome{
-position:fixed;
-inset:0;
-z-index:10000;
-background:#020617;
-display:flex;
-align-items:center;
-justify-content:center;
-padding:20px;
-}
-
-.welcomeBox{
-width:100%;
-max-width:420px;
-background:#312e81;
-border:3px solid #6366f1;
-border-radius:25px;
-padding:30px 20px;
-text-align:center;
-}
-
-.start{
-background:#059669;
-}
-
-.tip{
-margin-top:15px;
-padding:12px;
-background:#334155;
-border-radius:12px;
-font-size:14px;
-line-height:1.8;
-}
-
-</style></head><body><div id="welcome"><div class="welcomeBox"><h2>📖 بصير</h2><p>قارئ المستندات العربية</p><p style="color:#c7d2fe">
-مخصص لقراءة صفحات الكتب والرسائل
-</p><p style="font-size:14px">
-بدون Gemini وبدون API Key
-</p><button id="start" class="start">
-🚀 ابدأ التطبيق
-</button></div></div><div id="loading"><div class="loadingBox"><div class="spinner"></div><div id="loadingText">
-جاري تجهيز قارئ العربية...
-</div></div></div><div class="app"><h1>
-📖 قارئ المستندات العربي
-</h1><div class="camera"><video
-id="video"
-autoplay
-playsinline
-muted>
-</video>
-
-<div
-id="cameraMessage"
-class="cameraMessage">الكاميرا غير مفعلة
-
-</div></div><canvas
-id="canvasOriginal"
-style="display:none">
-</canvas>
-
-<canvas
-id="canvasProcessed"
-style="display:none">
-</canvas>
-
-<button
-id="capture"
-class="capture">
-
-📸 تصوير وقراءة الصفحة
-
-</button><label class="fileButton gallery">📁 اختيار صورة من الهاتف
-
-<input
-id="file"
-type="file"
-accept="image/*">
-
-</label><button
-id="repeat"
-class="repeat">
-
-🔊 إعادة قراءة النص
-
-</button><button
-id="stop"
-class="stop">
-
-🔇 إيقاف القراءة
-
-</button><div id="status" class="status">
-جاهز
-</div><div class="result"><div class="resultTitle">
-النص المستخرج:
-</div><div id="result">
-صوّر الصفحة أو اختر صورة من الهاتف.
-</div></div><div class="tip">
-أفضل نتيجة: ضع الصفحة كاملة أمام الكاميرا، واجعل الهاتف موازيًا للورقة، واستخدم إضاءة قوية بدون انعكاس.
-</div></div><script>
-
-const video =
-document.getElementById("video");
-
-const canvasOriginal =
-document.getElementById("canvasOriginal");
-
-const canvasProcessed =
-document.getElementById("canvasProcessed");
-
-const start =
-document.getElementById("start");
-
-const capture =
-document.getElementById("capture");
-
-const file =
-document.getElementById("file");
-
-const repeat =
-document.getElementById("repeat");
-
-const stop =
-document.getElementById("stop");
-
-const result =
-document.getElementById("result");
-
-const status =
-document.getElementById("status");
-
-const welcome =
-document.getElementById("welcome");
-
-const cameraMessage =
-document.getElementById("cameraMessage");
-
-const loading =
-document.getElementById("loading");
-
-const loadingText =
-document.getElementById("loadingText");
-
-
-let stream = null;
-let worker = null;
-let lastText = "";
-let busy = false;
-
-
-/* ==========================================
-   الحالة
-========================================== */
-
-function setStatus(text){
-status.textContent = text;
-}
-
-
-/* ==========================================
-   النطق العربي
-========================================== */
-
-function speak(text){
-
-if(!text){
-return;
-}
-
-if(!("speechSynthesis" in window)){
-return;
-}
-
-speechSynthesis.cancel();
-
-const utterance =
-new SpeechSynthesisUtterance(text);
-
-utterance.lang = "ar-EG";
-utterance.rate = 0.72;
-utterance.pitch = 1;
-utterance.volume = 1;
-
-const voices =
-speechSynthesis.getVoices();
-
-const arabicVoice =
-voices.find(
-v => v.lang === "ar-EG"
-)
-||
-voices.find(
-v => v.lang &&
-v.lang.toLowerCase().startsWith("ar")
-);
-
-if(arabicVoice){
-utterance.voice = arabicVoice;
-}
-
-speechSynthesis.speak(utterance);
-
-}
-
-
-/* ==========================================
-   تشغيل الكاميرا
-========================================== */
-
-async function startCamera(){
-
-try{
-
-stream =
-await navigator.mediaDevices.getUserMedia({
-
-video:{
-facingMode:{
-ideal:"environment"
-},
-
-width:{
-ideal:1920
-},
-
-height:{
-ideal:1080
-}
-
-},
-
-audio:false
-
-});
-
-
-video.srcObject =
-stream;
-
-
-cameraMessage.style.display =
-"none";
-
-
-setStatus(
-"الكاميرا جاهزة"
-);
-
-}
-
-catch(error){
-
-console.error(error);
-
-cameraMessage.innerHTML =
-"تعذر تشغيل الكاميرا.<br><br>يمكنك اختيار صورة من الهاتف.";
-
-setStatus(
-"الكاميرا غير متاحة"
-);
-
-}
-
-}
-
-
-/* ==========================================
-   تشغيل محرك OCR
-========================================== */
-
-async function startOCR(){
-
-if(worker){
-return worker;
-}
-
-loading.style.display =
-"flex";
-
-loadingText.textContent =
-"جاري تحميل قارئ العربية...";
-
-
-try{
-
-worker =
-await Tesseract.createWorker(
-"ara",
-1,
-{
-
-logger:function(info){
-
-console.log(info);
-
-if(
-info.status ===
-"loading tesseract core"
-){
-
-loadingText.textContent =
-"جاري تحميل محرك القراءة...";
-
-}
-
-else if(
-info.status ===
-"loading language traineddata"
-){
-
-loadingText.textContent =
-"جاري تحميل اللغة العربية...";
-
-}
-
-else if(
-info.status ===
-"recognizing text"
-){
-
-const percent =
-Math.round(
-(info.progress || 0) * 100
-);
-
-loadingText.textContent =
-"جاري قراءة الصفحة " +
-percent +
-"%";
-
-}
-
-}
-
-}
-);
-
-
-await worker.setParameters({
-
-preserve_interword_spaces:"1",
-
-user_defined_dpi:"300"
-
-});
-
-
-setStatus(
-"قارئ العربية جاهز"
-);
-
-return worker;
-
-}
-
-catch(error){
-
-console.error(
-"OCR ERROR",
-error
-);
-
-worker = null;
-
-setStatus(
-"فشل تشغيل قارئ العربية"
-);
-
-throw error;
-
-}
-
-finally{
-
-loading.style.display =
-"none";
-
-}
-
-}
-
-
-/* ==========================================
-   تحميل الصورة الأصلية
-========================================== */
-
-function loadImage(source){
-
-return new Promise(
-(resolve,reject)=>{
-
-const img =
-new Image();
-
-img.onload =
-function(){
-
-resolve(img);
-
-};
-
-img.onerror =
-function(){
-
-reject(
-new Error(
-"تعذر فتح الصورة"
-)
-);
-
-};
-
-img.src =
-source;
-
-});
-
-}
-
-
-/* ==========================================
-   تجهيز الصورة الأصلية
-   بدون تشويه
-========================================== */
-
-async function prepareOriginal(source){
-
-const img =
-await loadImage(source);
-
-
-let width =
-img.naturalWidth;
-
-let height =
-img.naturalHeight;
-
-
-/*
-   نحافظ على تفاصيل الصفحة.
-*/
-
-const maxWidth =
-2600;
-
-
-if(width > maxWidth){
-
-const ratio =
-maxWidth / width;
-
-width =
-Math.round(
-width * ratio
-);
-
-height =
-Math.round(
-height * ratio
-);
-
-}
-
-
-canvasOriginal.width =
-width;
-
-canvasOriginal.height =
-height;
-
-
-const ctx =
-canvasOriginal.getContext(
-"2d"
-);
-
-
-ctx.imageSmoothingEnabled =
-true;
-
-ctx.imageSmoothingQuality =
-"high";
-
-
-ctx.drawImage(
-img,
-0,
-0,
-width,
-height
-);
-
-
-return canvasOriginal;
-
-}
-
-
-/* ==========================================
-   معالجة ثانية للصورة
-   أبيض وأسود + تباين
-========================================== */
-
-function createProcessedImage(){
-
-const source =
-canvasOriginal;
-
-let width =
-source.width;
-
-let height =
-source.height;
-
-
-/*
-   لا نتجاوز حجمًا ضخمًا
-*/
-
-const maxWidth =
-2200;
-
-
-if(width > maxWidth){
-
-const ratio =
-maxWidth / width;
-
-width =
-Math.round(
-width * ratio
-);
-
-height =
-Math.round(
-height * ratio
-);
-
-}
-
-
-canvasProcessed.width =
-width;
-
-canvasProcessed.height =
-height;
-
-
-const ctx =
-canvasProcessed.getContext(
-"2d",
-{
-willReadFrequently:true
-}
-);
-
-
-ctx.drawImage(
-source,
-0,
-0,
-width,
-height
-);
-
-
-const imageData =
-ctx.getImageData(
-0,
-0,
-width,
-height
-);
-
-const pixels =
-imageData.data;
-
-
-for(
-let i=0;
-i<pixels.length;
-i+=4
-){
-
-const gray =
-0.299 * pixels[i] +
-0.587 * pixels[i+1] +
-0.114 * pixels[i+2];
-
-
-/*
-   تباين متوسط.
-   لا نبالغ حتى لا تختفي الحروف.
-*/
-
-let value =
-(gray - 128) * 1.18 + 128;
-
-
-value =
-Math.max(
-0,
-Math.min(
-255,
-value
-)
-);
-
-
-pixels[i] =
-value;
-
-pixels[i+1] =
-value;
-
-pixels[i+2] =
-value;
-
-}
-
-
-ctx.putImageData(
-imageData,
-0,
-0
-);
-
-
-return canvasProcessed;
-
-}
-
-
-/* ==========================================
-   تنظيف النص
-========================================== */
-
-function cleanText(text){
-
-if(!text){
-return "";
-}
-
-
-let lines =
-text
-.replace(/\r/g,"")
-.replace(/\u200b/g,"")
-.replace(/\u200c/g,"")
-.replace(/\u200d/g,"")
-.replace(/[|{}[\]<>~`^]+/g," ")
-.split("\n");
-
-
-lines =
-lines
-.map(
-line =>
-line
-.replace(/[ \t]+/g," ")
-.trim()
-)
-.filter(
-line => {
-
-if(!line){
-return false;
-}
-
-
-/*
-   نستبعد السطر الذي يحتوي
-   على رموز فقط.
-*/
-
-return /[\u0600-\u06FF0-9A-Za-z]/.test(line);
-
-});
-
-
-return lines.join("\n").trim();
-
-}
-
-
-/* ==========================================
-   حساب جودة النص
-========================================== */
-
-function scoreText(text){
-
-if(!text){
-return 0;
-}
-
-
-let arabic =
-(text.match(/[\u0600-\u06FF]/g) || []).length;
-
-let letters =
-(text.match(/[A-Za-z\u0600-\u06FF]/g) || []).length;
-
-let bad =
-(text.match(/[|{}[\]<>~`^]/g) || []).length;
-
-let lines =
-text.split("\n")
-.filter(
-x => x.trim().length > 2
-).length;
-
-
-return
-arabic * 3 +
-letters +
-lines * 5 -
-bad * 8;
-
-}
-
-
-/* ==========================================
-   OCR القراءة الأولى
-   الصورة الأصلية
-========================================== */
-
-async function recognizeOriginal(ocr){
-
-await ocr.setParameters({
-
-tessedit_pageseg_mode:"6",
-
-preserve_interword_spaces:"1",
-
-user_defined_dpi:"300"
-
-});
-
-
-const data =
-await ocr.recognize(
-canvasOriginal
-);
-
-
-return cleanText(
-data.data.text || ""
-);
-
-}
-
-
-/* ==========================================
-   OCR القراءة الثانية
-   الصورة المحسنة
-========================================== */
-
-async function recognizeProcessed(ocr){
-
-await ocr.setParameters({
-
-tessedit_pageseg_mode:"4",
-
-preserve_interword_spaces:"1",
-
-user_defined_dpi:"300"
-
-});
-
-
-const data =
-await ocr.recognize(
-canvasProcessed
-);
-
-
-return cleanText(
-data.data.text || ""
-);
-
-}
-
-
-/* ==========================================
-   قراءة الصفحة
-========================================== */
-
-async function readImage(source){
-
-if(busy){
-return;
-}
-
-busy = true;
-
-capture.disabled =
-true;
-
-loading.style.display =
-"flex";
-
-
-try{
-
-result.textContent =
-"جاري تجهيز الصفحة...";
-
-
-setStatus(
-"جاري تجهيز الصورة..."
-);
-
-
-/*
-   أولًا نحافظ على الصورة الأصلية.
-*/
-
-await prepareOriginal(
-source
-);
-
-
-const processed =
-createProcessedImage();
-
-
-const ocr =
-await startOCR();
-
-
-/*
-   القراءة الأولى
-*/
-
-setStatus(
-"المرحلة الأولى: قراءة الصفحة..."
-);
-
-loadingText.textContent =
-"جاري قراءة النص العربي...";
-
-
-const text1 =
-await recognizeOriginal(
-ocr
-);
-
-
-/*
-   القراءة الثانية
-*/
-
-setStatus(
-"المرحلة الثانية: تحسين القراءة..."
-);
-
-loadingText.textContent =
-"جاري تحسين دقة التعرف...";
-
-
-const text2 =
-await recognizeProcessed(
-ocr
-);
-
-
-/*
-   اختيار النتيجة الأفضل
-*/
-
-const score1 =
-scoreText(text1);
-
-const score2 =
-scoreText(text2);
-
-
-let finalText =
-score1 >= score2
-?
-text1
-:
-text2;
-
-
-finalText =
-cleanText(
-finalText
-);
-
-
-if(!finalText){
-
-result.textContent =
-"لم يتم العثور على نص واضح.";
-
-setStatus(
-"لم يتم العثور على نص واضح"
-);
-
-speak(
-"لم أتمكن من قراءة النص. حاول تصوير الصفحة بإضاءة أفضل."
-);
-
-return;
-
-}
-
-
-result.textContent =
-finalText;
-
-lastText =
-finalText;
-
-
-setStatus(
-"تمت قراءة الصفحة بنجاح"
-);
-
-
-/*
-   قراءة النص بصوت عربي
-*/
-
-speak(
-finalText
-);
-
-}
-
-catch(error){
-
-console.error(
-"READ ERROR",
-error
-);
-
-result.textContent =
-"حدث خطأ أثناء قراءة الصفحة.";
-
-setStatus(
-"حدث خطأ أثناء القراءة"
-);
-
-}
-
-finally{
-
-busy =
-false;
-
-capture.disabled =
-false;
-
-loading.style.display =
-"none";
-
-}
-
-}
-
-
-/* ==========================================
-   زر البداية
-========================================== */
-
-start.addEventListener(
-"click",
-async function(){
-
-welcome.style.display =
-"none";
-
-await startCamera();
-
-
-setTimeout(
-function(){
-
-speak(
-"التطبيق جاهز. ضع الصفحة أمام الكاميرا واضغط تصوير."
-);
-
-},
-700
-);
-
-});
-
-
-/* ==========================================
-   التقاط الصفحة
-========================================== */
-
-capture.addEventListener(
-"click",
-async function(){
-
-if(!video.videoWidth){
-
-speak(
-"الكاميرا غير جاهزة. اختر صورة من الهاتف."
-);
-
-return;
-
-}
-
-
-canvasOriginal.width =
-video.videoWidth;
-
-canvasOriginal.height =
-video.videoHeight;
-
-
-const ctx =
-canvasOriginal.getContext(
-"2d"
-);
-
-
-ctx.imageSmoothingEnabled =
-true;
-
-ctx.imageSmoothingQuality =
-"high";
-
-
-ctx.drawImage(
-video,
-0,
-0,
-canvasOriginal.width,
-canvasOriginal.height
-);
-
-
-const image =
-canvasOriginal.toDataURL(
-"image/jpeg",
-0.97
-);
-
-
-await readImage(
-image
-);
-
-});
-
-
-/* ==========================================
-   اختيار صورة من الهاتف
-========================================== */
-
-file.addEventListener(
-"change",
-function(event){
-
-const selectedFile =
-event.target.files[0];
-
-if(!selectedFile){
-return;
-}
-
-
-if(
-!selectedFile.type.startsWith("image/")
-){
-
-speak(
-"الملف المختار ليس صورة."
-);
-
-return;
-
-}
-
-
-const reader =
-new FileReader();
-
-
-reader.onload =
-async function(){
-
-await readImage(
-reader.result
-);
-
-};
-
-
-reader.onerror =
-function(){
-
-setStatus(
-"تعذر فتح الصورة"
-);
-
-};
-
-
-reader.readAsDataURL(
-selectedFile
-);
-
-
-file.value =
-"";
-
-});
-
-
-/* ==========================================
-   إعادة القراءة
-========================================== */
-
-repeat.addEventListener(
-"click",
-function(){
-
-if(lastText){
-
-speak(
-lastText
-);
-
-}
-else{
-
-speak(
-"لا يوجد نص لقراءته."
-);
-
-}
-
-});
-
-
-/* ==========================================
-   إيقاف الصوت
-========================================== */
-
-stop.addEventListener(
-"click",
-function(){
-
-if(
-"speechSynthesis" in window
-){
-
-speechSynthesis.cancel();
-
-}
-
-});
-
-
-/* ==========================================
-   تحميل أصوات الهاتف
-========================================== */
-
-if(
-"speechSynthesis" in window
-){
-
-speechSynthesis.onvoiceschanged =
-function(){
-
-speechSynthesis.getVoices();
-
-};
-
-}
-
-</script></body>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق بصير الذكي - Baser AI</title>
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 15px;
+            text-align: center;
+        }
+        h2 {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+        .mic-container {
+            margin-bottom: 20px;
+        }
+        .mic-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #0f172a;
+            border: 3px solid #00f2fe;
+            color: #00f2fe;
+            font-size: 32px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #mediaContainer {
+            max-width: 500px;
+            margin: 0 auto 15px auto;
+            display: none;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid #00f2fe;
+        }
+        video {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+        .close-cam {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 10;
+        }
+        .action-btn {
+            margin: 5px auto;
+            padding: 12px 20px;
+            background-color: #00f2fe;
+            color: #0b0f19;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            display: none;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .feature-btn {
+            padding: 12px 5px;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 85px;
+            transition: 0.2s;
+        }
+        .feature-btn:active {
+            transform: scale(0.95);
+        }
+        .btn-teal { background-color: #115e59; }
+        .btn-purple { background-color: #581c87; }
+        .btn-orange { background-color: #7c2d12; }
+        .btn-blue { background-color: #1e3a8a; }
+        .btn-darkblue { background-color: #1e293b; }
+        .btn-darkred { background-color: #7f1d1d; background-image: linear-gradient(to right, #7f1d1d, #4c1d95); }
+
+        .feature-btn span:first-child {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            max-width: 500px;
+            margin: 10px auto 0 auto;
+        }
+        #statusBox {
+            margin-top: 15px;
+            padding: 15px;
+            background: #1e293b;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #38bdf8;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: right;
+            border-right: 4px solid #00f2fe;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>كيف يمكنني مساعدتك اليوم؟</h2>
+
+    <div class="mic-container">
+        <button class="mic-btn" onclick="speakText('مرحباً بك في تطبيق بصير الذكي')">🎤</button>
+    </div>
+
+    <!-- نافذة عرض الكاميرا -->
+    <div id="mediaContainer">
+        <button class="close-cam" onclick="stopCamera()">إغلاق الكاميرا ✕</button>
+        <video id="cameraStream" autoplay playsinline></video>
+    </div>
+    
+    <!-- زر التحليل الذكي الموحد -->
+    <button id="aiAnalyzeBtn" class="action-btn" onclick="analyzeWithAI()">تحليل المشهد بالذكاء الاصطناعي 🧠</button>
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <!-- شبكة الأزرار -->
+    <div class="grid-container">
+        <button class="feature-btn btn-teal" onclick="triggerAction('الاتصال بمطوع', 'tel:01000000000', 'جاري الاتصال بالمطوع')">
+            <span>📞</span><span>اتصل بمطوع</span>
+        </button>
+        <button class="feature-btn btn-teal" onclick="startCameraForAI('اقرأ النصوص الموجودة في الصورة بدقة بالغة وذكر النص حرفياً إن وجد باللغة العربية.')">
+            <span>📄</span><span>قراءة النصوص</span>
+        </button>
+        <button class="feature-btn btn-purple" onclick="startCameraForAI('صف لي ما يوجد في هذا المشهد بشكل دقيق ومفيد جداً لشخص مكفوف باللغة العربية.')">
+            <span>📷</span><span>التعرف على الأشياء</span>
+        </button>
+
+        <button class="feature-btn btn-purple" onclick="notifyUnderDevelopment('المساعد الصوتي')">
+            <span>🎧</span><span>المساعد الصوتي</span>
+        </button>
+        <button class="feature-btn btn-orange" onclick="startCameraForAI('اقرأ لي محتوى الكتاب أو المستند الظاهر في الصورة بدقة.')">
+            <span>📖</span><span>الكتب والمستندات</span>
+        </button>
+        <button class="feature-btn btn-blue" onclick="getGPSLocation()">
+            <span>🧭</span><span>الملاحة والتنقل</span>
+        </button>
+
+        <button class="feature-btn btn-blue" onclick="notifyUnderDevelopment('قراءة الباركود')">
+            <span>📊</span><span>قراءة الباركود</span>
+        </button>
+        <button class="feature-btn btn-orange" onclick="notifyUnderDevelopment('التعلم والتعليم')">
+            <span>🎓</span><span>التعلم والتعليم</span>
+        </button>
+        <button class="feature-btn btn-teal" onclick="notifyUnderDevelopment('البحث الصوتي')">
+            <span>🔍</span><span>البحث الصوتي</span>
+        </button>
+
+        <button class="feature-btn btn-teal" onclick="notifyUnderDevelopment('التعرف على الوجوه')">
+            <span>👤</span><span>التعرف على الوجوه</span>
+        </button>
+        <button class="feature-btn btn-purple" onclick="notifyUnderDevelopment('التعرف على الألوان')">
+            <span>🎨</span><span>التعرف على الألوان</span>
+        </button>
+        <button class="feature-btn btn-blue" onclick="startCameraForAI('حدد لي فئة ونوع العملة الورقية الظاهرة في الصورة بصدق ودقة.')">
+            <span>🪙</span><span>التعرف على العملات</span>
+        </button>
+
+        <button class="feature-btn btn-darkblue" onclick="notifyUnderDevelopment('سجل المعلومات')">
+            <span>🕒</span><span>سجل المعلومات</span>
+        </button>
+        <button class="feature-btn btn-blue" onclick="getGPSLocation()">
+            <span>📍</span><span>مشاركة موقعي</span>
+        </button>
+        <button class="feature-btn btn-darkblue" onclick="getGPSLocation()">
+            <span>🏢</span><span>الملاحة الداخلية</span>
+        </button>
+    </div>
+
+    <div class="bottom-grid">
+        <button class="feature-btn btn-darkblue" onclick="notifyUnderDevelopment('دعم بدون إنترنت')">
+            <span>⚡</span><span>دعم بدون إنترنت</span>
+        </button>
+        <button class="feature-btn btn-darkred" onclick="triggerAction('حالة الطوارئ', 'tel:123', 'جاري الاتصال بالطوارئ')">
+            <span>🚨</span><span>طوارئ</span>
+        </button>
+    </div>
+
+    <div id="statusBox">أهلاً بك في تطبيق بصير. الكاميرا جاهزة للتحليل.</div>
+
+    <script>
+        let currentStream = null;
+        let currentPrompt = "صف لي ما يوجد في هذا المشهد بشكل دقيق لشخص مكفوف.";
+        
+        // المفتاح القديم الذي أرسلته سابقاً
+        const GEMINI_API_KEY = "AQ.Ab8RN6JnrvtQcVzi6PPHobCFv56kqvE_8LXVtmARZZcRABPk6w"; 
+
+        function speakText(text) {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ar-SA';
+            utterance.rate = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        async function startCameraForAI(promptText) {
+            currentPrompt = promptText;
+            const container = document.getElementById('mediaContainer');
+            const video = document.getElementById('cameraStream');
+            container.style.display = 'block';
+            document.getElementById('aiAnalyzeBtn').style.display = 'inline-block';
+            
+            document.getElementById('statusBox').innerText = "تم فتح الكاميرا. وجهها نحو الهدف واضغط زر التحليل.";
+            speakText("تم فتح الكاميرا، اضغط زر التحليل عند الاستعداد");
+
+            try {
+                if (currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
+                }
+                currentStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: { exact: "environment" } } 
+                }).catch(() => {
+                    return navigator.mediaDevices.getUserMedia({ video: true });
+                });
+                video.srcObject = currentStream;
+            } catch (err) {
+                document.getElementById('statusBox').innerText = "تعذر فتح الكاميرا، يرجى السماح بالصلاحيات.";
+                speakText("تعذر فتح الكاميرا");
+            }
+        }
+
+        function stopCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+            document.getElementById('mediaContainer').style.display = 'none';
+            document.getElementById('aiAnalyzeBtn').style.display = 'none';
+            document.getElementById('statusBox').innerText = "تم إغلاق الكاميرا.";
+            speakText("تم إغلاق الكاميرا");
+        }
+
+        async function analyzeWithAI() {
+            const video = document.getElementById('cameraStream');
+            const canvas = document.getElementById('canvas');
+            const statusBox = document.getElementById('statusBox');
+            
+            if (!video.srcObject) {
+                alert("الكاميرا غير مفعلة!");
+                return;
+            }
+
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            let base64Image = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+
+            statusBox.innerText = "جاري إرسال الصورة وتحليلها عبر الذكاء الاصطناعي... انتظر لحظات";
+            speakText("جاري التحليل");
+
+            try {
+                // استخدام الطريقة الصحيحة للمفتاح في الرابط
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                { text: currentPrompt },
+                                {
+                                    inline_data: {
+                                        mime_type: "image/jpeg",
+                                        data: base64Image
+                                    }
+                                }
+                            ]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    let aiReply = data.candidates[0].content.parts[0].text.trim();
+                    statusBox.innerText = "النتيجة: " + aiReply;
+                    speakText(aiReply);
+                } else if (data.error) {
+                    statusBox.innerText = "خطأ من الخادم: " + data.error.message;
+                    speakText("عذراً، حدث خطأ في النظام");
+                } else {
+                    statusBox.innerText = "لم يتم تلقي استجابة صحيحة من الذكاء الاصطناعي.";
+                    speakText("عذراً، لم أستطع تحليل الصورة بدقة");
+                }
+            } catch (err) {
+                document.getElementById('statusBox').innerText = "حدث خطأ في الاتصال بالشبكة.";
+                speakText("حدث خطأ في الاتصال");
+            }
+        }
+
+        function notifyUnderDevelopment(featureName) {
+            let msg = `خاصية ${featureName} قيد التطوير وسيتم تفعيلها قريباً`;
+            document.getElementById('statusBox').innerText = msg;
+            speakText(msg);
+        }
+
+        function triggerAction(name, link, speechMessage) {
+            document.getElementById('statusBox').innerText = "تم تفعيل: " + name;
+            speakText(speechMessage);
+            if (link) {
+                setTimeout(() => { window.location.href = link; }, 2000);
+            }
+        }
+
+        function getGPSLocation() {
+            document.getElementById('statusBox').innerText = "جاري تحديد الموقع الجغرافي...";
+            speakText("جاري تحديد موقعك الجغرافي للملاحة");
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    let lat = pos.coords.latitude.toFixed(4);
+                    let lng = pos.coords.longitude.toFixed(4);
+                    let text = `موقعك الحالي - خط العرض: ${lat}، خط الطول: ${lng}`;
+                    document.getElementById('statusBox').innerText = text;
+                    speakText("تم تحديد موقعك بنجاح");
+                }, () => {
+                    document.getElementById('statusBox').innerText = "تعذر تحديد الموقع، تأكد من تفعيل GPS.";
+                    speakText("تعذر تحديد الموقع");
+                });
+            }
+        }
+    </script>
+</body>
 </html>
