@@ -6,6 +6,10 @@
     <title>تطبيق بصير الذكي - Baser AI</title>
     <!-- مكتبة قراءة النصوص المحلية (OCR) -->
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+    <!-- مكتبات الذكاء الاصطناعي الحقيقي للتعرف على الأشياء (TensorFlow.js & MobileNet) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
+    
     <style>
         :root {
             --bg-color: #030712;
@@ -331,7 +335,7 @@
             <div class="hero-card" onclick="startCamera('smart')">
                 <div class="hero-cam-circle">📷</div>
                 <div class="hero-title">بصير الذكي</div>
-                <div class="hero-desc">اضغط لبدء الفحص والتحليل الذكي الحقيقي</div>
+                <div class="hero-desc">اضغط لبدء التعرف الحقيقي على الأشياء</div>
             </div>
 
             <div class="section-title-bar">الوظائف الرئيسية</div>
@@ -467,6 +471,18 @@
     <script>
         let videoStream = null;
         let activeMode = 'smart';
+        let aiModel = null;
+
+        // تحميل نموذج الذكاء الاصطناعي (MobileNet) في الخلفية عند فتح التطبيق
+        async function loadAIModel() {
+            try {
+                aiModel = await mobilenet.load();
+                console.log("تم تحميل نموذج الذكاء الاصطناعي بنجاح!");
+            } catch (e) {
+                console.log("خطأ في تحميل نموذج الذكاء الاصطناعي", e);
+            }
+        }
+        loadAIModel();
 
         function speakText(txt) {
             if (!('speechSynthesis' in window)) return;
@@ -502,7 +518,7 @@
         async function startCamera(mode) {
             activeMode = mode;
             let names = {
-                'smart': 'بصير الذكي ووصف المشهد',
+                'smart': 'بصير الذكي للتعرف على الأشياء',
                 'ocr': 'قراءة النصوص',
                 'object': 'التعرف على الأشياء',
                 'money': 'التعرف على العملات',
@@ -525,7 +541,7 @@
                 document.getElementById('vidElem').srcObject = videoStream;
 
                 // التقاط وتحليل حقيقي بعد فتح الكاميرا بثوانٍ
-                setTimeout(processTask, 2000);
+                setTimeout(processTask, 2500);
 
             } catch (e) {
                 speakText("تعذر تشغيل الكاميرا");
@@ -586,32 +602,38 @@
                 speakText(msg);
             }
             else {
-                // تحليل ذكي ديناميكي يعتمد على ألوان وإضاءة الصورة الملتقطة الفعليّة لتجنب التكرار الثابت
-                let data = ctx.getImageData(0, 0, c.width, c.height).data;
-                let brightness = 0;
-                for (let i = 0; i < data.length; i += 4) {
-                    brightness += (data[i] + data[i+1] + data[i+2]) / 3;
-                }
-                brightness = brightness / (data.length / 4);
+                // استخدام نموذج الذكاء الاصطناعي الحقيقي للتعرف على الأشياء
+                sb.innerText = "جاري تحليل الصورة والتعرف على الشيء...";
+                speakText("جاري تحليل الكائن");
 
-                let envDesc = "";
-                if (brightness > 140) {
-                    envDesc = "الإضاءة ساطعة جداً أمامك، تبدو في مكان مفتوح أو غرفة منارة بشكل مكثف.";
-                } else if (brightness > 70) {
-                    envDesc = "إضاءة المكان متوسطة وطبيعية، توجد أسطح أو أثاث منظم حولك.";
-                } else {
-                    envDesc = "الإضاءة ضعيفة أو مظلمة نسبياً، يرجى الحذر وتعديل الإضاءة.";
+                if (!aiModel) {
+                    let waitMsg = "جاري تجهيز نموذج الذكاء الاصطناعي، يرجى المحاولة بعد لحظات.";
+                    sb.innerText = waitMsg;
+                    speakText(waitMsg);
+                    return;
                 }
 
-                let objectTypes = [
-                    "تم رصد جسم مستطيل أو طاولة أمامك مباشرة.",
-                    "المشهد يحتوي على عناصر وأثاث منزلي أو مكتبي.",
-                    "يبدو أنك أمام حائط أو باب مغلق على مسافة قريبة."
-                ];
-                let dynamicMsg = objectTypes[Math.floor(Math.random() * objectTypes.length)] + " " + envDesc;
-                
-                sb.innerText = dynamicMsg;
-                speakText(dynamicMsg);
+                try {
+                    let predictions = await aiModel.classify(v);
+                    if (predictions && predictions.length > 0) {
+                        let topPred = predictions[0];
+                        // ترجمة وتنسيق التنبؤ الأولي لإعطاء اسم واضح للمستخدم
+                        let objectName = topPred.className.split(',')[0]; // يأخذ الاسم الأول الواضح
+                        let confidence = Math.round(topPred.probability * 100);
+                        
+                        let msg = `يبدو أن أمامك: ${objectName} (نسبة الثقة ${confidence} بالمئة)`;
+                        sb.innerText = msg;
+                        speakText(msg);
+                    } else {
+                        let errStr = "لم يتم التعرف بوضوح على الشيء، جرب تغيير الزاوية.";
+                        sb.innerText = errStr;
+                        speakText(errStr);
+                    }
+                } catch (err) {
+                    let errStr = "حدث خطأ أثناء تحليل الصورة بالذكاء الاصطناعي.";
+                    sb.innerText = errStr;
+                    speakText(errStr);
+                }
             }
         }
 
