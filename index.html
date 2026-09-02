@@ -5,88 +5,213 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق بصير الذكي - Baser AI</title>
     <style>
-        body {
-            background-color: #0b0f19;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 15px;
-            text-align: center;
+        :root {
+            --bg-color: #070913;
+            --card-bg: rgba(19, 27, 46, 0.75);
+            --border-color: rgba(0, 242, 254, 0.25);
+            --primary-glow: rgba(0, 242, 254, 0.4);
+            --accent-cyan: #00f2fe;
+            --accent-blue: #4facfe;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
         }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 242, 254, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(88, 28, 135, 0.15) 0%, transparent 40%);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 20px 15px;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
         .page {
             display: none;
-            max-width: 500px;
+            width: 100%;
+            max-width: 480px;
             margin: 0 auto;
+            animation: fadeIn 0.3s ease-in-out;
         }
+
         .page.active {
             display: block;
         }
-        h1, h2 {
-            color: #00f2fe;
-            margin-bottom: 15px;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
+
+        /* تصميم الصفحة الرئيسية الاحترافي */
+        .hero-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 30px 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 242, 254, 0.1);
+        }
+
+        .logo-wrapper {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px auto;
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.1), rgba(79, 172, 254, 0.2));
+            border: 2px solid var(--accent-cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            box-shadow: 0 0 20px var(--primary-glow);
+            animation: pulseLogo 3s infinite ease-in-out;
+        }
+
+        @keyframes pulseLogo {
+            0% { transform: scale(1); box-shadow: 0 0 15px rgba(0, 242, 254, 0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(0, 242, 254, 0.6); }
+            100% { transform: scale(1); box-shadow: 0 0 15px rgba(0, 242, 254, 0.3); }
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0 0 10px 0;
+            background: linear-gradient(135deg, #ffffff, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
         p {
-            color: #94a3b8;
-            font-size: 15px;
-            line-height: 1.6;
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.7;
             margin-bottom: 25px;
         }
+
         .main-menu-btn {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            background: linear-gradient(135deg, #00f2fe, #4facfe);
-            color: #0b0f19;
+            padding: 14px 20px;
+            margin: 12px 0;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: #070913;
             border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
-            transition: 0.2s;
+            box-shadow: 0 6px 20px rgba(0, 242, 254, 0.35);
+            transition: all 0.25s ease;
         }
-        .main-menu-btn.secondary {
-            background: #1e293b;
-            color: #38bdf8;
-            border: 2px solid #00f2fe;
+
+        .main-menu-btn:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 242, 254, 0.5);
         }
+
         .main-menu-btn:active {
             transform: scale(0.97);
         }
-        .mic-container {
-            margin-bottom: 20px;
+
+        .main-menu-btn.secondary {
+            background: rgba(30, 41, 59, 0.7);
+            color: var(--accent-cyan);
+            border: 1px solid var(--border-color);
+            box-shadow: none;
         }
+
+        /* شاشة التطبيق الداخلية والخواص */
+        .app-inner-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .top-nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            background: var(--card-bg);
+            padding: 10px 15px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-icon-btn {
+            background: rgba(0, 242, 254, 0.1);
+            color: var(--accent-cyan);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        
+        .nav-icon-btn:active {
+            transform: scale(0.95);
+        }
+
+        .mic-container {
+            margin-bottom: 15px;
+        }
+
         .mic-btn {
             width: 70px;
             height: 70px;
             border-radius: 50%;
-            background-color: #0f172a;
-            border: 3px solid #00f2fe;
-            color: #00f2fe;
+            background: radial-gradient(circle, #0f172a, #070913);
+            border: 3px solid var(--accent-cyan);
+            color: var(--accent-cyan);
             font-size: 28px;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            transition: 0.2s;
         }
+
+        .mic-btn:active {
+            transform: scale(0.92);
+        }
+
         #mediaContainer {
-            max-width: 500px;
-            margin: 0 auto 15px auto;
+            width: 100%;
+            margin-bottom: 15px;
             display: none;
             background: #000;
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
             position: relative;
-            border: 2px solid #00f2fe;
+            border: 2px solid var(--accent-cyan);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
+
         video {
             width: 100%;
-            max-height: 250px;
+            max-height: 240px;
             object-fit: cover;
             display: block;
         }
+
         .close-cam {
             position: absolute;
             top: 10px;
@@ -94,249 +219,257 @@
             background: #dc2626;
             color: white;
             border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 12px;
             z-index: 10;
         }
+
         .action-btn {
-            margin: 5px auto;
+            margin: 5px auto 15px auto;
             padding: 12px 20px;
-            background-color: #00f2fe;
-            color: #0b0f19;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: #070913;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-weight: bold;
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
             display: none;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
         }
+
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            max-width: 500px;
-            margin: 0 auto;
         }
+
         .feature-btn {
-            padding: 12px 5px;
-            border: none;
-            border-radius: 12px;
+            padding: 10px 5px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
             color: white;
-            font-size: 13px;
-            font-weight: bold;
+            font-size: 12px;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 85px;
-            transition: 0.2s;
+            min-height: 80px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.2s, filter 0.2s;
         }
+
         .feature-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.94);
+            filter: brightness(1.15);
         }
-        .btn-teal { background-color: #115e59; }
-        .btn-purple { background-color: #581c87; }
-        .btn-orange { background-color: #7c2d12; }
-        .btn-blue { background-color: #1e3a8a; }
-        .btn-darkblue { background-color: #1e293b; }
-        .btn-darkred { background-color: #7f1d1d; background-image: linear-gradient(to right, #7f1d1d, #4c1d95); }
+
+        .btn-teal { background: linear-gradient(135deg, #0d9488, #115e59); }
+        .btn-purple { background: linear-gradient(135deg, #7c3aed, #581c87); }
+        .btn-orange { background: linear-gradient(135deg, #c2410c, #7c2d12); }
+        .btn-blue { background: linear-gradient(135deg, #2563eb, #1e3a8a); }
+        .btn-darkblue { background: linear-gradient(135deg, #334155, #1e293b); }
+        .btn-darkred { background: linear-gradient(135deg, #991b1b, #4c1d95); }
 
         .feature-btn span:first-child {
             font-size: 20px;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
+
         .bottom-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            max-width: 500px;
-            margin: 10px auto 0 auto;
+            margin-top: 10px;
         }
+
         #statusBox {
             margin-top: 15px;
-            padding: 15px;
-            background: #1e293b;
-            border-radius: 8px;
-            font-size: 15px;
-            color: #38bdf8;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-            text-align: right;
-            border-right: 4px solid #00f2fe;
-        }
-        .top-nav-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .nav-icon-btn {
-            background: #1e293b;
-            color: #00f2fe;
-            border: 1px solid #00f2fe;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
+            padding: 14px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
             font-size: 14px;
-            font-weight: bold;
-        }
-        .settings-group {
-            background: #1e293b;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            color: #38bdf8;
             text-align: right;
+            border-right: 4px solid var(--accent-cyan);
+            border: 1px solid var(--border-color);
         }
+
+        /* صفحة الإعدادات */
+        .settings-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: right;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .settings-group {
+            margin-bottom: 15px;
+        }
+
         .settings-group label {
             display: block;
             margin-bottom: 8px;
-            color: #38bdf8;
-            font-size: 14px;
+            color: var(--accent-cyan);
+            font-size: 13px;
+            font-weight: bold;
         }
+
         .settings-group select {
             width: 100%;
-            padding: 10px;
-            background: #0f172a;
+            padding: 12px;
+            background: #070913;
             color: white;
-            border: 1px solid #475569;
-            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
         }
     </style>
 </head>
 <body>
 
-    <!-- 1. الصفحة الرئيسية (Home Page) -->
+    <!-- 1. الصفحة الرئيسية الاحترافية -->
     <div id="homePage" class="page active">
-        <div style="font-size: 50px; margin-bottom: 10px;">👁️</div>
-        <h1>تطبيق بصير الذكي</h1>
-        <p>
-            تطبيق "بصير" هو رفيقك الرقمي المصمم خصيصاً لمساعدة المكفوفين وضعاف البصر. 
-            يهدف التطبيق إلى منحك الاستقلالية الكاملة من خلال التعرف على الأشياء، قراءة النصوص بدقة، 
-            التعرف على العملات، والملاحة الآمنة عبر تقنيات الذكاء الاصطناعي المتقدمة.
-        </p>
-        
-        <button type="button" id="startAppBtn" class="main-menu-btn">
-            🚀 ابدأ استخدام التطبيق والخدمات
-        </button>
-        <button type="button" id="openSettingsBtn" class="main-menu-btn secondary">
-            ⚙️ إعدادات التطبيق
-        </button>
+        <div class="hero-container">
+            <div class="logo-wrapper">👁️</div>
+            <h1>تطبيق بصير الذكي</h1>
+            <p>
+                رفيقك الرقمي المتقدم لمساعدة المكفوفين وضعاف البصر. امنح نفسك الاستقلالية الكاملة للتعرف على الأشياء، قراءة النصوص، والعملات، والملاحة بكل ثقة عبر الذكاء الاصطناعي.
+            </p>
+            
+            <button type="button" id="startAppBtn" class="main-menu-btn">
+                <span>🚀</span> ابدأ استخدام التطبيق والخدمات
+            </button>
+            <button type="button" id="openSettingsBtn" class="main-menu-btn secondary">
+                <span>⚙️</span> إعدادات التطبيق
+            </button>
+        </div>
     </div>
 
-    <!-- 2. صفحة الإعدادات (Settings Page) -->
+    <!-- 2. صفحة الإعدادات -->
     <div id="settingsPage" class="page">
-        <div class="top-nav-bar">
-            <button type="button" class="nav-icon-btn home-nav-trigger">🏠 الرئيسية</button>
-            <h2>إعدادات التطبيق</h2>
-            <div></div>
-        </div>
+        <div class="settings-container">
+            <div class="top-nav-bar" style="margin-bottom: 20px;">
+                <button type="button" class="nav-icon-btn home-nav-trigger">🏠 الرئيسية</button>
+                <h2 style="margin: 0; font-size: 16px; color: var(--accent-cyan);">إعدادات التطبيق</h2>
+                <div></div>
+            </div>
 
-        <div class="settings-group">
-            <label for="speechRate">سرعة الناطق الصوتي:</label>
-            <select id="speechRate" onchange="updateSettings()">
-                <option value="0.8">بطيئة</option>
-                <option value="1.0" selected>عادية (افتراضي)</option>
-                <option value="1.25">سريعة</option>
-            </select>
-        </div>
+            <div class="settings-group">
+                <label for="speechRate">سرعة الناطق الصوتي:</label>
+                <select id="speechRate" onchange="updateSettings()">
+                    <option value="0.8">بطيئة</option>
+                    <option value="1.0" selected>عادية (افتراضي)</option>
+                    <option value="1.25">سريعة</option>
+                </select>
+            </div>
 
-        <div class="settings-group">
-            <label>حالة المساعد الصوتي:</label>
-            <p style="margin: 0; color: #fff;">الناطق الصوتي مفعل وجاهز للعمل بكفاءة.</p>
-        </div>
+            <div class="settings-group">
+                <label>حالة المساعد الصوتي:</label>
+                <p style="margin: 0; color: #fff; font-size: 13px;">الناطق الصوتي مفعل وجاهز للعمل بكفاءة تامة.</p>
+            </div>
 
-        <button type="button" class="main-menu-btn home-nav-trigger">حفظ والعودة للرئيسية</button>
+            <button type="button" class="main-menu-btn home-nav-trigger" style="margin-top: 20px;">حفظ والعودة للرئيسية</button>
+        </div>
     </div>
 
-    <!-- 3. شاشة التطبيق والخواص (App & Features Page) -->
+    <!-- 3. شاشة التطبيق والخواص -->
     <div id="appPage" class="page">
-        <div class="top-nav-bar">
-            <button type="button" class="nav-icon-btn home-nav-trigger">🏠 الرئيسية</button>
-            <h2 style="margin: 0; font-size: 16px;">خدمات بصير الذكية</h2>
-            <button type="button" class="nav-icon-btn settings-nav-trigger">⚙️ الإعدادات</button>
+        <div class="app-inner-container">
+            <div class="top-nav-bar">
+                <button type="button" class="nav-icon-btn home-nav-trigger">🏠 الرئيسية</button>
+                <span style="font-size: 14px; font-weight: bold; color: var(--accent-cyan);">خدمات بصير الذكية</span>
+                <button type="button" class="nav-icon-btn settings-nav-trigger">⚙️ الإعدادات</button>
+            </div>
+
+            <div class="mic-container">
+                <button type="button" class="mic-btn" onclick="speakText('مرحباً بك في تطبيق بصير الذكي، اختر الخدمة المناسبة')">🎤</button>
+            </div>
+
+            <!-- نافذة عرض الكاميرا -->
+            <div id="mediaContainer">
+                <button type="button" class="close-cam" onclick="stopCamera()">إغلاق الكاميرا ✕</button>
+                <video id="cameraStream" autoplay playsinline></video>
+            </div>
+            
+            <!-- زر التحليل الذكي الموحد -->
+            <button type="button" id="aiAnalyzeBtn" class="action-btn" onclick="analyzeWithAI()">تحليل المشهد بالذكاء الاصطناعي 🧠</button>
+            <canvas id="canvas" style="display:none;"></canvas>
+
+            <!-- شبكة الأزرار -->
+            <div class="grid-container">
+                <button type="button" class="feature-btn btn-teal" onclick="triggerAction('الاتصال بمطوع', 'tel:01000000000', 'جاري الاتصال بالمطوع')">
+                    <span>📞</span><span>اتصل بمطوع</span>
+                </button>
+                <button type="button" class="feature-btn btn-teal" onclick="startCameraForAI('اقرأ النصوص الموجودة في الصورة بدقة بالغة وذكر النص حرفياً إن وجد باللغة العربية.')">
+                    <span>📄</span><span>قراءة النصوص</span>
+                </button>
+                <button type="button" class="feature-btn btn-purple" onclick="startCameraForAI('صف لي ما يوجد في هذا المشهد بشكل دقيق ومفيد جداً لشخص مكفوف باللغة العربية.')">
+                    <span>📷</span><span>التعرف على الأشياء</span>
+                </button>
+
+                <button type="button" class="feature-btn btn-purple" onclick="notifyUnderDevelopment('المساعد الصوتي')">
+                    <span>🎧</span><span>المساعد الصوتي</span>
+                </button>
+                <button type="button" class="feature-btn btn-orange" onclick="startCameraForAI('اقرأ لي محتوى الكتاب أو المستند الظاهر في الصورة بدقة.')">
+                    <span>📖</span><span>الكتب والمستندات</span>
+                </button>
+                <button type="button" class="feature-btn btn-blue" onclick="getGPSLocation()">
+                    <span>🧭</span><span>الملاحة والتنقل</span>
+                </button>
+
+                <button type="button" class="feature-btn btn-blue" onclick="notifyUnderDevelopment('قراءة الباركود')">
+                    <span>📊</span><span>قراءة الباركود</span>
+                </button>
+                <button type="button" class="feature-btn btn-orange" onclick="notifyUnderDevelopment('التعلم والتعليم')">
+                    <span>🎓</span><span>التعلم والتعليم</span>
+                </button>
+                <button type="button" class="feature-btn btn-teal" onclick="notifyUnderDevelopment('البحث الصوتي')">
+                    <span>🔍</span><span>البحث الصوتي</span>
+                </button>
+
+                <button type="button" class="feature-btn btn-teal" onclick="notifyUnderDevelopment('التعرف على الوجوه')">
+                    <span>👤</span><span>التعرف على الوجوه</span>
+                </button>
+                <button type="button" class="feature-btn btn-purple" onclick="notifyUnderDevelopment('التعرف على الألوان')">
+                    <span>🎨</span><span>التعرف على الألوان</span>
+                </button>
+                <button type="button" class="feature-btn btn-blue" onclick="startCameraForAI('حدد لي فئة ونوع العملة الورقية الظاهرة في الصورة بصدق ودقة.')">
+                    <span>🪙</span><span>التعرف على العملات</span>
+                </button>
+
+                <button type="button" class="feature-btn btn-darkblue" onclick="notifyUnderDevelopment('سجل المعلومات')">
+                    <span>🕒</span><span>سجل المعلومات</span>
+                </button>
+                <button type="button" class="feature-btn btn-blue" onclick="getGPSLocation()">
+                    <span>📍</span><span>مشاركة موقعي</span>
+                </button>
+                <button type="button" class="feature-btn btn-darkblue" onclick="getGPSLocation()">
+                    <span>🏢</span><span>الملاحة الداخلية</span>
+                </button>
+            </div>
+
+            <div class="bottom-grid">
+                <button type="button" class="feature-btn btn-darkblue" onclick="notifyUnderDevelopment('دعم بدون إنترنت')">
+                    <span>⚡</span><span>دعم بدون إنترنت</span>
+                </button>
+                <button type="button" class="feature-btn btn-darkred" onclick="triggerAction('حالة الطوارئ', 'tel:123', 'جاري الاتصال بالطوارئ')">
+                    <span>🚨</span><span>طوارئ</span>
+                </button>
+            </div>
+
+            <div id="statusBox">أهلاً بك في تطبيق بصير. الكاميرا جاهزة للتحليل.</div>
         </div>
-
-        <div class="mic-container">
-            <button type="button" class="mic-btn" onclick="speakText('مرحباً بك في تطبيق بصير الذكي، اختر الخدمة المناسبة')">🎤</button>
-        </div>
-
-        <!-- نافذة عرض الكاميرا -->
-        <div id="mediaContainer">
-            <button type="button" class="close-cam" onclick="stopCamera()">إغلاق الكاميرا ✕</button>
-            <video id="cameraStream" autoplay playsinline></video>
-        </div>
-        
-        <!-- زر التحليل الذكي الموحد -->
-        <button type="button" id="aiAnalyzeBtn" class="action-btn" onclick="analyzeWithAI()">تحليل المشهد بالذكاء الاصطناعي 🧠</button>
-        <canvas id="canvas" style="display:none;"></canvas>
-
-        <!-- شبكة الأزرار -->
-        <div class="grid-container">
-            <button type="button" class="feature-btn btn-teal" onclick="triggerAction('الاتصال بمطوع', 'tel:01000000000', 'جاري الاتصال بالمطوع')">
-                <span>📞</span><span>اتصل بمطوع</span>
-            </button>
-            <button type="button" class="feature-btn btn-teal" onclick="startCameraForAI('اقرأ النصوص الموجودة في الصورة بدقة بالغة وذكر النص حرفياً إن وجد باللغة العربية.')">
-                <span>📄</span><span>قراءة النصوص</span>
-            </button>
-            <button type="button" class="feature-btn btn-purple" onclick="startCameraForAI('صف لي ما يوجد في هذا المشهد بشكل دقيق ومفيد جداً لشخص مكفوف باللغة العربية.')">
-                <span>📷</span><span>التعرف على الأشياء</span>
-            </button>
-
-            <button type="button" class="feature-btn btn-purple" onclick="notifyUnderDevelopment('المساعد الصوتي')">
-                <span>🎧</span><span>المساعد الصوتي</span>
-            </button>
-            <button type="button" class="feature-btn btn-orange" onclick="startCameraForAI('اقرأ لي محتوى الكتاب أو المستند الظاهر في الصورة بدقة.')">
-                <span>📖</span><span>الكتب والمستندات</span>
-            </button>
-            <button type="button" class="feature-btn btn-blue" onclick="getGPSLocation()">
-                <span>🧭</span><span>الملاحة والتنقل</span>
-            </button>
-
-            <button type="button" class="feature-btn btn-blue" onclick="notifyUnderDevelopment('قراءة الباركود')">
-                <span>📊</span><span>قراءة الباركود</span>
-            </button>
-            <button type="button" class="feature-btn btn-orange" onclick="notifyUnderDevelopment('التعلم والتعليم')">
-                <span>🎓</span><span>التعلم والتعليم</span>
-            </button>
-            <button type="button" class="feature-btn btn-teal" onclick="notifyUnderDevelopment('البحث الصوتي')">
-                <span>🔍</span><span>البحث الصوتي</span>
-            </button>
-
-            <button type="button" class="feature-btn btn-teal" onclick="notifyUnderDevelopment('التعرف على الوجوه')">
-                <span>👤</span><span>التعرف على الوجوه</span>
-            </button>
-            <button type="button" class="feature-btn btn-purple" onclick="notifyUnderDevelopment('التعرف على الألوان')">
-                <span>🎨</span><span>التعرف على الألوان</span>
-            </button>
-            <button type="button" class="feature-btn btn-blue" onclick="startCameraForAI('حدد لي فئة ونوع العملة الورقية الظاهرة في الصورة بصدق ودقة.')">
-                <span>🪙</span><span>التعرف على العملات</span>
-            </button>
-
-            <button type="button" class="feature-btn btn-darkblue" onclick="notifyUnderDevelopment('سجل المعلومات')">
-                <span>🕒</span><span>سجل المعلومات</span>
-            </button>
-            <button type="button" class="feature-btn btn-blue" onclick="getGPSLocation()">
-                <span>📍</span><span>مشاركة موقعي</span>
-            </button>
-            <button type="button" class="feature-btn btn-darkblue" onclick="getGPSLocation()">
-                <span>🏢</span><span>الملاحة الداخلية</span>
-            </button>
-        </div>
-
-        <div class="bottom-grid">
-            <button type="button" class="feature-btn btn-darkblue" onclick="notifyUnderDevelopment('دعم بدون إنترنت')">
-                <span>⚡</span><span>دعم بدون إنترنت</span>
-            </button>
-            <button type="button" class="feature-btn btn-darkred" onclick="triggerAction('حالة الطوارئ', 'tel:123', 'جاري الاتصال بالطوارئ')">
-                <span>🚨</span><span>طوارئ</span>
-            </button>
-        </div>
-
-        <div id="statusBox">أهلاً بك في تطبيق بصير. الكاميرا جاهزة للتحليل.</div>
     </div>
 
     <script>
@@ -346,7 +479,6 @@
         
         const GEMINI_API_KEY = "AQ.Ab8RN6JnrvtQcVzi6PPHobCFv56kqvE_8LXVtmARZZcRABPk6w"; 
 
-        // تفعيل ربط الأزرار برمجياً لمنع مشاكل المتصفحات على الهواتف
         document.addEventListener("DOMContentLoaded", function() {
             const startBtn = document.getElementById('startAppBtn');
             const settingsBtn = document.getElementById('openSettingsBtn');
