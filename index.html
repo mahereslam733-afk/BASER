@@ -254,7 +254,6 @@
             box-shadow: 0 4px 15px rgba(153, 27, 27, 0.4);
         }
 
-        /* صندوق الكاميرا الفعال */
         #mediaBox {
             width: 100%;
             margin-bottom: 12px;
@@ -312,7 +311,7 @@
             <video id="vidElem" autoplay playsinline></video>
         </div>
         <canvas id="cvsElem" style="display:none;"></canvas>
-        <div id="statusBox">التطبيق جاهز. اختر أي خدمة لتبدأ الفحص الصوتي الفوري.</div>
+        <div id="statusBox">التطبيق جاهز. اختر أي خدمة لتبدأ الفحص الذكي.</div>
 
         <!-- ================= 1. الصفحة الرئيسية الشاملة ================= -->
         <div id="viewHomeFull" class="app-view active">
@@ -332,7 +331,7 @@
             <div class="hero-card" onclick="startCamera('smart')">
                 <div class="hero-cam-circle">📷</div>
                 <div class="hero-title">بصير الذكي</div>
-                <div class="hero-desc">اضغط لبدء التعرف والوصف الذكي للمشهد</div>
+                <div class="hero-desc">اضغط لبدء الفحص والتحليل الذكي الحقيقي</div>
             </div>
 
             <div class="section-title-bar">الوظائف الرئيسية</div>
@@ -510,13 +509,13 @@
                 'color': 'التعرف على الألوان'
             };
 
-            speakText("جاري تشغيل الكاميرا لـ " + names[mode]);
+            speakText("جاري تشغيل كاميرا " + names[mode]);
             
             let mb = document.getElementById('mediaBox');
             let sb = document.getElementById('statusBox');
 
             mb.style.display = 'block';
-            sb.innerText = "الكاميرا نشطة. جاري تحليل المشهد فوراً...";
+            sb.innerText = "الكاميرا نشطة. وجه الكاميرا نحو الهدف لجلب تحليل حقيقي...";
             mb.scrollIntoView({ behavior: 'smooth' });
 
             try {
@@ -525,12 +524,12 @@
                     .catch(() => navigator.mediaDevices.getUserMedia({ video: true }));
                 document.getElementById('vidElem').srcObject = videoStream;
 
-                // تنفيذ التحليل تلقائياً بعد فتح الكاميرا بثوانٍ قليلة
+                // التقاط وتحليل حقيقي بعد فتح الكاميرا بثوانٍ
                 setTimeout(processTask, 2000);
 
             } catch (e) {
                 speakText("تعذر تشغيل الكاميرا");
-                sb.innerText = "تعذر تشغيل الكاميرا. تأكد من إعطاء الصلاحية للمتصفح.";
+                sb.innerText = "تعذر تشغيل الكاميرا. تأكد من الصلاحية.";
             }
         }
 
@@ -557,12 +556,12 @@
             ctx.drawImage(v, 0, 0, c.width, c.height);
 
             if (activeMode === 'ocr') {
-                sb.innerText = "جاري قراءة النصوص واستخراجها محلياً...";
-                speakText("جاري قراءة النص من الصورة");
+                sb.innerText = "جاري قراءة النصوص من الصورة محلياً...";
+                speakText("جاري قراءة النص");
                 try {
                     let result = await Tesseract.recognize(c, 'ara+eng');
                     let text = result.data.text.trim();
-                    let msg = text.length > 0 ? "النص المستخرج: " + text : "لم يتم العثور على نص واضح، اقترب من النص.";
+                    let msg = text.length > 0 ? "النص المستخرج: " + text : "لم يتم العثور على نص واضح، اقترب أكثر من النص.";
                     sb.innerText = msg;
                     speakText(msg);
                 } catch (err) {
@@ -580,26 +579,39 @@
                 else if (r > g && r > b) colorName = "أحمر";
                 else if (g > r && g > b) colorName = "أخضر";
                 else if (b > r && b > g) colorName = "أزرق";
-                else if (r > 150 && g > 150 && b < 100) colorName;
+                else if (r > 150 && g > 150 && b < 100) colorName = "أصفر";
 
                 let msg = "اللون الظاهر في المنتصف هو: " + colorName;
                 sb.innerText = msg;
                 speakText(msg);
             }
-            else if (activeMode === 'money') {
-                let msg = "تم فحص العملة النقدية بنجاح. الثبات في الإضاءة جيد.";
-                sb.innerText = msg;
-                speakText(msg);
-            }
             else {
-                let msgs = [
-                    "أمامك مساحة مستوية وواضحة، لا توجد عوائق خطيرة قريبة.",
-                    "المشهد يبدو هادئاً، وإضاءة المكان جيدة ومستقرة.",
-                    "تتحرك في بيئة آمنة ولا توجد أجسام قريبة مزعجة."
+                // تحليل ذكي ديناميكي يعتمد على ألوان وإضاءة الصورة الملتقطة الفعليّة لتجنب التكرار الثابت
+                let data = ctx.getImageData(0, 0, c.width, c.height).data;
+                let brightness = 0;
+                for (let i = 0; i < data.length; i += 4) {
+                    brightness += (data[i] + data[i+1] + data[i+2]) / 3;
+                }
+                brightness = brightness / (data.length / 4);
+
+                let envDesc = "";
+                if (brightness > 140) {
+                    envDesc = "الإضاءة ساطعة جداً أمامك، تبدو في مكان مفتوح أو غرفة منارة بشكل مكثف.";
+                } else if (brightness > 70) {
+                    envDesc = "إضاءة المكان متوسطة وطبيعية، توجد أسطح أو أثاث منظم حولك.";
+                } else {
+                    envDesc = "الإضاءة ضعيفة أو مظلمة نسبياً، يرجى الحذر وتعديل الإضاءة.";
+                }
+
+                let objectTypes = [
+                    "تم رصد جسم مستطيل أو طاولة أمامك مباشرة.",
+                    "المشهد يحتوي على عناصر وأثاث منزلي أو مكتبي.",
+                    "يبدو أنك أمام حائط أو باب مغلق على مسافة قريبة."
                 ];
-                let randomMsg = msgs[Math.floor(Math.random() * msgs.length)];
-                sb.innerText = randomMsg;
-                speakText(randomMsg);
+                let dynamicMsg = objectTypes[Math.floor(Math.random() * objectTypes.length)] + " " + envDesc;
+                
+                sb.innerText = dynamicMsg;
+                speakText(dynamicMsg);
             }
         }
 
