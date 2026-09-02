@@ -3,24 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق بصير الذكي - النسخة الاحترافية</title>
+    <title>تطبيق بصير الذكي - Baser AI</title>
     <style>
         :root {
-            --bg-color: #020617;
-            --surface-color: rgba(15, 23, 42, 0.9);
-            --accent-cyan: #06b6d4;
-            --accent-blue: #3b82f6;
+            --bg-color: #030712;
+            --surface-color: rgba(17, 24, 39, 0.9);
+            --accent-cyan: #00f2fe;
+            --accent-blue: #4facfe;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
         }
 
         body {
             background-color: var(--bg-color);
-            background-image: radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.15) 0%, transparent 60%);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(0, 242, 254, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 50% 100%, rgba(88, 28, 135, 0.15) 0%, transparent 50%);
             color: var(--text-main);
-            font-family: system-ui, -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             padding: 15px;
+            text-align: center;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -28,16 +31,16 @@
             align-items: center;
         }
 
-        .view-section {
+        .page {
             display: none;
             width: 100%;
-            max-width: 450px;
+            max-width: 480px;
             margin: 0 auto;
+            animation: fadeIn 0.3s ease-in-out;
         }
 
-        .view-section.active-view {
+        .page.active {
             display: block;
-            animation: fadeIn 0.3s ease;
         }
 
         @keyframes fadeIn {
@@ -45,118 +48,119 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* كارد الواجهة الحديثة */
-        .glass-card {
+        .card-box {
             background: var(--surface-color);
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            border-radius: 24px;
-            padding: 30px 20px;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 242, 254, 0.25);
+            border-radius: 28px;
+            padding: 35px 22px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
         }
 
-        .icon-badge {
-            width: 75px;
-            height: 75px;
-            margin: 0 auto 20px auto;
-            background: rgba(6, 182, 212, 0.1);
+        .logo-circle {
+            width: 85px;
+            height: 85px;
+            margin: 0 auto 22px auto;
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(79, 172, 254, 0.25));
             border: 2px solid var(--accent-cyan);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 35px;
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+            font-size: 40px;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.35);
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 800;
-            margin: 0 0 10px 0;
-            color: #fff;
+            color: var(--text-main);
+            margin: 0 0 12px 0;
         }
 
         p {
             color: var(--text-muted);
-            font-size: 14px;
-            line-height: 1.7;
-            margin-bottom: 25px;
+            font-size: 14.5px;
+            line-height: 1.8;
+            margin-bottom: 30px;
         }
 
-        .pro-btn {
+        .app-btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
             width: 100%;
-            padding: 15px;
-            margin: 10px 0;
+            padding: 16px 20px;
+            margin: 12px 0;
             background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-            color: #020617;
+            color: #030712;
             border: none;
-            border-radius: 14px;
-            font-size: 15px;
+            border-radius: 16px;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 5px 20px rgba(6, 182, 212, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 242, 254, 0.3);
         }
 
-        .pro-btn.alt {
-            background: rgba(30, 41, 59, 0.8);
+        .app-btn.secondary {
+            background: rgba(30, 41, 59, 0.9);
             color: var(--accent-cyan);
-            border: 1px solid rgba(6, 182, 212, 0.3);
+            border: 1px solid rgba(0, 242, 254, 0.3);
             box-shadow: none;
         }
 
-        /* شريط التنقل العلوي مع سهم الرجوع الواضح */
-        .top-bar {
+        /* شريط التنقل العلوي مع أسهم الرجوع الواضحة */
+        .top-nav-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             background: var(--surface-color);
-            padding: 10px 15px;
-            border-radius: 14px;
-            border: 1px solid rgba(6, 182, 212, 0.3);
+            padding: 12px 18px;
+            border-radius: 16px;
+            border: 1px solid rgba(0, 242, 254, 0.25);
         }
 
-        .back-arrow-btn {
-            background: rgba(6, 182, 212, 0.15);
+        .back-nav-btn {
+            background: rgba(0, 242, 254, 0.12);
             color: var(--accent-cyan);
-            border: 1px solid var(--accent-cyan);
+            border: 1px solid rgba(0, 242, 254, 0.3);
             padding: 8px 14px;
             border-radius: 10px;
             cursor: pointer;
             font-size: 14px;
             font-weight: bold;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 6px;
         }
 
-        .mic-box {
-            text-align: center;
+        .mic-container {
             margin-bottom: 15px;
         }
 
-        .mic-main-btn {
-            width: 65px;
-            height: 65px;
+        .mic-btn {
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            background: #0f172a;
+            background: radial-gradient(circle, #1e293b, #030712);
             border: 3px solid var(--accent-cyan);
             color: var(--accent-cyan);
-            font-size: 26px;
+            font-size: 28px;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        #cameraBox {
+        #mediaContainer {
             width: 100%;
             margin-bottom: 15px;
             display: none;
             background: #000;
-            border-radius: 14px;
+            border-radius: 16px;
             overflow: hidden;
             position: relative;
             border: 2px solid var(--accent-cyan);
@@ -169,270 +173,391 @@
             display: block;
         }
 
-        .close-cam-btn {
+        .close-cam {
             position: absolute;
             top: 10px;
             left: 10px;
-            background: #ef4444;
+            background: #dc2626;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 6px 12px;
             border-radius: 8px;
-            font-weight: bold;
             cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            z-index: 10;
         }
 
-        .analyze-action-btn {
-            width: 100%;
-            padding: 12px;
+        .action-btn {
+            margin: 5px auto 15px auto;
+            padding: 12px 20px;
             background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-            color: #020617;
+            color: #030712;
             border: none;
             border-radius: 12px;
             font-weight: bold;
-            margin-bottom: 15px;
-            display: none;
+            font-size: 14px;
             cursor: pointer;
+            display: none;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
         }
 
-        .features-grid {
+        /* شبكة الأزرار الكاملة (3 أعمدة) */
+        .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            gap: 10px;
         }
 
-        .feat-card {
-            background: #0f172a;
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 10px 5px;
-            border-radius: 12px;
+        .feature-btn {
+            padding: 12px 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
             color: white;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 75px;
+            min-height: 82px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: transform 0.15s;
         }
 
-        .feat-card span { font-size: 20px; margin-bottom: 4px; }
+        .feature-btn:active {
+            transform: scale(0.93);
+        }
 
-        .status-pane {
+        .btn-teal { background: linear-gradient(135deg, #0d9488, #115e59); }
+        .btn-purple { background: linear-gradient(135deg, #7c3aed, #581c87); }
+        .btn-orange { background: linear-gradient(135deg, #c2410c, #7c2d12); }
+        .btn-blue { background: linear-gradient(135deg, #2563eb, #1e3a8a); }
+        .btn-darkblue { background: linear-gradient(135deg, #334155, #1e293b); }
+        .btn-darkred { background: linear-gradient(135deg, #991b1b, #4c1d95); }
+
+        .feature-btn span:first-child {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        #statusBox {
             margin-top: 15px;
-            padding: 12px;
+            padding: 14px;
             background: var(--surface-color);
-            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
             font-size: 13.5px;
             color: #38bdf8;
             text-align: right;
             border-right: 4px solid var(--accent-cyan);
-            border: 1px solid rgba(6, 182, 212, 0.3);
+            border: 1px solid rgba(0, 242, 254, 0.25);
         }
 
         .settings-group {
+            margin-bottom: 18px;
             text-align: right;
-            margin-bottom: 15px;
         }
 
         .settings-group label {
             display: block;
+            margin-bottom: 8px;
             color: var(--accent-cyan);
+            font-size: 14px;
             font-weight: bold;
-            margin-bottom: 6px;
-            font-size: 13px;
         }
 
         .settings-group select {
             width: 100%;
-            padding: 12px;
-            background: #020617;
+            padding: 14px;
+            background: #030712;
             color: white;
-            border: 1px solid rgba(6, 182, 212, 0.4);
-            border-radius: 10px;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            border-radius: 12px;
+            font-size: 14px;
             outline: none;
         }
     </style>
 </head>
 <body>
 
-    <!-- الواجهة الرئيسية -->
-    <div id="viewHome" class="view-section active-view">
-        <div class="glass-card">
-            <div class="icon-badge">👁️</div>
+    <!-- 1. الصفحة الرئيسية -->
+    <div id="homePage" class="page active">
+        <div class="card-box">
+            <div class="logo-circle">👁️</div>
             <h1>تطبيق بصير الذكي</h1>
-            <p>رفيقك الرقمي المتقدم لمساعدة المكفوفين وضعاف البصر بكل ثقة واستقلالية تامة عبر الذكاء الاصطناعي.</p>
+            <p>رفيقك الرقمي المتقدم لمساعدة المكفوفين وضعاف البصر. امنح نفسك الاستقلالية الكاملة للتعرف على الأشياء، قراءة النصوص، والملاحة بكل ثقة عبر الذكاء الاصطناعي.</p>
             
-            <button type="button" class="pro-btn" onclick="goToView('viewApp')">
+            <button type="button" id="startAppBtn" class="app-btn">
                 <span>🚀</span> ابدأ استخدام التطبيق والخدمات
             </button>
-            <button type="button" class="pro-btn alt" onclick="goToView('viewSettings')">
+            <button type="button" id="openSettingsBtn" class="app-btn secondary">
                 <span>⚙️</span> إعدادات التطبيق
             </button>
         </div>
     </div>
 
-    <!-- صفحة الإعدادات مع سهم رجوع واضح -->
-    <div id="viewSettings" class="view-section">
-        <div class="glass-card">
-            <div class="top-bar" style="margin-bottom: 20px;">
-                <button type="button" class="back-arrow-btn" onclick="goToView('viewHome')">⬅ الرئيسية</button>
-                <h2 style="margin:0; font-size:16px; color:var(--accent-cyan);">الإعدادات</h2>
+    <!-- 2. صفحة الإعدادات -->
+    <div id="settingsPage" class="page">
+        <div class="card-box">
+            <div class="top-nav-bar" style="margin-bottom: 25px;">
+                <button type="button" class="back-nav-btn home-nav-trigger">⬅ الرئيسية</button>
+                <h2 style="margin: 0; font-size: 17px; color: var(--accent-cyan);">إعدادات التطبيق</h2>
                 <div></div>
             </div>
 
             <div class="settings-group">
-                <label>سرعة الناطق الصوتي:</label>
-                <select id="speechRate" onchange="updateRate()">
+                <label for="speechRate">سرعة الناطق الصوتي:</label>
+                <select id="speechRate" onchange="updateSettings()">
                     <option value="0.8">بطيئة</option>
-                    <option value="1.0" selected>عادية</option>
+                    <option value="1.0" selected>عادية (افتراضي)</option>
                     <option value="1.25">سريعة</option>
                 </select>
             </div>
 
-            <button type="button" class="pro-btn" onclick="goToView('viewHome')" style="margin-top: 20px;">حفظ والعودة</button>
+            <div class="settings-group">
+                <label>حالة المساعد الصوتي:</label>
+                <p style="margin: 0; color: #fff; font-size: 13.5px;">الناطق الصوتي مفعل وجاهز للعمل بكفاءة تامة.</p>
+            </div>
+
+            <button type="button" class="app-btn home-nav-trigger" style="margin-top: 25px;">حفظ والعودة للرئيسية</button>
         </div>
     </div>
 
-    <!-- شاشة الخدمات مع أسهم الرجوع -->
-    <div id="viewApp" class="view-section">
-        <div style="width:100%; max-width:450px;">
-            <div class="top-bar">
-                <button type="button" class="back-arrow-btn" onclick="goToView('viewHome')">⬅ الرئيسية</button>
-                <span style="font-weight:bold; color:var(--accent-cyan); font-size:14px;">خدمات بصير</span>
-                <button type="button" class="back-arrow-btn" onclick="goToView('viewSettings')">⚙️</button>
+    <!-- 3. شاشة التطبيق والخدمات الكاملة -->
+    <div id="appPage" class="page">
+        <div style="width: 100%; max-width: 500px; margin: 0 auto;">
+            <div class="top-nav-bar">
+                <button type="button" class="back-nav-btn home-nav-trigger">⬅ الرئيسية</button>
+                <span style="font-size: 14px; font-weight: bold; color: var(--accent-cyan);">خدمات بصير</span>
+                <button type="button" class="back-nav-btn settings-nav-trigger">⚙️ الإعدادات</button>
             </div>
 
-            <div class="mic-box">
-                <button type="button" class="mic-main-btn" onclick="speak('مرحباً بك في خدمات بصير الذكية')">🎤</button>
+            <div class="mic-container">
+                <button type="button" class="mic-btn" onclick="speakText('مرحباً بك في تطبيق بصير الذكي، اختر الخدمة المناسبة')">🎤</button>
             </div>
 
-            <div id="cameraBox">
-                <button type="button" class="close-cam-btn" onclick="stopCam()">إغلاق ✕</button>
-                <video id="vidStream" autoplay playsinline></video>
+            <!-- نافذة عرض الكاميرا -->
+            <div id="mediaContainer">
+                <button type="button" class="close-cam" onclick="stopCamera()">إغلاق الكاميرا ✕</button>
+                <video id="cameraStream" autoplay playsinline></video>
+            </div>
+            
+            <!-- زر التحليل الذكي الموحد -->
+            <button type="button" id="aiAnalyzeBtn" class="action-btn" onclick="analyzeWithAI()">تحليل المشهد بالذكاء الاصطناعي 🧠</button>
+            <canvas id="canvas" style="display:none;"></canvas>
+
+            <!-- جميع الأزرار والخواص الكاملة -->
+            <div class="grid-container">
+                <button type="button" class="feature-btn btn-teal" onclick="triggerAction('الاتصال بمطوع', 'tel:01000000000', 'جاري الاتصال بالمطوع')">
+                    <span>📞</span><span>اتصل بمطوع</span>
+                </button>
+                <button type="button" class="feature-btn btn-teal" onclick="startCameraForAI('اقرأ النصوص الموجودة في الصورة بدقة بالغة وذكر النص حرفياً إن وجد باللغة العربية.')">
+                    <span>📄</span><span>قراءة النصوص</span>
+                </button>
+                <button type="button" class="feature-btn btn-purple" onclick="startCameraForAI('صف لي ما يوجد في هذا المشهد بشكل دقيق ومفيد جداً لشخص مكفوف باللغة العربية.')">
+                    <span>📷</span><span>صف المشهد</span>
+                </button>
+
+                <button type="button" class="feature-btn btn-purple" onclick="notifyUnderDevelopment('المساعد الصوتي')">
+                    <span>🎧</span><span>المساعد الصوتي</span>
+                </button>
+                <button type="button" class="feature-btn btn-orange" onclick="startCameraForAI('اقرأ لي محتوى الكتاب أو المستند الظاهر في الصورة بدقة.')">
+                    <span>📖</span><span>الكتب والمستندات</span>
+                </button>
+                <button type="button" class="feature-btn btn-blue" onclick="getGPSLocation()">
+                    <span>🧭</span><span>الملاحة والتنقل</span>
+                </button>
+
+                <button type="button" class="feature-btn btn-blue" onclick="notifyUnderDevelopment('قراءة الباركود')">
+                    <span>📊</span><span>قراءة الباركود</span>
+                </button>
+                <button type="button" class="feature-btn btn-orange" onclick="notifyUnderDevelopment('التعلم والتعليم')">
+                    <span>🎓</span><span>التعلم والتعليم</span>
+                </button>
+                <button type="button" class="feature-btn btn-teal" onclick="notifyUnderDevelopment('البحث الصوتي')">
+                    <span>🔍</span><span>البحث الصوتي</span>
+                </button>
+
+                <button type="button" class="feature-btn btn-teal" onclick="startCameraForAI('صف لي الأشخاص الواقفين أمام الكاميرا ووصف ملامحهم ووجوههم بدقة.')">
+                    <span>👤</span><span>التعرف على الوجوه</span>
+                </button>
+                <button type="button" class="feature-btn btn-purple" onclick="startCameraForAI('اذكر لي الألوان الطاغية والظاهرة بوضوح في هذه الصورة.')">
+                    <span>🎨</span><span>التعرف على الألوان</span>
+                </button>
+                <button type="button" class="feature-btn btn-blue" onclick="startCameraForAI('حدد لي فئة ونوع العملة الورقية الظاهرة في الصورة بصدق ودقة.')">
+                    <span>🪙</span><span>التعرف على العملات</span>
+                </button>
+
+                <button type="button" class="feature-btn btn-darkblue" onclick="notifyUnderDevelopment('سجل المعلومات')">
+                    <span>🕒</span><span>سجل المعلومات</span>
+                </button>
+                <button type="button" class="feature-btn btn-blue" onclick="getGPSLocation()">
+                    <span>📍</span><span>مشاركة موقعي</span>
+                </button>
+                <button type="button" class="feature-btn btn-darkblue" onclick="getGPSLocation()">
+                    <span>🏢</span><span>الملاحة الداخلية</span>
+                </button>
             </div>
 
-            <button type="button" id="analyzeBtn" class="analyze-action-btn" onclick="runAiAnalysis()">تحليل المشهد بالذكاء الاصطناعي 🧠</button>
-            <canvas id="cvs" style="display:none;"></canvas>
-
-            <div class="features-grid">
-                <div class="feat-card" onclick="runCam('اقرأ النصوص الموجودة في الصورة بوضوح ودقة تامة باللغة العربية.')"><span>📄</span>قراءة النصوص</div>
-                <div class="feat-card" onclick="runCam('صف لي ما يوجد في هذا المشهد بشكل مفيد للمكفوفين.')"><span>📷</span>صف المشهد</div>
-                <div class="feat-card" onclick="runCam('حدد نوع وفئة العملة الورقية الظاهرة في الصورة.')"><span>🪙</span>العملات</div>
-                <div class="feat-card" onclick="runCam('اقرأ لي محتوى الكتاب أو المستند الظاهر في الصورة.')"><span>📖</span>الكتب</div>
-                <div class="feat-card" onclick="locateMe()"><span>🧭</span>الملاحة</div>
-                <div class="feat-card" onclick="alertMsg('خاصية قيد التطوير')"><span>📊</span>الباركود</div>
+            <div class="bottom-grid">
+                <button type="button" class="feature-btn btn-darkblue" onclick="notifyUnderDevelopment('دعم بدون إنترنت')">
+                    <span>⚡</span><span>بدون إنترنت</span>
+                </button>
+                <button type="button" class="feature-btn btn-darkred" onclick="triggerAction('حالة الطوارئ', 'tel:123', 'جاري الاتصال بالطوارئ')">
+                    <span>🚨</span><span>طوارئ</span>
+                </button>
             </div>
 
-            <div id="statusBox" class="status-pane">التطبيق جاهز للاستخدام. اختر خدمة أو اضغط الكاميرا.</div>
+            <div id="statusBox">أهلاً بك في تطبيق بصير. اختر خدمة أو اضغط الكاميرا للبدء.</div>
         </div>
     </div>
 
     <script>
-        let videoStream = null;
-        let promptText = "صف المشهد";
-        let speechSpeed = 1.0;
-        const apiKey = "AQ.Ab8RN6JnrvtQcVzi6PPHobCFv56kqvE_8LXVtmARZZcRABPk6w";
+        let currentStream = null;
+        let currentPrompt = "صف لي ما يوجد في هذا المشهد بشكل دقيق لشخص مكفوف.";
+        let currentSpeechRate = 1.0;
+        const GEMINI_API_KEY = "AQ.Ab8RN6JnrvtQcVzi6PPHobCFv56kqvE_8LXVtmARZZcRABPk6w"; 
 
-        function goToView(viewId) {
-            stopCam();
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
-            document.getElementById(viewId).classList.add('active-view');
-            window.scrollTo(0,0);
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById('startAppBtn').addEventListener('click', () => {
+                switchPage('appPage');
+                speakText('تم الدخول إلى شاشة التطبيق والخدمات');
+            });
+
+            document.getElementById('openSettingsBtn').addEventListener('click', () => {
+                switchPage('settingsPage');
+                speakText('صفحة الإعدادات');
+            });
+
+            document.querySelectorAll('.home-nav-trigger').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    switchPage('homePage');
+                    stopCamera();
+                });
+            });
+
+            document.querySelectorAll('.settings-nav-trigger').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    switchPage('settingsPage');
+                    stopCamera();
+                });
+            });
+        });
+
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0, 0);
         }
 
-        function speak(txt) {
+        function updateSettings() {
+            currentSpeechRate = parseFloat(document.getElementById('speechRate').value);
+            speakText("تم تحديث سرعة الناطق الصوتي");
+        }
+
+        function speakText(text) {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
-            let utter = new SpeechSynthesisUtterance(txt);
-            utter.lang = 'ar-SA';
-            utter.rate = speechSpeed;
-            window.speechSynthesis.speak(utter);
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ar-SA';
+            utterance.rate = currentSpeechRate;
+            window.speechSynthesis.speak(utterance);
         }
 
-        function updateRate() {
-            speechSpeed = parseFloat(document.getElementById('speechRate').value);
-            speak("تم تحديث السرعة");
-        }
-
-        async function runCam(p) {
-            promptText = p;
-            document.getElementById('cameraBox').style.display = 'block';
-            document.getElementById('analyzeBtn').style.display = 'block';
-            document.getElementById('statusBox').innerText = "تم فتح الكاميرا، وجهها للهدف واضغط تحليل.";
-            speak("تم فتح الكاميرا");
+        async function startCameraForAI(promptText) {
+            currentPrompt = promptText;
+            document.getElementById('mediaContainer').style.display = 'block';
+            document.getElementById('aiAnalyzeBtn').style.display = 'inline-block';
+            document.getElementById('statusBox').innerText = "تم فتح الكاميرا، وجهها نحو الهدف واضغط زر التحليل.";
+            speakText("تم فتح الكاميرا، اضغط زر التحليل عند الاستعداد");
 
             try {
-                if (videoStream) videoStream.getTracks().forEach(t => t.stop());
-                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                if (currentStream) currentStream.getTracks().forEach(t => t.stop());
+                currentStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" } } })
                     .catch(() => navigator.mediaDevices.getUserMedia({ video: true }));
-                document.getElementById('vidStream').srcObject = videoStream;
-            } catch (e) {
-                document.getElementById('statusBox').innerText = "تعذر تشغيل الكاميرا.";
-                speak("تعذر تشغيل الكاميرا");
+                document.getElementById('cameraStream').srcObject = currentStream;
+            } catch (err) {
+                document.getElementById('statusBox').innerText = "تعذر فتح الكاميرا.";
+                speakText("تعذر فتح الكاميرا");
             }
         }
 
-        function stopCam() {
-            if (videoStream) {
-                videoStream.getTracks().forEach(t => t.stop());
-                videoStream = null;
+        function stopCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(t => t.stop());
+                currentStream = null;
             }
-            document.getElementById('cameraBox').style.display = 'none';
-            document.getElementById('analyzeBtn').style.display = 'none';
+            document.getElementById('mediaContainer').style.display = 'none';
+            document.getElementById('aiAnalyzeBtn').style.display = 'none';
+            document.getElementById('statusBox').innerText = "تم إغلاق الكاميرا.";
         }
 
-        async function runAiAnalysis() {
-            let v = document.getElementById('vidStream');
-            let c = document.getElementById('cvs');
-            if (!v.srcObject) return;
+        async function analyzeWithAI() {
+            let video = document.getElementById('cameraStream');
+            let canvas = document.getElementById('canvas');
+            if (!video.srcObject) return;
 
-            c.width = v.videoWidth || 640;
-            c.height = v.videoHeight || 480;
-            c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
-            let b64 = c.toDataURL('image/jpeg', 0.8).split(',')[1];
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            let base64Image = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
 
             document.getElementById('statusBox').innerText = "جاري التحليل بالذكاء الاصطناعي...";
-            speak("جاري التحليل");
+            speakText("جاري التحليل");
 
             try {
-                let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: promptText }, { inline_data: { mime_type: "image/jpeg", data: b64 } }] }] })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: currentPrompt }, { inline_data: { mime_type: "image/jpeg", data: base64Image } }] }] })
                 });
-                let data = await res.json();
+                let data = await response.json();
                 if (data.candidates && data.candidates[0].content.parts[0].text) {
-                    let ans = data.candidates[0].content.parts[0].text.trim();
-                    document.getElementById('statusBox').innerText = ans;
-                    speak(ans);
+                    let aiReply = data.candidates[0].content.parts[0].text.trim();
+                    document.getElementById('statusBox').innerText = aiReply;
+                    speakText(aiReply);
                 } else {
-                    document.getElementById('statusBox').innerText = "فشل التحليل.";
-                    speak("عذراً، فشل التحليل");
+                    document.getElementById('statusBox').innerText = "فشل تحليل الصورة.";
+                    speakText("عذراً، لم أستطع تحليل الصورة");
                 }
             } catch (err) {
-                document.getElementById('statusBox').innerText = "خطأ في الاتصال.";
-                speak("خطأ في الاتصال");
+                document.getElementById('statusBox').innerText = "خطأ في الاتصال بالشبكة.";
+                speakText("خطأ في الاتصال");
             }
         }
 
-        function alertMsg(m) {
-            document.getElementById('statusBox').innerText = m;
-            speak(m);
+        function notifyUnderDevelopment(feature) {
+            let msg = `خاصية ${feature} قيد التطوير`;
+            document.getElementById('statusBox').innerText = msg;
+            speakText(msg);
         }
 
-        function locateMe() {
+        function triggerAction(name, link, speech) {
+            document.getElementById('statusBox').innerText = "جاري " + name;
+            speakText(speech);
+            setTimeout(() => { window.location.href = link; }, 2000);
+        }
+
+        function getGPSLocation() {
             document.getElementById('statusBox').innerText = "جاري تحديد الموقع...";
-            speak("جاري تحديد موقعك الجغرافي");
+            speakText("جاري تحديد موقعك الجغرافي");
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(p => {
-                    let txt = `موقعك: خط العرض ${p.coords.latitude.toFixed(3)}، خط الطول ${p.coords.longitude.toFixed(3)}`;
-                    document.getElementById('statusBox').innerText = txt;
-                    speak("تم تحديد موقعك بنجاح");
+                navigator.geolocation.getCurrentPosition(pos => {
+                    let text = `موقعك: خط العرض ${pos.coords.latitude.toFixed(3)}، خط الطول ${pos.coords.longitude.toFixed(3)}`;
+                    document.getElementById('statusBox').innerText = text;
+                    speakText("تم تحديد موقعك بنجاح");
                 }, () => {
                     document.getElementById('statusBox').innerText = "تعذر تحديد الموقع.";
-                    speak("تعذر تحديد الموقع");
+                    speakText("تعذر تحديد الموقع");
                 });
             }
         }
