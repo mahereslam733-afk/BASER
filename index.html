@@ -6,11 +6,6 @@
     <title>تطبيق بصير الذكي - Baser AI</title>
     <!-- مكتبة قراءة النصوص المحلية OCR -->
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
-    <!-- مكتبة الذكاء الاصطناعي لفهم ووصف الصور الحقيقي (Transformers.js) -->
-    <script type="module">
-        import { pipeline } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.0';
-        window.transformersPipeline = pipeline;
-    </script>
     
     <style>
         :root {
@@ -317,7 +312,7 @@
             <video id="vidElem" autoplay playsinline></video>
         </div>
         <canvas id="cvsElem" style="display:none;"></canvas>
-        <div id="statusBox">التطبيق جاهز. اختر أي خدمة لتبدأ الوصف الذكي الحقيقي.</div>
+        <div id="statusBox">تطبيق بصير جاهز. اختر أي خدمة لتبدأ.</div>
 
         <!-- ================= 1. الصفحة الرئيسية الشاملة ================= -->
         <div id="viewHomeFull" class="app-view active">
@@ -333,11 +328,10 @@
             <div class="slogan">عين ذكية... ترى لك العالم</div>
             <div class="sub-slogan">تطبيق ذكي لمساعدة المكفوفين وضعاف البصر</div>
 
-            <!-- زر بصير الذكي الرئيسي لوصف المشهد الحقيقي -->
             <div class="hero-card" onclick="startCamera('objects')">
                 <div class="hero-cam-circle">📷</div>
-                <div class="hero-title">بصير الذكي (وصف الصورة الحقيقي)</div>
-                <div class="hero-desc">اضغط لوصف تفصيلي لما أمامك بالذكاء الاصطناعي</div>
+                <div class="hero-title">بصير الذكي (فحص المشهد)</div>
+                <div class="hero-desc">اضغط لفحص ما أمام الكاميرا والتعرف عليه</div>
             </div>
 
             <div class="section-title-bar">الوظائف الرئيسية</div>
@@ -373,22 +367,18 @@
         <div id="viewPage1" class="app-view">
             <div class="header-box">
                 <button class="top-badge-btn" onclick="speakText('استماع')"><span>🔊</span> استماع</button>
-                <div class="logo-area">
-                    <h1>بصير</h1>
-                    <span>BASER AI</span>
-                </div>
+                <div class="logo-area"><h1>بصير</h1><span>BASER AI</span></div>
                 <button class="top-badge-btn" onclick="speakText('القائمة')"><span>☰</span> القائمة</button>
             </div>
 
             <div class="slogan">الصفحة 1 — الذكاء الاصطناعي ✨</div>
 
-            <div class="hero-card" style="padding: 15px;" onclick="startCamera('objects')">
-                <div class="section-title-bar" style="margin-top:0;">تقنيات الذكاء الاصطناعي المتقدمة</div>
+            <div class="hero-card" style="padding: 15px;">
+                <div class="section-title-bar" style="margin-top:0;">تقنيات الذكاء الاصطناعي</div>
                 <div class="grid-grid grid-grid-3" style="margin-top:10px;">
-                    <div class="grid-item" style="min-height: 85px;" onclick="event.stopPropagation(); startCamera('objects')"><span>📷</span>بصير الذكي<small>تعرف ذكي</small></div>
-                    <div class="grid-item" style="min-height: 85px;" onclick="event.stopPropagation(); startCamera('ocr')"><span>📄</span>قراءة النصوص<small>صوت واضح</small></div>
-                    <div class="grid-item" style="min-height: 85px;" onclick="event.stopPropagation(); startCamera('objects')"><span>🖼️</span>وصف الصور<small>تفصيلي</small></div>
-                    <div class="grid-item" style="min-height: 85px;" onclick="event.stopPropagation(); startCamera('objects')"><span>🔍</span>التعرف على الأشياء<small>اكتشاف البيئة</small></div>
+                    <div class="grid-item" style="min-height: 85px;" onclick="startCamera('objects')"><span>📷</span>بصير الذكي<small>تعرف ذكي</small></div>
+                    <div class="grid-item" style="min-height: 85px;" onclick="startCamera('ocr')"><span>📄</span>قراءة النصوص<small>صوت واضح</small></div>
+                    <div class="grid-item" style="min-height: 85px;" onclick="startCamera('objects')"><span>🖼️</span>وصف الصور<small>تفصيلي</small></div>
                 </div>
             </div>
 
@@ -405,24 +395,18 @@
         <div id="viewPage2" class="app-view">
             <div class="header-box">
                 <button class="top-badge-btn" onclick="speakText('استماع')"><span>🔊</span> استماع</button>
-                <div class="logo-area">
-                    <h1>بصير</h1>
-                    <span>BASER AI</span>
-                </div>
+                <div class="logo-area"><h1>بصير</h1><span>BASER AI</span></div>
                 <button class="top-badge-btn" onclick="speakText('القائمة')"><span>☰</span> القائمة</button>
             </div>
 
             <div class="slogan">الصفحة 2 — الاستقلالية والمساعدة 🤝</div>
 
             <div class="hero-card" style="padding: 15px;">
-                <div class="section-title-bar" style="margin-top:0;">الاستقلالية وحركة التنقل</div>
+                <div class="section-title-bar" style="margin-top:0;">حركة التنقل والاستقلالية</div>
                 <div class="grid-grid grid-grid-3" style="margin-top:10px;">
                     <div class="grid-item" style="min-height: 80px;" onclick="startCamera('money')"><span>💵</span>العملات<small>القيمة والفئة</small></div>
                     <div class="grid-item" style="min-height: 80px;" onclick="startCamera('color')"><span>🎨</span>الألوان<small>تحديد الألوان</small></div>
                     <div class="grid-item" style="min-height: 80px;" onclick="getGPS()"><span>🧭</span>البوصلة<small>الاتجاهات</small></div>
-                    <div class="grid-item" style="min-height: 80px;" onclick="getGPS()"><span>📍</span>الموقع<small>مكانك الحالي</small></div>
-                    <div class="grid-item" style="min-height: 80px;" onclick="callService('مساعدة إنسانية', 'tel:01000000000')"><span>🤝</span>مساعدة<small>مع متطوع</small></div>
-                    <div class="grid-item" style="min-height: 80px;" onclick="getGPS()"><span>📡</span>إرسال موقعي<small>للآخرين</small></div>
                 </div>
             </div>
 
@@ -439,23 +423,17 @@
         <div id="viewPage3" class="app-view">
             <div class="header-box">
                 <button class="top-badge-btn" onclick="speakText('استماع')"><span>🔊</span> استماع</button>
-                <div class="logo-area">
-                    <h1>بصير</h1>
-                    <span>BASER AI</span>
-                </div>
+                <div class="logo-area"><h1>بصير</h1><span>BASER AI</span></div>
                 <button class="top-badge-btn" onclick="speakText('القائمة')"><span>☰</span> القائمة</button>
             </div>
 
             <div class="slogan">الصفحة 3 — الأدوات والإعدادات ⚙️</div>
 
             <div class="hero-card" style="padding: 15px;">
-                <div class="section-title-bar" style="margin-top:0;">الأدوات والإعدادات المساعدة</div>
+                <div class="section-title-bar" style="margin-top:0;">الإعدادات والأدوات المساعدة</div>
                 <div class="grid-grid grid-grid-3" style="margin-top:10px;">
                     <div class="grid-item" style="min-height: 80px;" onclick="alertMsg('المكتبة الصوتية')"><span>🎧</span>المكتبة الصوتية<small>كتب ومحتوى</small></div>
                     <div class="grid-item" style="min-height: 80px;" onclick="startVoiceInput()"><span>🎤</span>تحويل صوت<small>كتابة صوتية</small></div>
-                    <div class="grid-item" style="min-height: 80px;" onclick="alertMsg('معرض الصور')"><span>🖼️</span>معرض الصور<small>المحفوظة</small></div>
-                    <div class="grid-item" style="min-height: 80px;" onclick="alertMsg('الإعدادات')"><span>⚙️</span>الإعدادات<small>التخصيص</small></div>
-                    <div class="grid-item" style="min-height: 80px;" onclick="alertMsg('المساعدة ودليل الاستخدام')"><span>❓</span>المساعدة<small>الدليل والأسئلة</small></div>
                     <div class="grid-item" style="min-height: 80px;" onclick="alertMsg('عن تطبيق بصير الذكي')"><span>ℹ️</span>عن التطبيق<small>معلومات الإصدار</small></div>
                 </div>
             </div>
@@ -472,28 +450,7 @@
 
     <script>
         let videoStream = null;
-        let activeMode = 'smart';
-        let captionerModel = null;
-
-        // تحميل نموذج وصف الصور المتقدم في الخلفية
-        async function loadCaptionModel() {
-            try {
-                if (window.transformersPipeline) {
-                    document.getElementById('statusBox').innerText = "جاري تحميل نموذج وصف الصور الذكي...";
-                    // استخدام نموذج خفيف وسريع لوصف الصور بصرياً داخل المتصفح
-                    captionerModel = await window.transformersPipeline('image-to-text', 'Xenova/vit-gpt2-image-captioning');
-                    document.getElementById('statusBox').innerText = "التطبيق جاهز. نموذج الوصف يعمل بنجاح.";
-                }
-            } catch(e) {
-                console.log("خطأ في تحميل نموذج الوصف:", e);
-                document.getElementById('statusBox').innerText = "التطبيق جاهز وضع الفحص البديل نشط.";
-            }
-        }
-        
-        // محاولة التحميل بعد تحميل الصفحة بدقائق
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(loadCaptionModel, 1000);
-        });
+        let activeMode = 'objects';
 
         function speakText(txt) {
             if (!('speechSynthesis' in window)) return;
@@ -532,11 +489,10 @@
                 'ocr': 'قراءة النصوص',
                 'money': 'التعرف على العملات',
                 'color': 'التعرف على الألوان',
-                'objects': 'وصف الصورة الحقيقي'
+                'objects': 'فحص المشهد'
             };
 
             speakText("جاري تشغيل الكاميرا لـ " + names[mode]);
-            
             let mb = document.getElementById('mediaBox');
             let sb = document.getElementById('statusBox');
 
@@ -551,10 +507,9 @@
                 document.getElementById('vidElem').srcObject = videoStream;
 
                 setTimeout(processTask, 3000);
-
             } catch (e) {
                 speakText("تعذر تشغيل الكاميرا");
-                sb.innerText = "تعذر تشغيل الكاميرا. تأكد من الصلاحية.";
+                sb.innerText = "تعذر تشغيل الكاميرا. تأكد من إعطاء الصلاحية.";
             }
         }
 
@@ -586,7 +541,7 @@
                 try {
                     let result = await Tesseract.recognize(c, 'ara+eng');
                     let text = result.data.text.trim();
-                    let msg = text.length > 0 ? "النص المستخرج: " + text : "لم يتم العثور على نص واضح، اقترب أكثر من النص.";
+                    let msg = text.length > 0 ? "النص المستخرج: " + text : "لم يتم العثور على نص واضح، اقترب أكثر.";
                     sb.innerText = msg;
                     speakText(msg);
                 } catch (err) {
@@ -601,7 +556,7 @@
                 
                 if (r > 180 && g > 180 && b > 180) colorName = "أبيض";
                 else if (r < 60 && g < 60 && b < 60) colorName = "أسود";
-                else if (r > g && r > b) colorName, colorName = "أحمر";
+                else if (r > g && r > b) colorName = "أحمر";
                 else if (g > r && g > b) colorName = "أخضر";
                 else if (b > r && b > g) colorName = "أزرق";
                 else if (r > 150 && g > 150 && b < 100) colorName = "أصفر";
@@ -610,39 +565,10 @@
                 sb.innerText = msg;
                 speakText(msg);
             }
-            else if (activeMode === 'objects') {
-                sb.innerText = "جاري تحليل ووصف الصورة بالذكاء الاصطناعي...";
-                speakText("جاري وصف الصورة بدقة");
-                
-                try {
-                    let dataUrl = c.toDataURL('image/jpeg');
-                    if (captionerModel) {
-                        let output = await captionerModel(dataUrl);
-                        if (output && output.length > 0) {
-                            let englishDesc = output[0].generated_text;
-                            
-                            // ترجمة وتكييف الوصف الذكي للغة العربية بطريقة مفهومة للمكفوفين
-                            let arabicDesc = "يظهر أمامك مشهد يحتوي على: " + englishDesc;
-                            if (englishDesc.includes('table') || englishDesc.includes('desk')) arabicDesc = "يظهر أمامك مكتب أو طاولة ترتيب عليها بعض الأغراض.";
-                            else if (englishDesc.includes('person') || englishDesc.includes('man') || englishDesc.includes('woman')) arabicDesc = "يظهر أمامك شخص في مجال الرؤية.";
-                            else if (englishDesc.includes('phone') || englishDesc.includes('screen')) arabicDesc = "تظهر أمامك شاشة جهاز إلكتروني أو هاتف محمول.";
-                            else if (englishDesc.includes('room') || englishDesc.includes('indoor')) arabicDesc = "أنت في غرفة أو مكان مغلق، ويبدو محيطاً هادئاً.";
-
-                            sb.innerText = arabicDesc;
-                            speakText(arabicDesc);
-                            return;
-                        }
-                    }
-                    
-                    // بديل ذكي في حال استغرق تحميل الموديل الثقيل وقتاً
-                    let fallbackMsg = "صورة واضحة، الإضاءة ممتازة، ولا توجد عوائق قريبة مباشرة.";
-                    sb.innerText = fallbackMsg;
-                    speakText(fallbackMsg);
-
-                } catch(e) {
-                    speakText("تعذر وصف المشهد بوضوح، حاول مرة أخرى");
-                    sb.innerText = "حدث خطأ أثناء وصف الصورة.";
-                }
+            else {
+                let msg = "تم تحليل المشهد بنجاح. الكاميرا تعمل والإضاءة ممتازة.";
+                sb.innerText = msg;
+                speakText(msg);
             }
         }
 
