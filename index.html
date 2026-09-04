@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق بصير الذكي - Baser AI</title>
-    <!-- مكتبة قراءة النصوص المحلية (OCR) -->
+    <!-- مكتبة قراءة النصوص المحلية OCR -->
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+    <!-- مكتبة التعرف الحقيقي على الأشياء داخل المتصفح (TensorFlow.js & MobileNet) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js"></script>
     
     <style>
         :root {
@@ -328,11 +331,11 @@
             <div class="slogan">عين ذكية... ترى لك العالم</div>
             <div class="sub-slogan">تطبيق ذكي لمساعدة المكفوفين وضعاف البصر</div>
 
-            <!-- زر بصير الذكي الرئيسي (مرتبط بالذكاء الاصطناعي الحقيقي - جوجل لنس) -->
-            <div class="hero-card" onclick="openSmartLensAI()">
+            <!-- زر بصير الذكي الرئيسي للتعرف الحقيقي داخل التطبيق -->
+            <div class="hero-card" onclick="startCamera('objects')">
                 <div class="hero-cam-circle">📷</div>
-                <div class="hero-title">بصير الذكي (التعرف الحقيقي)</div>
-                <div class="hero-desc">اضغط لفتح محرك البحث الذكي لمعرفة الأشياء بدقة</div>
+                <div class="hero-title">بصير الذكي (التعرف على الأشياء)</div>
+                <div class="hero-desc">اضغط لاكتشاف ما أمامك بصوت ذكي مباشر</div>
             </div>
 
             <div class="section-title-bar">الوظائف الرئيسية</div>
@@ -340,7 +343,7 @@
             <div class="grid-grid">
                 <div class="grid-item" onclick="startCamera('ocr')"><span>📄</span>قراءة النصوص<small>تحويل لنص</small></div>
                 <div class="grid-item" onclick="startCamera('color')"><span>🎨</span>التعرف ع الألوان<small>معرفة اللون</small></div>
-                <div class="grid-item" onclick="openSmartLensAI()"><span>🟩</span>الأشياء<small>اكتشاف البيئة</small></div>
+                <div class="grid-item" onclick="startCamera('objects')"><span>🟩</span>الأشياء<small>اكتشاف البيئة</small></div>
                 <div class="grid-item" onclick="startCamera('money')"><span>💵</span>العملات<small>معرفة القيمة</small></div>
 
                 <div class="grid-item" onclick="getGPS()"><span>🧭</span>البوصلة<small>الاتجاهات</small></div>
@@ -348,7 +351,7 @@
                 <div class="grid-item" onclick="callService('التواصل مع متطوع', 'tel:01000000000')"><span>🤝</span>مساعدة إنسانية<small>مع متطوع</small></div>
                 <div class="grid-item" onclick="alertMsg('المكتبة الصوتية قيد التطوير')"><span>🎧</span>المكتبة الصوتية<small>كتب ومحتوى</small></div>
 
-                <div class="grid-item" onclick="openSmartLensAI()"><span>🖼️</span>وصف الصور<small>وصف ما في الصورة</small></div>
+                <div class="grid-item" onclick="startCamera('objects')"><span>🖼️</span>وصف الصور<small>وصف ما في الصورة</small></div>
                 <div class="grid-item" onclick="startVoiceInput()"><span>🎤</span>تحويل صوت لنص<small>كتابة ما تقوله</small></div>
                 <div class="grid-item" onclick="getGPS()"><span>📡</span>إرسال موقعي<small>للآخرين</small></div>
                 <div class="grid-item" onclick="switchView('viewPage3')"><span>⚙️</span>الإعدادات<small>تخصيص التطبيق</small></div>
@@ -377,13 +380,13 @@
 
             <div class="slogan">الصفحة 1 — الذكاء الاصطناعي ✨</div>
 
-            <div class="hero-card" style="padding: 15px;" onclick="openSmartLensAI()">
+            <div class="hero-card" style="padding: 15px;" onclick="startCamera('objects')">
                 <div class="section-title-bar" style="margin-top:0;">تقنيات الذكاء الاصطناعي المتقدمة</div>
                 <div class="grid-grid grid-grid-3" style="margin-top:10px;">
-                    <div class="grid-item" style="min-height: 85px;" onclick="event.stopPropagation(); openSmartLensAI()"><span>📷</span>بصير الذكي<small>تعرف ذكي</small></div>
+                    <div class="grid-item" style="min-height: 85px;" onclick="event.stopPropagation(); startCamera('objects')"><span>📷</span>بصير الذكي<small>تعرف ذكي</small></div>
                     <div class="grid-item" style="min-height: 85px;" onclick="event.stopPropagation(); startCamera('ocr')"><span>📄</span>قراءة النصوص<small>صوت واضح</small></div>
-                    <div class="grid-item" style="min-height: 85px;" onclick="event.stopPropagation(); openSmartLensAI()"><span>🖼️</span>وصف الصور<small>تفصيلي</small></div>
-                    <div class="grid-item" style="min-height: 85px;" onclick="event.stopPropagation(); openSmartLensAI()"><span>🔍</span>التعرف على الأشياء<small>اكتشاف البيئة</small></div>
+                    <div class="grid-item" style="min-height: 85px;" onclick="event.stopPropagation(); startCamera('objects')"><span>🖼️</span>وصف الصور<small>تفصيلي</small></div>
+                    <div class="grid-item" style="min-height: 85px;" onclick="event.stopPropagation(); startCamera('objects')"><span>🔍</span>التعرف على الأشياء<small>اكتشاف البيئة</small></div>
                 </div>
             </div>
 
@@ -468,6 +471,18 @@
     <script>
         let videoStream = null;
         let activeMode = 'smart';
+        let aiModel = null;
+
+        // تحميل نموذج الذكاء الاصطناعي للتعرف على الأشياء في الخلفية بذكاء
+        async function loadAIModel() {
+            try {
+                aiModel = await mobilenet.load();
+                console.log("تم تحميل نموذج التعرف على الأشياء بنجاح.");
+            } catch(e) {
+                console.log("خطأ في تحميل النموذج:", e);
+            }
+        }
+        loadAIModel();
 
         function speakText(txt) {
             if (!('speechSynthesis' in window)) return;
@@ -500,26 +515,16 @@
             setTimeout(() => { window.location.href = link; }, 1500);
         }
 
-        // ربط تطبيق بصير بمحرك البحث الذكي المجاني (Google Lens) للتعرف الفائق الدقة على الأشياء
-        function openSmartLensAI() {
-            speakText("جاري فتح نظام التعرف الذكي على الأشياء");
-            document.getElementById('statusBox').innerText = "جاري تفعيل محرك البحث المرئي الذكي المجاني...";
-            
-            setTimeout(() => {
-                // فتح خدمة جوجل لنس المجانية للتعرف الحقيقي على أي شيء بالصور
-                window.open("https://lens.google.com/", "_blank");
-            }, 1000);
-        }
-
         async function startCamera(mode) {
             activeMode = mode;
             let names = {
                 'ocr': 'قراءة النصوص',
                 'money': 'التعرف على العملات',
-                'color': 'التعرف على الألوان'
+                'color': 'التعرف على الألوان',
+                'objects': 'التعرف على الأشياء'
             };
 
-            speakText("جاري تشغيل كاميرا " + names[mode]);
+            speakText("جاري تشغيل الكاميرا لـ " + names[mode]);
             
             let mb = document.getElementById('mediaBox');
             let sb = document.getElementById('statusBox');
@@ -534,9 +539,8 @@
                     .catch(() => navigator.mediaDevices.getUserMedia({ video: true }));
                 document.getElementById('vidElem').srcObject = videoStream;
 
-                if(mode === 'ocr' || mode === 'color') {
-                    setTimeout(processTask, 2500);
-                }
+                // تنفيذ الفحص التلقائي بعد فتح الكاميرا بثانية ونصف
+                setTimeout(processTask, 2500);
 
             } catch (e) {
                 speakText("تعذر تشغيل الكاميرا");
@@ -567,7 +571,7 @@
             ctx.drawImage(v, 0, 0, c.width, c.height);
 
             if (activeMode === 'ocr') {
-                sb.innerText = "جاري قراءة النصوص من الصورة محلياً...";
+                sb.innerText = "جاري قراءة النصوص من الصورة...";
                 speakText("جاري قراءة النص");
                 try {
                     let result = await Tesseract.recognize(c, 'ara+eng');
@@ -583,7 +587,7 @@
             else if (activeMode === 'color') {
                 let pixel = ctx.getImageData(c.width / 2, c.height / 2, 1, 1).data;
                 let r = pixel[0], g = pixel[1], b = pixel[2];
-                let colorName = "متداخل أو رمادي";
+                let colorName = "غير معروف";
                 
                 if (r > 180 && g > 180 && b > 180) colorName = "أبيض";
                 else if (r < 60 && g < 60 && b < 60) colorName = "أسود";
@@ -592,9 +596,61 @@
                 else if (b > r && b > g) colorName = "أزرق";
                 else if (r > 150 && g > 150 && b < 100) colorName = "أصفر";
 
-                let msg = "اللون الظاهر في المنتصف هو: " + colorName;
+                let msg = "اللون الظاهر هو: " + colorName;
                 sb.innerText = msg;
                 speakText(msg);
+            }
+            else if (activeMode === 'objects') {
+                if (!aiModel) {
+                    speakText("جاري تحضير نموذج الذكاء الاصطناعي، انتظر ثانية");
+                    setTimeout(processTask, 1500);
+                    return;
+                }
+                sb.innerText = "جاري تحليل واكتشاف الأشياء...";
+                speakText("جاري التعرف على الشيء");
+                try {
+                    let predictions = await aiModel.classify(c);
+                    if (predictions && predictions.length > 0) {
+                        let topPred = predictions[0];
+                        // ترجمة دقيقة لأشهر الكلمات المتداولة للمكفوفين باللغة العربية
+                        let labelMap = {
+                            "cellular telephone": "هاتف محمول",
+                            "phone": "هاتف",
+                            "laptop": "حاسوب محمول",
+                            "water bottle": "زجاجة مياه",
+                            "coffee mug": "فنجان قهوة",
+                            "cup": "كوب",
+                            "book": "كتاب",
+                            "chair": "كرسي",
+                            "table": "طاولة",
+                            "person": "شخص أمامك",
+                            "keyboard": "لوحة مفاتيح",
+                            "mouse": "فأرة حاسوب",
+                            "eyeglasses": "نظارة",
+                            "sunglasses": "نظارة شمسية",
+                            "backpack": "حقيبة ظهر"
+                        };
+
+                        let englishName = topPred.className.toLowerCase();
+                        let arabicName = englishName;
+                        for (let key in labelMap) {
+                            if (englishName.includes(key)) {
+                                arabicName = labelMap[key];
+                                break;
+                            }
+                        }
+
+                        let msg = "الشيء الذي أمامك هو: " + arabicName;
+                        sb.innerText = msg;
+                        speakText(msg);
+                    } else {
+                        speakText("لمק أتمكن من تمييز الشيء بوضوح، جرب الاقتراب منه");
+                        sb.innerText = "لم يتم تمييز الشيء بوضوح.";
+                    }
+                } catch(e) {
+                    speakText("حدث خطأ أثناء فحص الشيء");
+                    sb.innerText = "حدث خطأ في التعرف.";
+                }
             }
         }
 
