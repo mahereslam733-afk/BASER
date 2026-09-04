@@ -6,7 +6,7 @@
     <title>تطبيق بصير الذكي - Baser AI</title>
     <!-- مكتبة قراءة النصوص المحلية OCR -->
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
-    <!-- مكتبة التعرف الحقيقي على الأشياء داخل المتصفح (TensorFlow.js & MobileNet) -->
+    <!-- مكتبة التعرف على الأشياء -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js"></script>
     
@@ -331,11 +331,11 @@
             <div class="slogan">عين ذكية... ترى لك العالم</div>
             <div class="sub-slogan">تطبيق ذكي لمساعدة المكفوفين وضعاف البصر</div>
 
-            <!-- زر بصير الذكي الرئيسي للتعرف الحقيقي داخل التطبيق -->
+            <!-- زر بصير الذكي الرئيسي -->
             <div class="hero-card" onclick="startCamera('objects')">
                 <div class="hero-cam-circle">📷</div>
                 <div class="hero-title">بصير الذكي (التعرف على الأشياء)</div>
-                <div class="hero-desc">اضغط لاكتشاف ما أمامك بصوت ذكي مباشر</div>
+                <div class="hero-desc">اكتشف ما أمامك بصوت ذكي مباشر</div>
             </div>
 
             <div class="section-title-bar">الوظائف الرئيسية</div>
@@ -473,7 +473,6 @@
         let activeMode = 'smart';
         let aiModel = null;
 
-        // تحميل نموذج الذكاء الاصطناعي للتعرف على الأشياء في الخلفية بذكاء
         async function loadAIModel() {
             try {
                 aiModel = await mobilenet.load();
@@ -539,7 +538,6 @@
                     .catch(() => navigator.mediaDevices.getUserMedia({ video: true }));
                 document.getElementById('vidElem').srcObject = videoStream;
 
-                // تنفيذ الفحص التلقائي بعد فتح الكاميرا بثانية ونصف
                 setTimeout(processTask, 2500);
 
             } catch (e) {
@@ -612,39 +610,32 @@
                     let predictions = await aiModel.classify(c);
                     if (predictions && predictions.length > 0) {
                         let topPred = predictions[0];
-                        // ترجمة دقيقة لأشهر الكلمات المتداولة للمكفوفين باللغة العربية
-                        let labelMap = {
-                            "cellular telephone": "هاتف محمول",
-                            "phone": "هاتف",
-                            "laptop": "حاسوب محمول",
-                            "water bottle": "زجاجة مياه",
-                            "coffee mug": "فنجان قهوة",
-                            "cup": "كوب",
-                            "book": "كتاب",
-                            "chair": "كرسي",
-                            "table": "طاولة",
-                            "person": "شخص أمامك",
-                            "keyboard": "لوحة مفاتيح",
-                            "mouse": "فأرة حاسوب",
-                            "eyeglasses": "نظارة",
-                            "sunglasses": "نظارة شمسية",
-                            "backpack": "حقيبة ظهر"
-                        };
-
                         let englishName = topPred.className.toLowerCase();
-                        let arabicName = englishName;
-                        for (let key in labelMap) {
-                            if (englishName.includes(key)) {
-                                arabicName = labelMap[key];
-                                break;
-                            }
+                        
+                        // فلتر قوي لاستبعاد الحيوانات وفصائل الكلاب والرموز غير الدقيقة وتوجيهها لأسماء عملية
+                        let arabicName = "أداة أو جسم أمامك";
+                        
+                        if (englishName.includes('retriever') || englishName.includes('dog') || englishName.includes('puppy') || englishName.includes('cat') || englishName.includes('animal') || englishName.includes('nipple') || englishName.includes('pin')) {
+                            arabicName = "جسم أو قطعة ملابس محيطة";
+                        } else if (englishName.includes('phone') || englishName.includes('cellphone') || englishName.includes('mobile')) {
+                            arabicName = "هاتف محمول";
+                        } else if (englishName.includes('laptop') || englishName.includes('computer') || englishName.includes('screen')) {
+                            arabicName = "حاسوب أو شاشة";
+                        } else if (englishName.includes('cup') || englishName.includes('mug') || englishName.includes('bottle') || englishName.includes('glass')) {
+                            arabicName = "كوب أو زجاجة";
+                        } else if (englishName.includes('book') || englishName.includes('paper') || englishName.includes('card')) {
+                            arabicName = "كتاب أو ورقة";
+                        } else if (englishName.includes('chair') || englishName.includes('table')) {
+                            arabicName = "قطعة أثاث";
+                        } else {
+                            arabicName = "جسم أو أداة في البيئة";
                         }
 
                         let msg = "الشيء الذي أمامك هو: " + arabicName;
                         sb.innerText = msg;
                         speakText(msg);
                     } else {
-                        speakText("لمק أتمكن من تمييز الشيء بوضوح، جرب الاقتراب منه");
+                        speakText("لم أتمكن من تمييز الشيء بوضوح، جرب الاقتراب منه");
                         sb.innerText = "لم يتم تمييز الشيء بوضوح.";
                     }
                 } catch(e) {
