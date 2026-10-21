@@ -3,656 +3,438 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#123d32">
 <title>مكتبة كلية التجارة - جامعة المنوفية</title>
-
 <style>
 *{box-sizing:border-box}
-:root{
- --green:#123d32;--green2:#1c5947;--gold:#d8b56d;
- --bg:#f3f6f3;--white:#fff;--text:#26352e;
- --muted:#718078;--border:#dce5de;--red:#b93c3c
-}
-body{margin:0;background:var(--bg);color:var(--text);
+:root{--g:#123d32;--g2:#205a43;--gold:#b58a32;--bg:#f1f4f0;
+--ink:#172b22;--muted:#596a60;--line:#d6dfd8;--red:#a52c2c}
+body{margin:0;background:var(--bg);color:var(--ink);
 font-family:Tahoma,Arial,sans-serif}
 button,input,select{font:inherit}
 button{cursor:pointer}
-header{background:var(--green);color:white;padding:18px 16px}
-.header-inner{max-width:1100px;margin:auto;display:flex;
-align-items:center;gap:13px}
-.logo{width:55px;height:55px;border:2px solid var(--gold);
-border-radius:16px;display:grid;place-items:center;font-size:29px}
-header h1{font-size:19px;margin:0 0 7px}
-header p{font-size:12px;margin:0;color:#dce9df}
+header{background:var(--g);color:#fff;padding:17px}
+.head{max-width:1100px;margin:auto;display:flex;align-items:center;gap:13px}
+.logo{background:#f5e5b9;color:var(--g);border:2px solid var(--gold);
+border-radius:15px;width:56px;height:56px;display:grid;place-items:center;
+font-size:30px;font-weight:bold}
+header h1{font-size:20px;margin:0 0 7px}
+header p{font-size:12px;margin:0;color:#e6eee8}
 main{max-width:1100px;margin:20px auto;padding:0 13px 35px}
-.panel{background:white;border:1px solid var(--border);
-border-radius:16px;padding:17px;margin-bottom:15px}
-h2{font-size:18px;margin:0 0 15px;color:var(--green)}
-h3{font-size:15px}
-.welcome{background:linear-gradient(120deg,#123d32,#28664d);
-color:white;border-radius:18px;padding:21px;margin-bottom:16px}
-.welcome h2{color:white;font-size:21px;margin-bottom:8px}
-.welcome p{font-size:13px;line-height:1.9;margin:0;color:#e2eee5}
-.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
-gap:10px;margin-bottom:15px}
-.stat{background:white;border:1px solid var(--border);
-padding:15px;border-radius:14px}
-.stat .ico{font-size:25px}
-.stat strong{display:block;font-size:23px;color:var(--green);margin:8px 0}
+.panel,.stat{background:#fff;border:1px solid var(--line);
+border-radius:15px;padding:16px;margin-bottom:14px}
+h2{font-size:18px;color:var(--g);margin:0 0 15px}
+h3{font-size:15px;color:var(--g);margin:0 0 14px}
+.welcome{background:linear-gradient(120deg,#123d32,#286449);
+color:#fff;border-radius:17px;padding:21px;margin-bottom:15px}
+.welcome h2{color:white;font-size:21px;margin-bottom:9px}
+.welcome p{font-size:13px;line-height:1.9;margin:0;color:#f0f5f1}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{margin:0;padding:14px}
+.stat .ico{font-size:27px;color:var(--g);filter:contrast(1.3)}
+.stat strong{display:block;font-size:23px;color:var(--g);margin:8px 0}
 .stat span{font-size:12px;color:var(--muted)}
 .menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.menu button{background:white;border:1px solid var(--border);
-border-radius:14px;padding:17px 8px;color:var(--green);
-min-height:105px;font-weight:bold}
-.menu button .ico{display:block;font-size:30px;margin-bottom:9px}
-.menu button small{display:block;color:var(--muted);font-weight:normal;
-margin-top:6px;font-size:11px}
-.menu button:active,.menu button:hover{background:#e9f2eb}
+.menu button{background:#fff;border:1px solid #c8d5ca;border-radius:14px;
+padding:15px 7px;color:var(--g);min-height:112px;font-weight:bold}
+.menu button:hover{background:#e5eee6}
+.ico{display:block;font-size:31px;line-height:1.3;color:#123d32;
+margin-bottom:8px;font-family:Arial,sans-serif}
+.menu small{display:block;color:#43564a;font-weight:normal;margin-top:7px;font-size:11px}
 label{display:block;font-size:13px;font-weight:bold;margin-bottom:6px}
-input,select{width:100%;padding:11px;border:1px solid #ccd8ce;
-border-radius:9px;background:white;min-width:0;color:var(--text)}
-input:focus,select:focus{outline:2px solid #8ab69c;border-color:var(--green)}
-.field{margin-bottom:13px}
+input,select{width:100%;padding:11px;border:1px solid #bfcfc2;
+border-radius:9px;background:#fff;color:#172b22;min-width:0}
+input:focus,select:focus{outline:2px solid #719c7c}
+.field{margin-bottom:12px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.btn{border:0;border-radius:9px;padding:11px 15px;font-weight:bold;
-background:var(--green);color:white}
-.btn.secondary{background:#e6eee8;color:var(--green)}
-.btn.gold{background:var(--gold);color:#26352e}
-.btn.danger{background:var(--red)}
-.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn{background:var(--g);color:#fff;border:0;border-radius:9px;
+padding:11px 14px;font-weight:bold}
+.btn.gold{background:#e8d29c;color:#392b0d}
+.btn.light{background:#e2ece4;color:#123d32;border:1px solid #c2d2c5}
+.btn.red{background:var(--red)}
+.btn:disabled{opacity:.5}
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.searchbar{margin-bottom:13px}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:12px;min-width:570px}
-th,td{padding:11px 9px;text-align:right;border-bottom:1px solid var(--border)}
-th{background:#edf3ee;color:var(--green)}
-td .btn{padding:7px;font-size:11px;margin:2px}
-.empty{text-align:center;color:var(--muted);padding:24px}
-.badge{display:inline-block;padding:5px 8px;border-radius:7px;
-background:#e6f1e8;color:#236341;font-size:11px}
-.badge.red{background:#fae8e8;color:#a22c2c}
-.hidden{display:none!important}
-.page-title{display:flex;justify-content:space-between;
-align-items:center;gap:8px;margin-bottom:15px}
+.page-title{display:flex;justify-content:space-between;align-items:center;
+gap:8px;margin-bottom:14px}
 .page-title h2{margin:0}
-.pager{display:flex;justify-content:space-between;gap:10px;margin-top:15px}
-footer{text-align:center;color:var(--muted);font-size:11px;padding:15px}
-#cameraVideo{width:100%;max-height:350px;background:#111;
-border-radius:12px;display:block}
-.notice{font-size:12px;line-height:1.8;color:var(--muted)}
-#receipt{border:1px dashed #888;padding:18px;border-radius:10px;
-line-height:2}
+.hidden{display:none!important}
+.notice{font-size:12px;line-height:1.9;color:#46594c}
+.table-wrap{overflow-x:auto}
+table{width:100%;min-width:550px;border-collapse:collapse;font-size:12px}
+th,td{padding:11px 8px;text-align:right;border-bottom:1px solid var(--line)}
+th{background:#e5eee6;color:#123d32}
+td .btn{font-size:11px;padding:7px;margin:2px}
+.empty{text-align:center;color:#596a60;padding:22px}
+.badge{display:inline-block;background:#dfede2;color:#164b2d;
+border-radius:6px;padding:5px 8px;font-size:11px}
+.badge.red{background:#f8e1e1;color:#942727}
+.camera{width:100%;max-height:350px;min-height:180px;object-fit:cover;
+background:#14241c;border-radius:12px}
+.scan-count{background:#e4eee5;border:1px solid #b9cfbd;
+padding:14px;border-radius:12px;margin:12px 0;color:#123d32}
+.scan-count strong{font-size:24px}
+footer{text-align:center;color:#596a60;font-size:11px;padding:18px}
 @media(min-width:650px){
- .stats{grid-template-columns:repeat(4,minmax(0,1fr))}
- .menu{grid-template-columns:repeat(3,minmax(0,1fr))}
- .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
- header h1{font-size:23px}
+.stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+.menu{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
-@media print{
- body{background:white}
- body *{visibility:hidden}
- #receipt,#receipt *{visibility:visible}
- #receipt{position:absolute;top:0;right:0;width:100%;
- border:1px solid #777}
- .no-print{display:none!important}
-}
+@media print{body *{visibility:hidden}#receipt,#receipt *{visibility:visible}
+#receipt{position:absolute;top:0;right:0;width:100%}.no-print{display:none}}
 </style>
 </head>
-
 <body>
-<header>
- <div class="header-inner">
-  <div class="logo">📚</div>
-  <div>
-   <h1>مكتبة كلية التجارة</h1>
-   <p>جامعة المنوفية | نظام إدارة المكتبة</p>
-  </div>
- </div>
-</header>
+<header><div class="head">
+<div class="logo">📚</div>
+<div><h1>مكتبة كلية التجارة</h1>
+<p>جامعة المنوفية | نظام إدارة المكتبة</p></div>
+</div></header>
 
 <main>
-<!-- الرئيسية -->
 <section id="home">
- <div class="welcome">
-  <h2>أهلاً بك في نظام المكتبة الذكي</h2>
-  <p>إدارة الكتب والفهرسة والإعارة والجرد والباركود
-  من مكان واحد، بسهولة وسرعة.</p>
- </div>
-
- <div class="stats">
-  <div class="stat"><div class="ico">📚</div>
-   <strong id="totalBooks">0</strong><span>عناوين الكتب</span></div>
-  <div class="stat"><div class="ico">📦</div>
-   <strong id="totalCopies">0</strong><span>إجمالي النسخ</span></div>
-  <div class="stat"><div class="ico">📤</div>
-   <strong id="activeLoans">0</strong><span>الإعارات القائمة</span></div>
-  <div class="stat"><div class="ico">🔍</div>
-   <strong id="totalInventory">0</strong><span>عمليات الجرد</span></div>
- </div>
-
- <div class="panel">
-  <h2>خدمات المكتبة</h2>
-  <div class="menu">
-   <button onclick="openPage('books')"><span class="ico">📚</span>الكتب والفهرسة
-    <small>إضافة وتعديل وبحث</small></button>
-   <button onclick="openPage('loans')"><span class="ico">📤</span>الإعارة
-    <small>تسجيل وإرجاع الكتب</small></button>
-   <button onclick="openPage('scan')"><span class="ico">▦</span>قارئ الباركود
-    <small>استخدام كاميرا الجهاز</small></button>
-   <button onclick="openPage('inventory')"><span class="ico">📋</span>الجرد
-    <small>مطابقة النسخ الموجودة</small></button>
-   <button onclick="openPage('reports')"><span class="ico">📊</span>التقارير
-    <small>ملخص الكتب والإعارات</small></button>
-   <button onclick="openPage('backup')"><span class="ico">💾</span>النسخ الاحتياطي
-    <small>حفظ البيانات واستعادتها</small></button>
-  </div>
- </div>
+<div class="welcome"><h2>أهلًا بك في نظام المكتبة الذكي</h2>
+<p>إدارة الكتب والفهرسة والإعارة والجرد باستخدام الباركود والتقارير في مكان واحد.</p></div>
+<div class="stats">
+<div class="stat"><span class="ico">📚</span><strong id="totalBooks">0</strong><span>عناوين الكتب</span></div>
+<div class="stat"><span class="ico">📦</span><strong id="totalCopies">0</strong><span>إجمالي النسخ</span></div>
+<div class="stat"><span class="ico">📤</span><strong id="activeLoans">0</strong><span>الإعارات القائمة</span></div>
+<div class="stat"><span class="ico">▦</span><strong id="totalInventory">0</strong><span>عمليات الجرد</span></div>
+</div>
+<div class="panel" style="margin-top:15px"><h2>خدمات المكتبة</h2>
+<div class="menu">
+<button onclick="openPage('books')"><span class="ico">📚</span>الكتب والفهرسة<small>إضافة وتعديل وبحث</small></button>
+<button onclick="openPage('loans')"><span class="ico">📤</span>الإعارة والإرجاع<small>تسجيل حركة الكتب</small></button>
+<button onclick="openPage('inventory')"><span class="ico">▦</span>الجرد بالباركود<small>جرد النسخ بكاميرا الجهاز</small></button>
+<button onclick="openPage('reports')"><span class="ico">📊</span>التقارير<small>ملخص المكتبة والفروق</small></button>
+<button onclick="openPage('backup')"><span class="ico">💾</span>النسخ الاحتياطي<small>حفظ البيانات واستعادتها</small></button>
+<button onclick="openPage('help')"><span class="ico">❔</span>تعليمات الاستخدام<small>كيفية تشغيل النظام</small></button>
+</div></div>
 </section>
 
-<!-- الكتب -->
 <section id="books" class="page hidden">
- <div class="page-title"><h2>📚 إدارة الكتب والفهرسة</h2>
-  <button class="btn secondary" onclick="openPage('home')">الرئيسية</button>
- </div>
- <div class="panel">
-  <h3>بيانات الكتاب</h3>
-  <form id="bookForm">
-   <input type="hidden" id="bookId">
-   <div class="grid">
-    <div class="field"><label>عنوان الكتاب *</label>
-     <input id="bookTitle" required placeholder="عنوان الكتاب"></div>
-    <div class="field"><label>اسم المؤلف</label>
-     <input id="bookAuthor" placeholder="اسم المؤلف"></div>
-    <div class="field"><label>رقم التصنيف *</label>
-     <input id="bookClass" required placeholder="مثال: 330.1"></div>
-    <div class="field"><label>رقم الباركود</label>
-     <input id="bookBarcode" placeholder="رقم الباركود"></div>
-    <div class="field"><label>القسم</label>
-     <select id="bookSection">
-      <option>اللغة العربية</option><option>اللغة الأجنبية</option>
-      <option>شعبة اللغة</option><option>الرسائل العلمية</option>
-      <option>الدوريات</option><option>أخرى</option>
-     </select>
-    </div>
-    <div class="field"><label>عدد النسخ *</label>
-     <input id="bookCopies" type="number" min="1" value="1" required></div>
-   </div>
-   <div class="actions">
-    <button class="btn" type="submit">💾 حفظ الكتاب</button>
-    <button class="btn secondary" type="button" onclick="resetBookForm()">تفريغ الحقول</button>
-   </div>
-  </form>
- </div>
- <div class="panel">
-  <h3>البحث في الفهرس</h3>
-  <div class="searchbar"><input id="bookSearch"
-   placeholder="ابحث بالعنوان أو المؤلف أو رقم التصنيف أو الباركود..."
-   oninput="renderBooks()"></div>
-  <div class="table-wrap"><table>
-   <thead><tr><th>العنوان</th><th>المؤلف</th><th>التصنيف</th>
-   <th>الباركود</th><th>النسخ</th><th>المتاح</th><th>الإجراءات</th></tr></thead>
-   <tbody id="booksTable"></tbody>
-  </table></div>
-  <p class="notice">يمكن تعديل بيانات الكتاب أو حذفه إذا لم تكن له إعارات قائمة.</p>
- </div>
- <div class="pager"><button class="btn secondary" onclick="openPage('home')">السابق</button>
- <button class="btn" onclick="openPage('loans')">التالي: الإعارة ←</button></div>
+<div class="page-title"><h2>📚 الكتب والفهرسة</h2><button class="btn light" onclick="openPage('home')">الرئيسية</button></div>
+<div class="panel"><h3>بيانات الكتاب</h3>
+<form id="bookForm"><input type="hidden" id="bookId">
+<div class="grid">
+<div class="field"><label>عنوان الكتاب *</label><input id="bookTitle" required></div>
+<div class="field"><label>اسم المؤلف</label><input id="bookAuthor"></div>
+<div class="field"><label>رقم التصنيف *</label><input id="bookClass" required></div>
+<div class="field"><label>باركود النسخة *</label><input id="bookBarcode" required></div>
+<div class="field"><label>القسم</label><select id="bookSection">
+<option>اللغة العربية</option><option>اللغة الأجنبية</option>
+<option>شعبة اللغة</option><option>الرسائل العلمية</option>
+<option>الدوريات</option><option>أخرى</option></select></div>
+<div class="field"><label>عدد النسخ *</label><input id="bookCopies" type="number" min="1" value="1" required></div>
+</div>
+<p class="notice">يمكن تسجيل باركود مستقل لكل نسخة من الكتاب. إذا كانت النسخ متعددة ولكل منها باركود مختلف، أضف سجلًا لكل نسخة مع تكرار بيانات العنوان.</p>
+<div class="actions"><button class="btn">حفظ الكتاب</button><button class="btn light" type="button" onclick="resetBook()">تفريغ الحقول</button></div>
+</form></div>
+<div class="panel"><h3>البحث في الفهرس</h3>
+<div class="field"><input id="bookSearch" placeholder="ابحث بالعنوان أو المؤلف أو التصنيف أو الباركود" oninput="renderBooks()"></div>
+<div class="table-wrap"><table><thead><tr><th>العنوان</th><th>المؤلف</th><th>التصنيف</th><th>الباركود</th><th>النسخ</th><th>المتاح</th><th>الإجراء</th></tr></thead><tbody id="booksTable"></tbody></table></div>
+</div>
 </section>
 
-<!-- الإعارة -->
 <section id="loans" class="page hidden">
- <div class="page-title"><h2>📤 تسجيل الإعارة والإرجاع</h2>
-  <button class="btn secondary" onclick="openPage('home')">الرئيسية</button>
- </div>
- <div class="panel">
-  <h3>تسجيل إعارة جديدة</h3>
-  <form id="loanForm">
-   <div class="grid">
-    <div class="field"><label>الكتاب *</label>
-     <select id="loanBook" required></select></div>
-    <div class="field"><label>اسم المستعير *</label>
-     <input id="borrower" required placeholder="اسم المستعير"></div>
-    <div class="field"><label>رقم المستعير</label>
-     <input id="borrowerNo" placeholder="الرقم الجامعي أو الوظيفي"></div>
-    <div class="field"><label>تاريخ الإعارة *</label>
-     <input id="loanDate" type="date" required></div>
-    <div class="field"><label>تاريخ الاستحقاق *</label>
-     <input id="dueDate" type="date" required></div>
-   </div>
-   <button class="btn" type="submit">تسجيل الإعارة</button>
-  </form>
- </div>
- <div class="panel">
-  <h3>سجل الإعارات</h3>
-  <input id="loanSearch" class="searchbar"
-   placeholder="بحث باسم المستعير أو عنوان الكتاب..." oninput="renderLoans()">
-  <div class="table-wrap"><table>
-   <thead><tr><th>الكتاب</th><th>المستعير</th><th>رقمه</th>
-   <th>الإعارة</th><th>الاستحقاق</th><th>الحالة</th><th>الإجراء</th></tr></thead>
-   <tbody id="loansTable"></tbody>
-  </table></div>
- </div>
- <div class="pager"><button class="btn secondary" onclick="openPage('books')">→ السابق</button>
- <button class="btn" onclick="openPage('scan')">التالي: الباركود ←</button></div>
-</section>
+<div class="page-title"><h2>📤 الإعارة والإرجاع</h2><button class="btn light" onclick="openPage('home')">الرئيسية</button></div>
+<div class="panel"><h3>إعارة كتاب</h3>
+<form id="loanForm"><div class="grid">
+<div class="field"><label>الكتاب *</label><select id="loanBook" required></select></div>
+<div class="field"><label>اسم المستعير *</label><input id="borrower" required></div>
+<div class="field"><label>رقم المستعير</label><input id="borrowerNo"></div>
+<div class="field"><label>تاريخ الإعارة</label><input id="loanDate" type="date" required></div>
+<div class="field"><label>تاريخ الاستحقاق</label><input id="dueDate" type="date" required></div>
+</div><button class="btn">تسجيل الإعارة</button></form></div>
+<div class="panel"><h3>سجل الإعارات</h3>
+<input id="loanSearch" placeholder="بحث باسم المستعير أو الكتاب" oninput="renderLoans">
+<div class="table-wrap"><table><thead><tr><th>الكتاب</th><th>المستعير</th><th>الرقم</th><th>الإعارة</th><th>الاستحقاق</th><th>الحالة</th><th>الإجراء</th></tr></thead><tbody id="loansTable"></tbody></table></div>
+</div></section>
 
-<!-- الباركود -->
-<section id="scan" class="page hidden">
- <div class="page-title"><h2>▦ قارئ الباركود</h2>
-  <button class="btn secondary" onclick="openPage('home')">الرئيسية</button>
- </div>
- <div class="panel">
-  <p class="notice">وجّه كاميرا الجهاز نحو الباركود. يتطلب تشغيل الكاميرا إذن الوصول إليها، وقد يتطلب اتصالًا آمنًا HTTPS.</p>
-  <video id="cameraVideo" autoplay muted playsinline></video>
-  <div class="actions">
-   <button class="btn" id="startCamera" onclick="startScanner()">📷 تشغيل الكاميرا</button>
-   <button class="btn danger" onclick="stopScanner()">إيقاف الكاميرا</button>
-  </div>
-  <div class="field" style="margin-top:15px">
-   <label>رقم الباركود المقروء أو المدخل يدويًا</label>
-   <input id="scanValue" placeholder="امسح الباركود أو اكتب رقمه">
-  </div>
-  <div class="actions">
-   <button class="btn" onclick="findBarcode()">البحث عن الكتاب</button>
-   <button class="btn secondary" onclick="useBarcodeForBook()">استخدامه في الفهرسة</button>
-  </div>
-  <div id="scanResult" class="notice" style="margin-top:15px"></div>
- </div>
- <div class="pager"><button class="btn secondary" onclick="openPage('loans')">→ السابق</button>
- <button class="btn" onclick="openPage('inventory')">التالي: الجرد ←</button></div>
-</section>
-
-<!-- الجرد -->
 <section id="inventory" class="page hidden">
- <div class="page-title"><h2>📋 جرد الكتب</h2>
-  <button class="btn secondary" onclick="openPage('home')">الرئيسية</button>
- </div>
- <div class="panel">
-  <h3>تسجيل عملية جرد</h3>
-  <form id="inventoryForm">
-   <div class="grid">
-    <div class="field"><label>الكتاب *</label><select id="inventoryBook" required></select></div>
-    <div class="field"><label>النسخ الموجودة فعليًا *</label>
-     <input id="countedCopies" type="number" min="0" required></div>
-    <div class="field"><label>ملاحظات</label><input id="inventoryNotes" placeholder="ملاحظات الجرد"></div>
-   </div>
-   <button class="btn">حفظ عملية الجرد</button>
-  </form>
- </div>
- <div class="panel">
-  <h3>سجل الجرد</h3>
-  <div class="table-wrap"><table>
-   <thead><tr><th>التاريخ</th><th>الكتاب</th><th>النسخ المسجلة</th>
-   <th>النسخ الفعلية</th><th>الفرق</th><th>ملاحظات</th></tr></thead>
-   <tbody id="inventoryTable"></tbody>
-  </table></div>
- </div>
- <div class="pager"><button class="btn secondary" onclick="openPage('scan')">→ السابق</button>
- <button class="btn" onclick="openPage('reports')">التالي: التقارير ←</button></div>
-</section>
+<div class="page-title"><h2>▦ الجرد باستخدام الباركود</h2><button class="btn light" onclick="openPage('home')">الرئيسية</button></div>
+<div class="panel">
+<h3>الخطوة الأولى: بدء عملية جرد</h3>
+<div class="field"><label>اسم عملية الجرد</label><input id="sessionName" value="جرد المكتبة"></div>
+<p class="notice">ابدأ عملية جرد جديدة، ثم وجّه كاميرا الجهاز إلى باركود كل نسخة. سيُسجل النظام النسخ الممسوحة ويحسب الفروق مقارنة بالنسخ المسجلة.</p>
+<div class="actions"><button class="btn" id="startInventory" onclick="beginInventory()">＋ بدء جرد جديد</button>
+<button class="btn light" onclick="stopCamera()">إيقاف الكاميرا</button></div>
+</div>
+<div class="panel">
+<h3>الخطوة الثانية: مسح الباركود بالكاميرا</h3>
+<video id="camera" class="camera" autoplay muted playsinline></video>
+<div class="actions">
+<button class="btn" id="cameraBtn" onclick="startCamera()">📷 تشغيل الكاميرا</button>
+<button class="btn light" onclick="stopCamera()">إيقاف الكاميرا</button>
+</div>
+<div class="field" style="margin-top:15px"><label>إدخال باركود يدويًا عند الحاجة</label>
+<input id="manualBarcode" placeholder="اكتب أو امسح رقم الباركود"></div>
+<button class="btn gold" onclick="countManual()">إضافة النسخة للجرد</button>
+<div class="scan-count">النسخ التي تم جردها في هذه الجلسة:
+<strong id="sessionCount">0</strong><br>
+<span id="lastScan">لم يتم مسح أي باركود بعد.</span></div>
+</div>
+<div class="panel"><h3>الخطوة الثالثة: نتائج الجرد الحالي</h3>
+<div class="table-wrap"><table><thead><tr><th>الكتاب</th><th>الباركود</th><th>المسجل</th><th>المجرد</th><th>الفرق</th><th>الحالة</th></tr></thead><tbody id="sessionTable"></tbody></table></div>
+<div class="actions"><button class="btn" onclick="finishInventory()">✔ إنهاء وحفظ الجرد</button><button class="btn light" onclick="clearSession()">إلغاء الجلسة الحالية</button></div>
+<p class="notice">الفرق = عدد النسخ المسجلة − عدد النسخ التي تم جردها. الباركود غير المسجل سيظهر تنبيهًا، ولن يُحتسب ضمن النسخ المطابقة.</p>
+</div>
+<div class="panel"><h3>عمليات الجرد السابقة</h3>
+<div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>اسم الجرد</th><th>عدد النسخ الممسوحة</th><th>عدد الأصناف</th></tr></thead><tbody id="historyTable"></tbody></table></div>
+</div></section>
 
-<!-- التقارير -->
 <section id="reports" class="page hidden">
- <div class="page-title"><h2>📊 تقارير المكتبة</h2>
-  <button class="btn secondary" onclick="openPage('home')">الرئيسية</button>
- </div>
- <div class="stats">
-  <div class="stat"><span>عناوين الكتب</span><strong id="rTitles">0</strong></div>
-  <div class="stat"><span>إجمالي النسخ</span><strong id="rCopies">0</strong></div>
-  <div class="stat"><span>الإعارات القائمة</span><strong id="rLoans">0</strong></div>
-  <div class="stat"><span>الإعارات المتأخرة</span><strong id="rLate">0</strong></div>
- </div>
- <div class="panel">
-  <h3>توزيع الكتب حسب القسم</h3>
-  <div class="table-wrap"><table>
-   <thead><tr><th>القسم</th><th>عدد العناوين</th><th>عدد النسخ</th></tr></thead>
-   <tbody id="sectionReport"></tbody>
-  </table></div>
-  <div class="actions">
-   <button class="btn" onclick="exportCSV()">📄 تصدير الكتب CSV</button>
-   <button class="btn secondary" onclick="window.print()">طباعة الصفحة</button>
-  </div>
- </div>
- <div class="pager"><button class="btn secondary" onclick="openPage('inventory')">→ السابق</button>
- <button class="btn" onclick="openPage('backup')">التالي: النسخ الاحتياطي ←</button></div>
-</section>
+<div class="page-title"><h2>📊 التقارير</h2><button class="btn light" onclick="openPage('home')">الرئيسية</button></div>
+<div class="stats">
+<div class="stat"><span>عناوين الكتب/السجلات</span><strong id="rBooks">0</strong></div>
+<div class="stat"><span>إجمالي النسخ المسجلة</span><strong id="rCopies">0</strong></div>
+<div class="stat"><span>الإعارات القائمة</span><strong id="rLoans">0</strong></div>
+<div class="stat"><span>الإعارات المتأخرة</span><strong id="rLate">0</strong></div>
+</div>
+<div class="panel"><h3>توزيع الكتب حسب القسم</h3>
+<div class="table-wrap"><table><thead><tr><th>القسم</th><th>عدد السجلات</th><th>عدد النسخ</th></tr></thead><tbody id="sectionTable"></tbody></table></div>
+<div class="actions"><button class="btn" onclick="exportBooks()">تصدير الكتب CSV</button><button class="btn light" onclick="window.print()">طباعة</button></div>
+</div></section>
 
-<!-- النسخ الاحتياطي -->
 <section id="backup" class="page hidden">
- <div class="page-title"><h2>💾 حفظ البيانات واستعادتها</h2>
-  <button class="btn secondary" onclick="openPage('home')">الرئيسية</button>
- </div>
- <div class="panel">
-  <h3>النسخ الاحتياطي</h3>
-  <p class="notice">احفظ نسخة من بيانات الكتب والإعارات والجرد في ملف JSON، واحتفظ بها في مكان آمن. البيانات محفوظة محليًا في المتصفح على هذا الجهاز.</p>
-  <div class="actions">
-   <button class="btn" onclick="backupData()">⬇ تنزيل نسخة احتياطية</button>
-  </div>
- </div>
- <div class="panel">
-  <h3>استعادة نسخة سابقة</h3>
-  <div class="field"><label>اختر ملف النسخة الاحتياطية JSON</label>
-   <input type="file" id="restoreFile" accept=".json,application/json"></div>
-  <button class="btn gold" onclick="restoreData()">استعادة البيانات</button>
-  <p class="notice">الاستعادة تستبدل البيانات الحالية. نزّل نسخة احتياطية قبل الاستعادة.</p>
- </div>
- <div class="panel">
-  <h3>إنهاء الجلسة</h3>
-  <p class="notice">الزر التالي يعيدك إلى الشاشة الرئيسية ولا يحذف بياناتك.</p>
-  <button class="btn danger" onclick="openPage('home')">خروج إلى الرئيسية</button>
- </div>
- <div class="pager"><button class="btn secondary" onclick="openPage('reports')">→ السابق</button>
- <button class="btn" onclick="openPage('home')">العودة للبداية</button></div>
+<div class="page-title"><h2>💾 النسخ الاحتياطي</h2><button class="btn light" onclick="openPage('home')">الرئيسية</button></div>
+<div class="panel"><h3>حفظ نسخة من البيانات</h3><p class="notice">احفظ ملفًا يحتوي على الكتب والإعارات ونتائج الجرد.</p><button class="btn" onclick="backup()">⬇ تنزيل نسخة احتياطية</button></div>
+<div class="panel"><h3>استعادة البيانات</h3><div class="field"><label>ملف JSON</label><input type="file" id="restoreFile" accept=".json,application/json"></div><button class="btn gold" onclick="restore()">استعادة النسخة</button></div>
 </section>
 
-<!-- بطاقة الإعارة -->
+<section id="help" class="page hidden">
+<div class="page-title"><h2>❔ تعليمات الاستخدام</h2><button class="btn light" onclick="openPage('home')">الرئيسية</button></div>
+<div class="panel"><h3>إدارة الكتب</h3><p class="notice">أضف بيانات الكتاب ورقم الباركود، واجعل لكل نسخة باركودًا مستقلًا إذا أردت تتبع النسخ بشكل دقيق.</p>
+<h3>الإعارة</h3><p class="notice">اختر الكتاب والمستعير وتاريخ الاستحقاق. استخدم زر الإرجاع عند عودة الكتاب.</p>
+<h3>الجرد بالباركود</h3><p class="notice">ابدأ جلسة جرد، شغّل الكاميرا، وامسح كل نسخة على حدة. يمكنك إدخال الباركود يدويًا عند تعذر تشغيل الكاميرا. عند الانتهاء احفظ النتائج لمراجعتها لاحقًا.</p>
+<h3>حفظ البيانات</h3><p class="notice">البيانات محفوظة في متصفح الجهاز نفسه. نزّل نسخة احتياطية بانتظام؛ النظام لا يزامن البيانات تلقائيًا بين أجهزة مختلفة.</p></div>
+</section>
+
 <section id="receiptPage" class="page hidden">
- <div class="page-title"><h2>🧾 بطاقة الإعارة</h2>
-  <button class="btn secondary no-print" onclick="openPage('loans')">رجوع</button>
- </div>
- <div class="panel"><div id="receipt"></div>
-  <div class="actions no-print">
-   <button class="btn" onclick="window.print()">🖨 طباعة البطاقة</button>
-   <button class="btn secondary" onclick="openPage('loans')">عودة إلى الإعارات</button>
-  </div>
- </div>
+<div class="panel" id="receipt"></div><button class="btn no-print" onclick="window.print()">طباعة بطاقة الإعارة</button>
+<button class="btn light no-print" onclick="openPage('loans')">رجوع</button>
 </section>
 <footer>مكتبة كلية التجارة – جامعة المنوفية</footer>
 </main>
 
 <script>
 "use strict";
+const $=id=>document.getElementById(id);
+const today=()=>{let d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const KEY="commerce_library_v2";
+let books=[],loans=[],inventory=[],session=null,stream=null,detector=null,timer=null,lastCode="",lastTime=0;
 
-const $ = id => document.getElementById(id);
-const today = () => new Date().toLocaleDateString("en-CA");
-const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({
- "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-}[c]));
-
-let books=[],loans=[],inventory=[],scannerStream=null,scanTimer=null;
-const STORAGE_KEY="commerce_library_manager_v1";
-
-function loadData(){
- try{
-  const d=JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}");
-  books=Array.isArray(d.books)?d.books:[];
-  loans=Array.isArray(d.loans)?d.loans:[];
-  inventory=Array.isArray(d.inventory)?d.inventory:[];
+function load(){
+ try{let d=JSON.parse(localStorage.getItem(KEY)||"{}");
+ books=Array.isArray(d.books)?d.books:[];
+ loans=Array.isArray(d.loans)?d.loans:[];
+ inventory=Array.isArray(d.inventory)?d.inventory:[];
  }catch(e){books=[];loans=[];inventory=[]}
 }
-function saveData(){
- try{
-  localStorage.setItem(STORAGE_KEY,JSON.stringify({books,loans,inventory}));
- }catch(e){alert("تعذر حفظ البيانات. قد تكون مساحة التخزين ممتلئة.");}
- updateAll();
+function save(){
+ try{localStorage.setItem(KEY,JSON.stringify({books,loans,inventory}));}
+ catch(e){alert("تعذر الحفظ. نزّل نسخة احتياطية وتحقق من مساحة التخزين.")}
+ updateStats();
 }
 function openPage(id){
- stopScanner();
+ stopCamera();
  document.querySelectorAll("main>section").forEach(s=>s.classList.add("hidden"));
  $(id).classList.remove("hidden");
  if(id==="books")renderBooks();
  if(id==="loans")renderLoans();
- if(id==="inventory")renderInventory();
+ if(id==="inventory"){renderSession();renderHistory()}
  if(id==="reports")renderReports();
- if(id==="loans"||id==="inventory")fillBookSelects();
+ fillSelects();
  window.scrollTo({top:0,behavior:"smooth"});
 }
-function available(b){
- return Math.max(0,Number(b.copies||0)-
- loans.filter(l=>l.bookId===b.id&&l.status==="قائمة").length);
-}
-function updateAll(){
+function available(b){return Math.max(0,Number(b.copies||0)-loans.filter(l=>l.bookId===b.id&&l.status==="قائمة").length)}
+function updateStats(){
  $("totalBooks").textContent=books.length;
- $("totalCopies").textContent=books.reduce((s,b)=>s+Number(b.copies||0),0);
+ $("totalCopies").textContent=books.reduce((n,b)=>n+Number(b.copies||0),0);
  $("activeLoans").textContent=loans.filter(l=>l.status==="قائمة").length;
  $("totalInventory").textContent=inventory.length;
- fillBookSelects();
 }
-function resetBookForm(){
- $("bookForm").reset();$("bookId").value="";$("bookCopies").value=1;
-}
-function renderBooks(){
- const q=$("bookSearch").value.trim().toLowerCase();
- const filtered=books.filter(b=>[b.title,b.author,b.classification,b.barcode,b.section]
-  .some(v=>String(v||"").toLowerCase().includes(q)));
- $("booksTable").innerHTML=filtered.map(b=>`<tr>
- <td>${esc(b.title)}</td><td>${esc(b.author)}</td>
- <td>${esc(b.classification)}</td><td>${esc(b.barcode)}</td>
- <td>${b.copies}</td><td>${available(b)}</td><td>
- <button class="btn secondary" onclick="editBook('${b.id}')">تعديل</button>
- <button class="btn danger" onclick="deleteBook('${b.id}')">حذف</button>
- </td></tr>`).join("")||'<tr><td colspan="7" class="empty">لا توجد نتائج</td></tr>';
-}
+function resetBook(){$("bookForm").reset();$("bookId").value="";$("bookCopies").value=1}
 $("bookForm").addEventListener("submit",e=>{
  e.preventDefault();
- const id=$("bookId").value;
- const old=books.find(b=>b.id===id);
- const title=$("bookTitle").value.trim();
- const author=$("bookAuthor").value.trim();
- const classification=$("bookClass").value.trim();
- const barcode=$("bookBarcode").value.trim();
+ const id=$("bookId").value,old=books.find(b=>b.id===id);
+ const title=$("bookTitle").value.trim(),barcode=$("bookBarcode").value.trim();
  const copies=Number($("bookCopies").value);
- if(!title||!classification||copies<1)return alert("أكمل عنوان الكتاب والتصنيف وعدد النسخ.");
- if(barcode&&books.some(b=>b.barcode===barcode&&b.id!==id))
-  return alert("رقم الباركود مسجل بالفعل لكتاب آخر.");
- const loanCount=loans.filter(l=>l.bookId===id&&l.status==="قائمة").length;
- if(old&&copies<loanCount)return alert("عدد النسخ لا يمكن أن يقل عن الإعارات القائمة.");
- const data={id:id||uid(),title,author,classification,barcode,
-  section:$("bookSection").value,copies};
- if(old)books=books.map(b=>b.id===id?data:b);else books.push(data);
- saveData();resetBookForm();renderBooks();alert("تم حفظ بيانات الكتاب.");
+ if(!title||!barcode||copies<1)return alert("أكمل عنوان الكتاب والباركود وعدد النسخ.");
+ if(books.some(b=>b.barcode===barcode&&b.id!==id))return alert("هذا الباركود مسجل بالفعل. استخدم باركودًا مستقلًا لكل نسخة.");
+ if(old&&copies<loans.filter(l=>l.bookId===id&&l.status==="قائمة").length)return alert("عدد النسخ أقل من عدد الإعارات القائمة.");
+ const b={id:id||uid(),title,author:$("bookAuthor").value.trim(),
+ classification:$("bookClass").value.trim(),barcode,section:$("bookSection").value,copies};
+ if(old)books=books.map(x=>x.id===id?b:x);else books.push(b);
+ save();resetBook();renderBooks();alert("تم حفظ بيانات الكتاب.");
 });
+function renderBooks(){
+ let q=($("bookSearch").value||"").trim().toLowerCase();
+ let arr=books.filter(b=>[b.title,b.author,b.classification,b.barcode,b.section].some(v=>String(v||"").toLowerCase().includes(q)));
+ $("booksTable").innerHTML=arr.map(b=>`<tr><td>${esc(b.title)}</td><td>${esc(b.author)}</td><td>${esc(b.classification)}</td><td>${esc(b.barcode)}</td><td>${b.copies}</td><td>${available(b)}</td><td><button class="btn light" onclick="editBook('${b.id}')">تعديل</button><button class="btn red" onclick="deleteBook('${b.id}')">حذف</button></td></tr>`).join("")||'<tr><td colspan="7" class="empty">لا توجد كتب</td></tr>';
+}
 function editBook(id){
- const b=books.find(x=>x.id===id);if(!b)return;
- $("bookId").value=b.id;$("bookTitle").value=b.title;
- $("bookAuthor").value=b.author;$("bookClass").value=b.classification;
- $("bookBarcode").value=b.barcode||"";$("bookSection").value=b.section;
- $("bookCopies").value=b.copies;
- window.scrollTo({top:0,behavior:"smooth"});
+ let b=books.find(x=>x.id===id);if(!b)return;
+ $("bookId").value=b.id;$("bookTitle").value=b.title;$("bookAuthor").value=b.author;
+ $("bookClass").value=b.classification;$("bookBarcode").value=b.barcode;
+ $("bookSection").value=b.section;$("bookCopies").value=b.copies;window.scrollTo({top:0,behavior:"smooth"});
 }
 function deleteBook(id){
- if(loans.some(l=>l.bookId===id&&l.status==="قائمة"))
-  return alert("لا يمكن حذف كتاب له إعارة قائمة.");
- if(!confirm("هل تريد حذف هذا الكتاب؟"))return;
- books=books.filter(b=>b.id!==id);saveData();renderBooks();
+ if(loans.some(l=>l.bookId===id&&l.status==="قائمة"))return alert("لا يمكن حذف كتاب له إعارة قائمة.");
+ if(!confirm("حذف الكتاب؟"))return;
+ books=books.filter(b=>b.id!==id);save();renderBooks();
 }
-function fillBookSelects(){
- ["loanBook","inventoryBook"].forEach(id=>{
-  const el=$(id);if(!el)return;
-  const previous=el.value;
-  el.innerHTML='<option value="">اختر الكتاب</option>'+
-   books.map(b=>`<option value="${b.id}">${esc(b.title)} — ${esc(b.author)} (${id==="loanBook"?available(b):b.copies} نسخة)</option>`).join("");
-  if([...el.options].some(o=>o.value===previous))el.value=previous;
+function fillSelects(){
+ ["loanBook"].forEach(id=>{
+  let el=$(id);if(!el)return;let v=el.value;
+  el.innerHTML='<option value="">اختر الكتاب</option>'+books.map(b=>`<option value="${b.id}">${esc(b.title)} — ${esc(b.barcode)} (متاح ${available(b)})</option>`).join("");
+  if([...el.options].some(o=>o.value===v))el.value=v;
  });
 }
-$("loanDate").value=today();
-$("dueDate").value=today();
+$("loanDate").value=today();$("dueDate").value=today();
 $("loanForm").addEventListener("submit",e=>{
- e.preventDefault();
- const b=books.find(x=>x.id===$("loanBook").value);
- if(!b)return alert("اختر الكتاب أولًا.");
- if(available(b)<1)return alert("لا توجد نسخ متاحة للإعارة.");
- const borrower=$("borrower").value.trim();
- if(!borrower)return alert("أدخل اسم المستعير.");
- const date=$("loanDate").value,due=$("dueDate").value;
- if(!date||!due||due<date)return alert("راجع تاريخ الإعارة والاستحقاق.");
- const l={id:uid(),bookId:b.id,bookTitle:b.title,author:b.author,
-  classification:b.classification,barcode:b.barcode||"",
-  borrower,borrowerNo:$("borrowerNo").value.trim(),
-  date,due,status:"قائمة",returnDate:""};
- loans.push(l);saveData();renderLoans();
- showReceipt(l.id);$("loanForm").reset();
- $("loanDate").value=today();$("dueDate").value=today();
+ e.preventDefault();let b=books.find(x=>x.id===$("loanBook").value);
+ if(!b)return alert("اختر الكتاب.");
+ if(available(b)<1)return alert("لا توجد نسخ متاحة.");
+ let date=$("loanDate").value,due=$("dueDate").value;
+ if(!date||!due||due<date)return alert("راجع التواريخ.");
+ loans.push({id:uid(),bookId:b.id,bookTitle:b.title,author:b.author,classification:b.classification,barcode:b.barcode,borrower:$("borrower").value.trim(),borrowerNo:$("borrowerNo").value.trim(),date,due,status:"قائمة",returnDate:""});
+ save();renderLoans();$("loanForm").reset();$("loanDate").value=today();$("dueDate").value=today();
 });
 function renderLoans(){
- const q=($("loanSearch").value||"").trim().toLowerCase();
- const arr=loans.filter(l=>(l.borrower+" "+l.bookTitle+" "+l.borrowerNo).toLowerCase().includes(q));
- $("loansTable").innerHTML=arr.slice().reverse().map(l=>{
-  const late=l.status==="قائمة"&&l.due<today();
-  return `<tr><td>${esc(l.bookTitle)}</td><td>${esc(l.borrower)}</td>
-  <td>${esc(l.borrowerNo)}</td><td>${esc(l.date)}</td><td>${esc(l.due)}</td>
-  <td><span class="badge ${late?"red":""}">${late?"متأخرة":esc(l.status)}</span></td><td>
-  ${l.status==="قائمة"?`<button class="btn" onclick="returnLoan('${l.id}')">إرجاع</button>`:""}
-  <button class="btn secondary" onclick="showReceipt('${l.id}')">البطاقة</button>
-  </td></tr>`;
+ let q=($("loanSearch").value||"").toLowerCase();
+ $("loansTable").innerHTML=loans.slice().reverse().filter(l=>(l.borrower+" "+l.bookTitle+" "+l.borrowerNo).toLowerCase().includes(q)).map(l=>{
+ let late=l.status==="قائمة"&&l.due<today();
+ return `<tr><td>${esc(l.bookTitle)}</td><td>${esc(l.borrower)}</td><td>${esc(l.borrowerNo)}</td><td>${esc(l.date)}</td><td>${esc(l.due)}</td><td><span class="badge ${late?"red":""}">${late?"متأخرة":esc(l.status)}</span></td><td>${l.status==="قائمة"?`<button class="btn" onclick="returnLoan('${l.id}')">إرجاع</button>`:""}<button class="btn light" onclick="receipt('${l.id}')">بطاقة</button></td></tr>`;
  }).join("")||'<tr><td colspan="7" class="empty">لا توجد إعارات</td></tr>';
 }
 function returnLoan(id){
- const l=loans.find(x=>x.id===id);if(!l||l.status!=="قائمة")return;
- if(!confirm("تأكيد إرجاع الكتاب؟"))return;
- l.status="تم الإرجاع";l.returnDate=today();saveData();renderLoans();
+ let l=loans.find(x=>x.id===id);if(!l||!confirm("تأكيد إرجاع الكتاب؟"))return;
+ l.status="تم الإرجاع";l.returnDate=today();save();renderLoans();
 }
-function showReceipt(id){
- const l=loans.find(x=>x.id===id);if(!l)return;
- $("receipt").innerHTML=`
- <h2 style="text-align:center">مكتبة كلية التجارة – جامعة المنوفية</h2>
- <h3 style="text-align:center">بطاقة إعارة كتاب</h3>
- <hr>
- <p><b>عنوان الكتاب:</b> ${esc(l.bookTitle)}</p>
- <p><b>اسم المؤلف:</b> ${esc(l.author)}</p>
- <p><b>رقم التصنيف:</b> ${esc(l.classification)}</p>
- <p><b>الباركود:</b> ${esc(l.barcode)}</p>
- <p><b>اسم المستعير:</b> ${esc(l.borrower)}</p>
- <p><b>رقم المستعير:</b> ${esc(l.borrowerNo)}</p>
- <p><b>تاريخ الإعارة:</b> ${esc(l.date)}</p>
- <p><b>تاريخ الاستحقاق:</b> ${esc(l.due)}</p>
- <p><b>تاريخ الإرجاع:</b> ${esc(l.returnDate||"لم يُرجع بعد")}</p>
- <p><b>الحالة:</b> ${esc(l.status)}</p>
- <hr><p>توقيع المستعير: ........................</p>
- <p>توقيع مسئول المكتبة: ........................</p>`;
+function receipt(id){
+ let l=loans.find(x=>x.id===id);if(!l)return;
+ $("receipt").innerHTML=`<h2 style="text-align:center">مكتبة كلية التجارة – جامعة المنوفية</h2><h3>بطاقة إعارة</h3><hr><p>الكتاب: ${esc(l.bookTitle)}</p><p>المؤلف: ${esc(l.author)}</p><p>الباركود: ${esc(l.barcode)}</p><p>المستعير: ${esc(l.borrower)}</p><p>رقم المستعير: ${esc(l.borrowerNo)}</p><p>تاريخ الإعارة: ${esc(l.date)}</p><p>الاستحقاق: ${esc(l.due)}</p><p>الإرجاع: ${esc(l.returnDate||"لم يُرجع")}</p><p>توقيع المستعير: ....................</p><p>توقيع مسئول المكتبة: ....................</p>`;
  openPage("receiptPage");
 }
-async function startScanner(){
- if(!("BarcodeDetector" in window))
-  return alert("ميزة قراءة الباركود غير مدعومة في هذا المتصفح. يمكنك إدخال الرقم يدويًا.");
- try{
-  const detector=new BarcodeDetector();
-  scannerStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
-  $("cameraVideo").srcObject=scannerStream;
-  await $("cameraVideo").play();
-  $("startCamera").disabled=true;
-  async function tick(){
-   if(!scannerStream)return;
-   try{
-    const codes=await detector.detect($("cameraVideo"));
-    if(codes.length){
-     $("scanValue").value=codes[0].rawValue;
-     $("scanResult").textContent="تمت قراءة الباركود: "+codes[0].rawValue;
-     stopScanner();findBarcode();return;
-    }
-   }catch(e){}
-   scanTimer=setTimeout(tick,500);
-  }
-  tick();
- }catch(e){
-  alert("تعذر تشغيل الكاميرا. تحقق من الإذن واتصال آمن HTTPS.");
-  stopScanner();
- }
+
+/* الجرد: كل مسح ناجح يحتسب نسخة واحدة، والباركود المكرر في
+   الجلسة يحتسب مرة أخرى بعد مرور مهلة تسمح بمسح النسخة التالية. */
+function beginInventory(){
+ if(session&&!confirm("ستُلغى جلسة الجرد الحالية. بدء جلسة جديدة؟"))return;
+ stopCamera();
+ session={id:uid(),name:$("sessionName").value.trim()||"جرد المكتبة",
+ date:today(),counts:{},unknown:[]};
+ lastCode="";lastTime=0;renderSession();
+ $("lastScan").textContent="بدأ الجرد. وجّه الكاميرا نحو باركود النسخة الأولى.";
 }
-function stopScanner(){
- if(scanTimer)clearTimeout(scanTimer);
- scanTimer=null;
- if(scannerStream){scannerStream.getTracks().forEach(t=>t.stop());scannerStream=null;}
- $("cameraVideo").srcObject=null;
- $("startCamera").disabled=false;
-}
-function findBarcode(){
- const code=$("scanValue").value.trim();
- if(!code)return alert("امسح الباركود أو أدخل رقمه.");
+function addScan(code){
+ code=String(code||"").trim();if(!code)return;
+ if(!session)return alert("اضغط بدء جرد جديد أولًا.");
+ const now=Date.now();
+ if(code===lastCode&&now-lastTime<1800)return;
+ lastCode=code;lastTime=now;
  const b=books.find(x=>x.barcode===code);
- $("scanResult").innerHTML=b?
- `تم العثور على الكتاب: <b>${esc(b.title)}</b><br>
- المؤلف: ${esc(b.author)}<br>التصنيف: ${esc(b.classification)}<br>
- النسخ المتاحة: ${available(b)}`:
- "لم يتم العثور على كتاب بهذا الباركود. يمكنك تسجيله في الفهرس.";
- if(b) $("scanResult").innerHTML+=
- ` <button class="btn" onclick="prepareLoan('${b.id}')">تجهيز الإعارة</button>`;
+ if(!b){
+  session.unknown.push({code,time:new Date().toLocaleTimeString("ar-EG")});
+  $("lastScan").textContent="باركود غير مسجل: "+code;
+  renderSession();return;
+ }
+ session.counts[b.id]=(session.counts[b.id]||0)+1;
+ $("manualBarcode").value="";
+ $("lastScan").textContent="تم جرد: "+b.title+" — "+code;
+ renderSession();
 }
-function prepareLoan(id){
- openPage("loans");$("loanBook").value=id;
- $("borrower").focus();
+function countManual(){
+ const code=$("manualBarcode").value.trim();
+ if(!code)return alert("أدخل الباركود أولًا.");
+ lastCode="";lastTime=0;addScan(code);
 }
-function useBarcodeForBook(){
- openPage("books");$("bookBarcode").value=$("scanValue").value.trim();
- $("bookTitle").focus();
+async function startCamera(){
+ if(!session)return alert("ابدأ جلسة الجرد أولًا.");
+ if(!navigator.mediaDevices?.getUserMedia)return alert("الكاميرا تحتاج متصفحًا يدعمها وتشغيل الموقع عبر HTTPS.");
+ if(!("BarcodeDetector" in window))return alert("متصفحك لا يدعم قارئ الباركود المدمج. استخدم الإدخال اليدوي أو افتح التطبيق في متصفح يدعم BarcodeDetector.");
+ try{
+  detector=new BarcodeDetector();
+  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});
+  $("camera").srcObject=stream;await $("camera").play();
+  $("cameraBtn").disabled=true;
+  const tick=async()=>{
+   if(!stream)return;
+   try{
+    const codes=await detector.detect($("camera"));
+    if(codes.length)addScan(codes[0].rawValue);
+   }catch(e){}
+   if(stream)timer=setTimeout(tick,300);
+  };
+  tick();
+ }catch(e){stopCamera();alert("تعذر تشغيل الكاميرا. اسمح بالوصول إليها وتأكد من تشغيل الموقع عبر HTTPS.")}
 }
-$("inventoryForm").addEventListener("submit",e=>{
- e.preventDefault();
- const b=books.find(x=>x.id===$("inventoryBook").value);
- if(!b)return alert("اختر كتابًا.");
- const counted=Number($("countedCopies").value);
- if(!Number.isInteger(counted)||counted<0)return alert("أدخل عدد نسخ صحيحًا.");
- inventory.push({id:uid(),date:today(),bookId:b.id,title:b.title,
-  recorded:Number(b.copies),counted,notes:$("inventoryNotes").value.trim()});
- saveData();renderInventory();$("inventoryForm").reset();
- alert("تم حفظ عملية الجرد.");
-});
-function renderInventory(){
- $("inventoryTable").innerHTML=inventory.slice().reverse().map(i=>
- `<tr><td>${esc(i.date)}</td><td>${esc(i.title)}</td>
- <td>${i.recorded}</td><td>${i.counted}</td>
- <td>${i.counted-i.recorded}</td><td>${esc(i.notes)}</td></tr>`
- ).join("")||'<tr><td colspan="6" class="empty">لا توجد عمليات جرد</td></tr>';
+function stopCamera(){
+ if(timer)clearTimeout(timer);timer=null;
+ if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+ $("camera").srcObject=null;$("cameraBtn").disabled=false;
+}
+function renderSession(){
+ const counts=session?session.counts:{};
+ const total=Object.values(counts).reduce((a,b)=>a+b,0);
+ $("sessionCount").textContent=total;
+ $("sessionTable").innerHTML=books.map(b=>{
+ const n=counts[b.id]||0,d=Number(b.copies)-n;
+ return `<tr><td>${esc(b.title)}</td><td>${esc(b.barcode)}</td><td>${b.copies}</td><td>${n}</td><td>${d}</td><td><span class="badge ${d<0?"red":d===0?"":"red"}">${n===0?"لم يُجرد":d===0?"مطابق":d>0?"نسخ غير مجرودة":"زيادة عن المسجل"}</span></td></tr>`;
+ }).join("")||'<tr><td colspan="6" class="empty">أضف الكتب أولًا إلى الفهرس</td></tr>';
+}
+function clearSession(){
+ if(!session)return;
+ if(!confirm("إلغاء جلسة الجرد الحالية؟"))return;
+ stopCamera();session=null;lastCode="";lastTime=0;renderSession();
+ $("sessionCount").textContent="0";$("lastScan").textContent="تم إلغاء الجلسة.";
+}
+function finishInventory(){
+ if(!session)return alert("ابدأ جلسة جرد أولًا.");
+ stopCamera();
+ if(!confirm("حفظ نتائج الجرد الحالية؟"))return;
+ inventory.push({id:session.id,name:session.name,date:session.date,
+ counts:session.counts,unknown:session.unknown,total:Object.values(session.counts).reduce((a,b)=>a+b,0)});
+ save();session=null;renderSession();renderHistory();
+ alert("تم حفظ عملية الجرد. راجع التقارير لمتابعة النتائج.");
+}
+function renderHistory(){
+ $("historyTable").innerHTML=inventory.slice().reverse().map(i=>
+ `<tr><td>${esc(i.date)}</td><td>${esc(i.name||"جرد المكتبة")}</td><td>${i.total??Object.values(i.counts||{}).reduce((a,b)=>a+b,0)}</td><td>${Object.keys(i.counts||{}).length}</td></tr>`
+ ).join("")||'<tr><td colspan="4" class="empty">لا توجد عمليات جرد محفوظة</td></tr>';
 }
 function renderReports(){
- $("rTitles").textContent=books.length;
- $("rCopies").textContent=books.reduce((s,b)=>s+Number(b.copies),0);
+ $("rBooks").textContent=books.length;
+ $("rCopies").textContent=books.reduce((n,b)=>n+Number(b.copies),0);
  $("rLoans").textContent=loans.filter(l=>l.status==="قائمة").length;
  $("rLate").textContent=loans.filter(l=>l.status==="قائمة"&&l.due<today()).length;
- const sections={};
- books.forEach(b=>{
-  const s=b.section||"أخرى";
-  if(!sections[s])sections[s]={titles:0,copies:0};
-  sections[s].titles++;sections[s].copies+=Number(b.copies);
- });
- $("sectionReport").innerHTML=Object.entries(sections).map(([s,v])=>
- `<tr><td>${esc(s)}</td><td>${v.titles}</td><td>${v.copies}</td></tr>`
- ).join("")||'<tr><td colspan="3" class="empty">لا توجد بيانات</td></tr>';
+ let map={};books.forEach(b=>{let s=b.section||"أخرى";if(!map[s])map[s]={n:0,c:0};map[s].n++;map[s].c+=Number(b.copies)});
+ $("sectionTable").innerHTML=Object.entries(map).map(([s,v])=>`<tr><td>${esc(s)}</td><td>${v.n}</td><td>${v.c}</td></tr>`).join("")||'<tr><td colspan="3" class="empty">لا توجد بيانات</td></tr>';
 }
-function downloadFile(name,content,type){
- const blob=new Blob([content],{type});
- const url=URL.createObjectURL(blob);
- const a=document.createElement("a");a.href=url;a.download=name;a.click();
- setTimeout(()=>URL.revokeObjectURL(url),1000);
+function download(name,content,type){
+ const u=URL.createObjectURL(new Blob([content],{type}));
+ const a=document.createElement("a");a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);
 }
-function backupData(){
- downloadFile("library-backup-"+today()+".json",
- JSON.stringify({version:1,books,loans,inventory},null,2),
- "application/json;charset=utf-8");
-}
-function restoreData(){
- const file=$("restoreFile").files[0];
- if(!file)return alert("اختر ملف النسخة الاحتياطية.");
+function backup(){download("library-backup-"+today()+".json",JSON.stringify({books,loans,inventory},null,2),"application/json")}
+function restore(){
+ const f=$("restoreFile").files[0];if(!f)return alert("اختر ملف النسخة الاحتياطية.");
  if(!confirm("سيتم استبدال البيانات الحالية. هل تريد المتابعة؟"))return;
- const reader=new FileReader();
- reader.onload=()=>{
-  try{
-   const d=JSON.parse(reader.result);
-   if(!Array.isArray(d.books)||!Array.isArray(d.loans)||!Array.isArray(d.inventory))
-    throw Error("invalid");
-   if(!d.books.every(b=>b.id&&b.title&&Number.isFinite(Number(b.copies))&&Number(b.copies)>=1))
-    throw Error("invalid");
-   books=d.books;loans=d.loans;inventory=d.inventory;
-   saveData();renderBooks();renderLoans();renderInventory();renderReports();
-   alert("تمت استعادة البيانات.");
-  }catch(e){alert("الملف غير صالح أو ليس نسخة احتياطية متوافقة.");}
- };
- reader.readAsText(file);
+ const r=new FileReader();r.onload=()=>{
+ try{const d=JSON.parse(r.result);
+ if(!Array.isArray(d.books)||!Array.isArray(d.loans)||!Array.isArray(d.inventory))throw Error();
+ books=d.books;loans=d.loans;inventory=d.inventory;save();
+ renderBooks();renderLoans();renderHistory();renderReports();alert("تمت استعادة البيانات.");
+ }catch(e){alert("ملف النسخة الاحتياطية غير صالح.")}
+ };r.readAsText(f);
 }
-function exportCSV(){
- const rows=[["عنوان الكتاب","المؤلف","رقم التصنيف","الباركود","القسم","عدد النسخ","المتاح"]];
- books.forEach(b=>rows.push([b.title,b.author,b.classification,b.barcode,b.section,b.copies,available(b)]));
- const csv="\uFEFF"+rows.map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
- downloadFile("library-books.csv",csv,"text/csv;charset=utf-8");
+function exportBooks(){
+ const rows=[["عنوان الكتاب","المؤلف","التصنيف","الباركود","القسم","النسخ","المتاح"],...books.map(b=>[b.title,b.author,b.classification,b.barcode,b.section,b.copies,available(b)])];
+ download("library-books.csv","\uFEFF"+rows.map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n"),"text/csv;charset=utf-8");
 }
-loadData();
-updateAll();
-renderBooks();
-renderLoans();
-renderInventory();
-renderReports();
+load();updateStats();renderBooks();renderLoans();renderReports();renderHistory();renderSession();
 </script>
 </body>
 </html>
