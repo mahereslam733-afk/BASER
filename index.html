@@ -1,611 +1,463 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق بصير الذكي - Baser AI</title>
-    <!-- مكتبة قراءة النصوص المحلية OCR -->
-    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
-    
-    <style>
-        :root {
-            --bg-color: #030712;
-            --surface-color: rgba(11, 18, 32, 0.95);
-            --accent-cyan: #00f2fe;
-            --accent-blue: #4facfe;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#123b32">
+<title>مكتبة كلية التجارة - جامعة المنوفية</title>
 
-        body {
-            background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(circle at 50% 0%, rgba(0, 242, 254, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 50% 100%, rgba(79, 172, 254, 0.1) 0%, transparent 40%);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            padding: 10px;
-            text-align: center;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-        }
+<style>
+* { box-sizing: border-box; }
 
-        .container {
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
-            padding-bottom: 30px;
-        }
+body {
+  margin: 0;
+  font-family: Tahoma, Arial, sans-serif;
+  background: #f0f4f1;
+  color: #18372e;
+}
 
-        .app-view {
-            display: none;
-            animation: fadeIn 0.25s ease-in-out;
-        }
+header {
+  background: #123b32;
+  color: white;
+  padding: 25px 15px;
+  text-align: center;
+  border-radius: 0 0 22px 22px;
+}
 
-        .app-view.active {
-            display: block;
-        }
+header h1 { margin: 5px; font-size: 25px; }
+header p { color: #d8e8df; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 15px;
+}
 
-        .header-box {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 0 5px;
-        }
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin: 5px 0;
+  border: 1px solid #ccd9d1;
+  border-radius: 9px;
+  background: white;
+  font-size: 15px;
+}
 
-        .top-badge-btn {
-            background: var(--surface-color);
-            border: 1px solid rgba(0, 242, 254, 0.3);
-            color: var(--accent-cyan);
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
+button {
+  border: 0;
+  padding: 12px;
+  border-radius: 9px;
+  background: #1b5947;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 3px;
+}
 
-        .logo-area h1 {
-            font-size: 28px;
-            font-weight: 900;
-            margin: 0;
-            background: linear-gradient(135deg, #fff, var(--accent-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
-        }
+button:hover { opacity: .85; }
 
-        .logo-area span {
-            font-size: 10px;
-            color: var(--accent-cyan);
-            letter-spacing: 3px;
-            display: block;
-        }
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 9px;
+  margin: 15px 0;
+}
 
-        .slogan {
-            color: var(--accent-cyan);
-            font-size: 14px;
-            font-weight: bold;
-            margin: 5px 0 3px 0;
-        }
+.tabs button {
+  padding: 16px 5px;
+  font-size: 15px;
+  min-height: 55px;
+}
 
-        .sub-slogan {
-            color: var(--text-muted);
-            font-size: 11.5px;
-            margin-bottom: 15px;
-        }
+.panel {
+  background: white;
+  padding: 16px;
+  border-radius: 14px;
+  margin: 12px 0;
+  box-shadow: 0 3px 12px #173c3010;
+}
 
-        .hero-card {
-            background: var(--surface-color);
-            border: 1px solid rgba(0, 242, 254, 0.35);
-            border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            position: relative;
-            cursor: pointer;
-        }
+.hidden { display: none; }
 
-        .hero-cam-circle {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 10px auto;
-            background: radial-gradient(circle, rgba(0,242,254,0.3) 0%, rgba(3,7,18,0.8) 70%);
-            border: 2px solid var(--accent-cyan);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
-        }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
 
-        .hero-title {
-            font-size: 18px;
-            font-weight: 800;
-            color: #fff;
-            margin: 5px 0;
-        }
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #dce5df;
+  text-align: right;
+  font-size: 13px;
+}
 
-        .hero-desc {
-            color: var(--text-muted);
-            font-size: 12px;
-            margin: 0;
-        }
+th { background: #e7f0e9; }
 
-        .section-title-bar {
-            font-size: 13px;
-            color: var(--accent-cyan);
-            font-weight: bold;
-            margin: 15px 0 10px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .section-title-bar::before, .section-title-bar::after {
-            content: "";
-            height: 1px;
-            flex: 1;
-            background: rgba(0, 242, 254, 0.2);
-        }
+.table-wrap { overflow-x: auto; }
 
-        .grid-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
-        }
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
 
-        .grid-grid-3 {
-            grid-template-columns: repeat(3, 1fr);
-        }
+.stat {
+  background: #e2eee6;
+  padding: 17px;
+  border-radius: 12px;
+  text-align: center;
+}
 
-        .grid-item {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            border-radius: 16px;
-            padding: 12px 4px;
-            color: white;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 75px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: all 0.1s ease;
-        }
+.stat strong {
+  display: block;
+  font-size: 27px;
+  margin-top: 8px;
+}
 
-        .grid-item:active {
-            transform: scale(0.94);
-            border-color: var(--accent-cyan);
-        }
+.danger { background: #a63d37; }
+.secondary { background: #65756d; }
 
-        .grid-item span:first-child {
-            font-size: 22px;
-            margin-bottom: 5px;
-        }
-
-        .grid-item small {
-            font-size: 9px;
-            color: var(--text-muted);
-            margin-top: 2px;
-            display: block;
-        }
-
-        .bottom-nav-bar {
-            display: grid;
-            grid-template-columns: 1fr 1.2fr 1fr;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .nav-control-btn {
-            background: var(--surface-color);
-            border: 1px solid rgba(0, 242, 254, 0.3);
-            color: var(--accent-cyan);
-            padding: 12px 8px;
-            border-radius: 14px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .nav-control-btn.home-mid {
-            background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
-            color: #fff;
-            border-color: #3b82f6;
-        }
-
-        .exit-btn {
-            width: 100%;
-            margin-top: 10px;
-            background: linear-gradient(135deg, #991b1b, #7f1d1d);
-            border: 1px solid #ef4444;
-            color: white;
-            padding: 12px;
-            border-radius: 14px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(153, 27, 27, 0.4);
-        }
-
-        #mediaBox {
-            width: 100%;
-            margin-bottom: 12px;
-            display: none;
-            background: #000;
-            border-radius: 16px;
-            overflow: hidden;
-            position: relative;
-            border: 2px solid var(--accent-cyan);
-        }
-
-        video {
-            width: 100%;
-            max-height: 220px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .close-cam-x {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 12px;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        #statusBox {
-            margin-top: 10px;
-            padding: 14px;
-            background: var(--surface-color);
-            border-radius: 12px;
-            font-size: 13.5px;
-            color: #38bdf8;
-            text-align: right;
-            border-right: 4px solid var(--accent-cyan);
-            border: 1px solid rgba(0, 242, 254, 0.3);
-            display: block;
-        }
-    </style>
+@media (min-width: 700px) {
+  .tabs { grid-template-columns: repeat(4, 1fr); }
+  .stats { grid-template-columns: repeat(4, 1fr); }
+}
+</style>
 </head>
+
 <body>
 
-    <div class="container">
+<header>
+  <h1>📚 مكتبة كلية التجارة</h1>
+  <p>جامعة المنوفية</p>
+  <div>بوابتك للمعرفة والبحث العلمي</div>
+</header>
 
-        <!-- صندوق الكاميرا الموحد -->
-        <div id="mediaBox">
-            <button class="close-cam-x" onclick="stopCam()">إغلاق الكاميرا ✕</button>
-            <video id="vidElem" autoplay playsinline></video>
-        </div>
-        <canvas id="cvsElem" style="display:none;"></canvas>
-        <div id="statusBox">تطبيق بصير جاهز. اختر أي خدمة لتبدأ.</div>
+<div class="container">
 
-        <!-- ================= 1. الصفحة الرئيسية الشاملة ================= -->
-        <div id="viewHomeFull" class="app-view active">
-            <div class="header-box">
-                <button class="top-badge-btn" onclick="speakText('استماع'); switchView('viewPage1')"><span>🔊</span> استماع</button>
-                <div class="logo-area">
-                    <h1>بصير</h1>
-                    <span>BASER AI</span>
-                </div>
-                <button class="top-badge-btn" onclick="speakText('المساعدة والدعم'); alertMsg('المساعدة والدعم مفعل')"><span>☰</span> المساعدة</button>
-            </div>
+  <div class="tabs">
+    <button onclick="openTab('home')">🏠 الرئيسية</button>
+    <button onclick="openTab('books')">📚 إدارة الكتب</button>
+    <button onclick="openTab('loans')">📝 الإعارة</button>
+    <button onclick="openTab('inventory')">📦 الجرد</button>
+    <button onclick="openTab('reports')">📊 الإحصائيات</button>
+    <button onclick="openTab('services')">🌐 الخدمات</button>
+    <button onclick="openTab('backup')">💾 النسخ الاحتياطي</button>
+  </div>
 
-            <div class="slogan">عين ذكية... ترى لك العالم</div>
-            <div class="sub-slogan">تطبيق ذكي لمساعدة المكفوفين وضعاف البصر</div>
-
-            <div class="hero-card" onclick="startCamera('objects')">
-                <div class="hero-cam-circle">📷</div>
-                <div class="hero-title">بصير الذكي (فحص المشهد)</div>
-                <div class="hero-desc">اضغط لفحص ما أمام الكاميرا والتعرف عليه</div>
-            </div>
-
-            <div class="section-title-bar">الوظائف الرئيسية</div>
-
-            <div class="grid-grid">
-                <div class="grid-item" onclick="startCamera('ocr')"><span>📄</span>قراءة النصوص<small>تحويل لنص</small></div>
-                <div class="grid-item" onclick="startCamera('color')"><span>🎨</span>التعرف ع الألوان<small>معرفة اللون</small></div>
-                <div class="grid-item" onclick="startCamera('objects')"><span>🟩</span>وصف المشهد<small>اكتشاف البيئة</small></div>
-                <div class="grid-item" onclick="startCamera('money')"><span>💵</span>العملات<small>معرفة القيمة</small></div>
-
-                <div class="grid-item" onclick="getGPS()"><span>🧭</span>البوصلة<small>الاتجاهات</small></div>
-                <div class="grid-item" onclick="getGPS()"><span>📍</span>الموقع الحالي<small>مكانك الحالي</small></div>
-                <div class="grid-item" onclick="callService('التواصل مع متطوع', 'tel:01000000000')"><span>🤝</span>مساعدة إنسانية<small>مع متطوع</small></div>
-                <div class="grid-item" onclick="alertMsg('المكتبة الصوتية قيد التطوير')"><span>🎧</span>المكتبة الصوتية<small>كتب ومحتوى</small></div>
-
-                <div class="grid-item" onclick="startCamera('objects')"><span>🖼️</span>وصف الصور<small>تفصيلي</small></div>
-                <div class="grid-item" onclick="startVoiceInput()"><span>🎤</span>تحويل صوت لنص<small>كتابة ما تقوله</small></div>
-                <div class="grid-item" onclick="getGPS()"><span>📡</span>إرسال موقعي<small>للآخرين</small></div>
-                <div class="grid-item" onclick="switchView('viewPage3')"><span>⚙️</span>الإعدادات<small>تخصيص التطبيق</small></div>
-            </div>
-
-            <div class="bottom-nav-bar">
-                <button class="nav-control-btn" onclick="speakText('الصفحة السابقة'); switchView('viewPage3')">◀ السابق</button>
-                <button class="nav-control-btn home-mid" onclick="speakText('الرئيسية'); switchView('viewHomeFull')">🏠 الرئيسية</button>
-                <button class="nav-control-btn" onclick="speakText('الصفحة التالية'); switchView('viewPage1')">التالي ▶</button>
-            </div>
-
-            <button class="exit-btn" onclick="speakText('إغلاق التطبيق'); window.close()"><span>🚪</span> خروج</button>
-        </div>
-
-
-        <!-- ================= 2. الصفحة 1 — الذكاء الاصطناعي ================= -->
-        <div id="viewPage1" class="app-view">
-            <div class="header-box">
-                <button class="top-badge-btn" onclick="speakText('استماع')"><span>🔊</span> استماع</button>
-                <div class="logo-area"><h1>بصير</h1><span>BASER AI</span></div>
-                <button class="top-badge-btn" onclick="speakText('القائمة')"><span>☰</span> القائمة</button>
-            </div>
-
-            <div class="slogan">الصفحة 1 — الذكاء الاصطناعي ✨</div>
-
-            <div class="hero-card" style="padding: 15px;">
-                <div class="section-title-bar" style="margin-top:0;">تقنيات الذكاء الاصطناعي</div>
-                <div class="grid-grid grid-grid-3" style="margin-top:10px;">
-                    <div class="grid-item" style="min-height: 85px;" onclick="startCamera('objects')"><span>📷</span>بصير الذكي<small>تعرف ذكي</small></div>
-                    <div class="grid-item" style="min-height: 85px;" onclick="startCamera('ocr')"><span>📄</span>قراءة النصوص<small>صوت واضح</small></div>
-                    <div class="grid-item" style="min-height: 85px;" onclick="startCamera('objects')"><span>🖼️</span>وصف الصور<small>تفصيلي</small></div>
-                </div>
-            </div>
-
-            <div class="bottom-nav-bar">
-                <button class="nav-control-btn" onclick="speakText('الصفحة السابقة'); switchView('viewHomeFull')">◀ السابق</button>
-                <button class="nav-control-btn home-mid" onclick="speakText('الرئيسية'); switchView('viewHomeFull')">🏠 الرئيسية</button>
-                <button class="nav-control-btn" onclick="speakText('الصفحة التالية'); switchView('viewPage2')">التالي ▶</button>
-            </div>
-            <button class="exit-btn" onclick="window.close()"><span>🚪</span> خروج</button>
-        </div>
-
-
-        <!-- ================= 3. الصفحة 2 — الاستقلالية والمساعدة ================= -->
-        <div id="viewPage2" class="app-view">
-            <div class="header-box">
-                <button class="top-badge-btn" onclick="speakText('استماع')"><span>🔊</span> استماع</button>
-                <div class="logo-area"><h1>بصير</h1><span>BASER AI</span></div>
-                <button class="top-badge-btn" onclick="speakText('القائمة')"><span>☰</span> القائمة</button>
-            </div>
-
-            <div class="slogan">الصفحة 2 — الاستقلالية والمساعدة 🤝</div>
-
-            <div class="hero-card" style="padding: 15px;">
-                <div class="section-title-bar" style="margin-top:0;">حركة التنقل والاستقلالية</div>
-                <div class="grid-grid grid-grid-3" style="margin-top:10px;">
-                    <div class="grid-item" style="min-height: 80px;" onclick="startCamera('money')"><span>💵</span>العملات<small>القيمة والفئة</small></div>
-                    <div class="grid-item" style="min-height: 80px;" onclick="startCamera('color')"><span>🎨</span>الألوان<small>تحديد الألوان</small></div>
-                    <div class="grid-item" style="min-height: 80px;" onclick="getGPS()"><span>🧭</span>البوصلة<small>الاتجاهات</small></div>
-                </div>
-            </div>
-
-            <div class="bottom-nav-bar">
-                <button class="nav-control-btn" onclick="speakText('الصفحة السابقة'); switchView('viewPage1')">◀ السابق</button>
-                <button class="nav-control-btn home-mid" onclick="speakText('الرئيسية'); switchView('viewHomeFull')">🏠 الرئيسية</button>
-                <button class="nav-control-btn" onclick="speakText('الصفحة التالية'); switchView('viewPage3')">التالي ▶</button>
-            </div>
-            <button class="exit-btn" onclick="window.close()"><span>🚪</span> خروج</button>
-        </div>
-
-
-        <!-- ================= 4. الصفحة 3 — الأدوات والإعدادات ================= -->
-        <div id="viewPage3" class="app-view">
-            <div class="header-box">
-                <button class="top-badge-btn" onclick="speakText('استماع')"><span>🔊</span> استماع</button>
-                <div class="logo-area"><h1>بصير</h1><span>BASER AI</span></div>
-                <button class="top-badge-btn" onclick="speakText('القائمة')"><span>☰</span> القائمة</button>
-            </div>
-
-            <div class="slogan">الصفحة 3 — الأدوات والإعدادات ⚙️</div>
-
-            <div class="hero-card" style="padding: 15px;">
-                <div class="section-title-bar" style="margin-top:0;">الإعدادات والأدوات المساعدة</div>
-                <div class="grid-grid grid-grid-3" style="margin-top:10px;">
-                    <div class="grid-item" style="min-height: 80px;" onclick="alertMsg('المكتبة الصوتية')"><span>🎧</span>المكتبة الصوتية<small>كتب ومحتوى</small></div>
-                    <div class="grid-item" style="min-height: 80px;" onclick="startVoiceInput()"><span>🎤</span>تحويل صوت<small>كتابة صوتية</small></div>
-                    <div class="grid-item" style="min-height: 80px;" onclick="alertMsg('عن تطبيق بصير الذكي')"><span>ℹ️</span>عن التطبيق<small>معلومات الإصدار</small></div>
-                </div>
-            </div>
-
-            <div class="bottom-nav-bar">
-                <button class="nav-control-btn" onclick="speakText('الصفحة السابقة'); switchView('viewPage2')">◀ السابق</button>
-                <button class="nav-control-btn home-mid" onclick="speakText('الرئيسية'); switchView('viewHomeFull')">🏠 الرئيسية</button>
-                <button class="nav-control-btn" onclick="speakText('الصفحة التالية'); switchView('viewHomeFull')">التالي ▶</button>
-            </div>
-            <button class="exit-btn" onclick="window.close()"><span>🚪</span> خروج</button>
-        </div>
-
+  <section id="home" class="panel">
+    <h2>لوحة تحكم المكتبة</h2>
+    <div class="stats">
+      <div class="stat">عناوين الكتب<strong id="bookCount">0</strong></div>
+      <div class="stat">إجمالي النسخ<strong id="copyCount">0</strong></div>
+      <div class="stat">الإعارات الحالية<strong id="loanCount">0</strong></div>
+      <div class="stat">الإعارات المتأخرة<strong id="lateCount">0</strong></div>
     </div>
+    <h3>البحث عن كتاب</h3>
+    <input id="search" placeholder="اكتب عنوان الكتاب أو اسم المؤلف..."
+      oninput="renderBooks()">
+    <button onclick="openTab('books')">عرض الكتب</button>
+  </section>
 
-    <script>
-        let videoStream = null;
-        let activeMode = 'objects';
+  <section id="books" class="panel hidden">
+    <h2>إدارة الكتب والمقتنيات</h2>
 
-        function speakText(txt) {
-            if (!('speechSynthesis' in window)) return;
-            window.speechSynthesis.cancel();
-            let utter = new SpeechSynthesisUtterance(txt);
-            utter.lang = 'ar-SA';
-            utter.rate = 1.0;
-            window.speechSynthesis.speak(utter);
-        }
+    <input id="title" placeholder="عنوان الكتاب *">
+    <input id="author" placeholder="اسم المؤلف">
+    <input id="code" placeholder="رقم التصنيف">
+    <select id="category">
+      <option>كتب عربية</option>
+      <option>كتب أجنبية</option>
+      <option>شعبة اللغة</option>
+      <option>رسائل علمية</option>
+      <option>دوريات</option>
+    </select>
+    <input id="copies" type="number" min="1" value="1"
+      placeholder="عدد النسخ">
+    <input id="location" placeholder="مكان الكتاب أو رقم الرف">
 
-        function switchView(viewId) {
-            stopCam();
-            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            window.scrollTo(0, 0);
+    <button onclick="addBook()">💾 حفظ الكتاب</button>
 
-            if (viewId === 'viewHomeFull') speakText("الرئيسية. تطبيق بصير الذكي.");
-            else if (viewId === 'viewPage1') speakText("الصفحة الأولى، الذكاء الاصطناعي.");
-            else if (viewId === 'viewPage2') speakText("الصفحة الثانية، الاستقلالية والمساعدة.");
-            else if (viewId === 'viewPage3') speakText("الصفحة الثالثة، الأدوات والإعدادات.");
-        }
+    <input id="filter" placeholder="ابحث في السجلات..."
+      oninput="renderBooks()">
 
-        function alertMsg(msg) {
-            speakText(msg);
-            document.getElementById('statusBox').innerText = msg;
-        }
+    <div class="table-wrap" id="bookTable"></div>
+  </section>
 
-        function callService(name, link) {
-            speakText("جاري " + name);
-            setTimeout(() => { window.location.href = link; }, 1500);
-        }
+  <section id="loans" class="panel hidden">
+    <h2>الإعارة والإرجاع</h2>
+    <input id="borrower" placeholder="اسم المستفيد">
+    <select id="loanBook"></select>
+    <label>تاريخ الإعارة</label>
+    <input id="loanDate" type="date">
+    <label>تاريخ الاستحقاق</label>
+    <input id="dueDate" type="date">
+    <button onclick="addLoan()">تسجيل الإعارة</button>
+    <div class="table-wrap" id="loanTable"></div>
+  </section>
 
-        async function startCamera(mode) {
-            activeMode = mode;
-            let names = {
-                'ocr': 'قراءة النصوص',
-                'money': 'التعرف على العملات',
-                'color': 'التعرف على الألوان',
-                'objects': 'فحص المشهد'
-            };
+  <section id="inventory" class="panel hidden">
+    <h2>جرد مقتنيات المكتبة</h2>
+    <div class="table-wrap" id="inventoryTable"></div>
+  </section>
 
-            speakText("جاري تشغيل الكاميرا لـ " + names[mode]);
-            let mb = document.getElementById('mediaBox');
-            let sb = document.getElementById('statusBox');
+  <section id="reports" class="panel hidden">
+    <h2>الإحصائيات</h2>
+    <div id="report"></div>
+  </section>
 
-            mb.style.display = 'block';
-            sb.innerText = "الكاميرا نشطة. وجه الكاميرا نحو الهدف...";
-            mb.scrollIntoView({ behavior: 'smooth' });
+  <section id="services" class="panel hidden">
+    <h2>الخدمات الإلكترونية</h2>
+    <p><a href="https://www.ekb.eg/" target="_blank">بنك المعرفة المصري</a></p>
+    <p><a href="https://www.eulc.edu.eg/" target="_blank">اتحاد مكتبات الجامعات المصرية</a></p>
+    <p><a href="https://www.menofia.edu.eg/" target="_blank">جامعة المنوفية</a></p>
+    <p><a href="https://scholar.google.com/" target="_blank">الباحث العلمي Google Scholar</a></p>
+  </section>
 
-            try {
-                if (videoStream) videoStream.getTracks().forEach(t => t.stop());
-                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-                    .catch(() => navigator.mediaDevices.getUserMedia({ video: true }));
-                document.getElementById('vidElem').srcObject = videoStream;
+  <section id="backup" class="panel hidden">
+    <h2>النسخ الاحتياطي</h2>
+    <button onclick="backup()">⬇ تنزيل نسخة احتياطية</button>
+    <p>استعادة نسخة سابقة:</p>
+    <input id="restoreFile" type="file" accept=".json">
+    <button onclick="restore()">استعادة البيانات</button>
+    <hr>
+    <button class="danger" onclick="clearAll()">مسح جميع البيانات</button>
+  </section>
 
-                setTimeout(processTask, 3000);
-            } catch (e) {
-                speakText("تعذر تشغيل الكاميرا");
-                sb.innerText = "تعذر تشغيل الكاميرا. تأكد من إعطاء الصلاحية.";
-            }
-        }
+</div>
 
-        function stopCam() {
-            if (videoStream) {
-                videoStream.getTracks().forEach(t => t.stop());
-                videoStream = null;
-            }
-            document.getElementById('mediaBox').style.display = 'none';
-            speakText("تم إغلاق الكاميرا");
-            document.getElementById('statusBox').innerText = "التطبيق جاهز.";
-        }
+<script>
+const KEY = "menoufiaCommerceLibrary";
+let books = [];
+let loans = [];
 
-        async function processTask() {
-            let v = document.getElementById('vidElem');
-            let c = document.getElementById('cvsElem');
-            let sb = document.getElementById('statusBox');
-            
-            if (!v.srcObject) return;
+try {
+  const saved = JSON.parse(localStorage.getItem(KEY));
+  if (saved) {
+    books = Array.isArray(saved.books) ? saved.books : [];
+    loans = Array.isArray(saved.loans) ? saved.loans : [];
+  }
+} catch (e) {}
 
-            c.width = v.videoWidth || 640;
-            c.height = v.videoHeight || 480;
-            let ctx = c.getContext('2d');
-            ctx.drawImage(v, 0, 0, c.width, c.height);
+function save() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify({books, loans}));
+    renderAll();
+  } catch (e) {
+    alert("تعذر حفظ البيانات. صدّر نسخة احتياطية.");
+  }
+}
 
-            if (activeMode === 'ocr') {
-                sb.innerText = "جاري قراءة النصوص من الصورة...";
-                speakText("جاري قراءة النص");
-                try {
-                    let result = await Tesseract.recognize(c, 'ara+eng');
-                    let text = result.data.text.trim();
-                    let msg = text.length > 0 ? "النص المستخرج: " + text : "لم يتم العثور على نص واضح، اقترب أكثر.";
-                    sb.innerText = msg;
-                    speakText(msg);
-                } catch (err) {
-                    speakText("فشل قراءة النص");
-                    sb.innerText = "حدث خطأ أثناء قراءة النص.";
-                }
-            } 
-            else if (activeMode === 'color') {
-                let pixel = ctx.getImageData(c.width / 2, c.height / 2, 1, 1).data;
-                let r = pixel[0], g = pixel[1], b = pixel[2];
-                let colorName = "غير معروف";
-                
-                if (r > 180 && g > 180 && b > 180) colorName = "أبيض";
-                else if (r < 60 && g < 60 && b < 60) colorName = "أسود";
-                else if (r > g && r > b) colorName = "أحمر";
-                else if (g > r && g > b) colorName = "أخضر";
-                else if (b > r && b > g) colorName = "أزرق";
-                else if (r > 150 && g > 150 && b < 100) colorName = "أصفر";
+function openTab(id) {
+  document.querySelectorAll(".container section").forEach(section => {
+    section.classList.add("hidden");
+  });
+  document.getElementById(id).classList.remove("hidden");
+  renderAll();
+}
 
-                let msg = "اللون الظاهر هو: " + colorName;
-                sb.innerText = msg;
-                speakText(msg);
-            }
-            else {
-                let msg = "تم تحليل المشهد بنجاح. الكاميرا تعمل والإضاءة ممتازة.";
-                sb.innerText = msg;
-                speakText(msg);
-            }
-        }
+function addBook() {
+  const title = document.getElementById("title").value.trim();
+  if (!title) return alert("اكتب عنوان الكتاب أولًا.");
 
-        function startVoiceInput() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                speakText("متصفحك لا يدعم التعرف الصوتي");
-                return;
-            }
-            let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = 'ar-SA';
-            recognition.start();
-            
-            speakText("تفضل، تحدث الآن...");
-            document.getElementById('statusBox').innerText = "جاري الاستماع لصوتك...";
+  books.push({
+    id: Date.now().toString(),
+    title,
+    author: document.getElementById("author").value.trim(),
+    code: document.getElementById("code").value.trim(),
+    category: document.getElementById("category").value,
+    copies: Math.max(1, Number(document.getElementById("copies").value) || 1),
+    location: document.getElementById("location").value.trim()
+  });
 
-            recognition.onresult = function(event) {
-                let speechText = event.results[0][0].transcript;
-                document.getElementById('statusBox').innerText = "قلت: " + speechText;
-                speakText("لقد قلت: " + speechText);
-            };
-        }
+  ["title", "author", "code", "location"].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+  document.getElementById("copies").value = 1;
+  save();
+  alert("تم حفظ الكتاب.");
+}
 
-        function getGPS() {
-            speakText("جاري تحديد الموقع الجغرافي");
-            let sb = document.getElementById('statusBox');
-            sb.innerText = "جاري تحديد الموقع...";
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(p => {
-                    let loc = `موقعك الحالي: خط ${p.coords.latitude.toFixed(3)}، خط الطول ${p.coords.longitude.toFixed(3)}`;
-                    sb.innerText = loc;
-                    speakText("تم تحديد موقعك بدقة");
-                }, () => {
-                    speakText("تعذر تحديد الموقع");
-                    sb.innerText = "تعذر تحديد الموقع، تأكد من تفعيل الـ GPS.";
-                });
-            }
-        }
-    </script>
+function deleteBook(id) {
+  if (!confirm("هل تريد حذف هذا الكتاب؟")) return;
+  if (loans.some(l => l.bookId === id && !l.returned)) {
+    return alert("لا يمكن حذف كتاب له إعارة نشطة.");
+  }
+  books = books.filter(b => b.id !== id);
+  save();
+}
+
+function renderBooks() {
+  const q = (
+    document.getElementById("filter")?.value ||
+    document.getElementById("search")?.value || ""
+  ).toLowerCase();
+
+  const list = books.filter(b =>
+    [b.title, b.author, b.code, b.category]
+      .some(v => String(v || "").toLowerCase().includes(q))
+  );
+
+  document.getElementById("bookTable").innerHTML = list.length
+    ? `<table><tr><th>العنوان</th><th>المؤلف</th><th>القسم</th><th>النسخ</th><th>إجراء</th></tr>
+      ${list.map(b => `<tr>
+      <td>${safe(b.title)}</td><td>${safe(b.author)}</td>
+      <td>${safe(b.category)}</td><td>${b.copies}</td>
+      <td><button class="danger" onclick="deleteBook('${b.id}')">حذف</button></td>
+      </tr>`).join("")}</table>`
+    : "<p>لا توجد كتب مطابقة.</p>";
+}
+
+function addLoan() {
+  const borrower = document.getElementById("borrower").value.trim();
+  const bookId = document.getElementById("loanBook").value;
+  const date = document.getElementById("loanDate").value;
+  const due = document.getElementById("dueDate").value;
+
+  if (!borrower || !bookId || !date) {
+    return alert("أدخل اسم المستفيد والكتاب وتاريخ الإعارة.");
+  }
+
+  const active = loans.filter(l => l.bookId === bookId && !l.returned).length;
+  const book = books.find(b => b.id === bookId);
+  if (!book || active >= Number(book.copies)) {
+    return alert("لا توجد نسخة متاحة للإعارة.");
+  }
+
+  loans.push({
+    id: Date.now().toString(),
+    borrower, bookId, date, due, returned: false
+  });
+
+  document.getElementById("borrower").value = "";
+  save();
+  alert("تم تسجيل الإعارة.");
+}
+
+function returnLoan(id) {
+  const loan = loans.find(l => l.id === id);
+  if (!loan) return;
+  loan.returned = true;
+  loan.returnDate = new Date().toISOString().slice(0, 10);
+  save();
+}
+
+function renderLoans() {
+  const select = document.getElementById("loanBook");
+  const previous = select.value;
+  select.innerHTML = books.map(b =>
+    `<option value="${b.id}">${safe(b.title)}</option>`
+  ).join("");
+  if (books.some(b => b.id === previous)) select.value = previous;
+
+  document.getElementById("loanTable").innerHTML = loans.length
+    ? `<table><tr><th>المستفيد</th><th>الكتاب</th><th>الاستحقاق</th><th>الحالة</th><th>إجراء</th></tr>
+    ${loans.map(l => {
+      const b = books.find(x => x.id === l.bookId);
+      const late = !l.returned && l.due &&
+        l.due < new Date().toISOString().slice(0,10);
+      return `<tr><td>${safe(l.borrower)}</td>
+      <td>${safe(b?.title || "كتاب محذوف")}</td>
+      <td>${safe(l.due || "—")}</td>
+      <td>${l.returned ? "تم الإرجاع" : late ? "متأخرة" : "معار"}</td>
+      <td>${l.returned ? "—" :
+        `<button onclick="returnLoan('${l.id}')">إرجاع</button>`}</td></tr>`;
+    }).join("")}</table>`
+    : "<p>لا توجد إعارات مسجلة.</p>";
+}
+
+function renderInventory() {
+  document.getElementById("inventoryTable").innerHTML = books.length
+    ? `<table><tr><th>الكتاب</th><th>رقم التصنيف</th><th>القسم</th><th>الرف</th><th>النسخ</th></tr>
+      ${books.map(b => `<tr><td>${safe(b.title)}</td>
+      <td>${safe(b.code)}</td><td>${safe(b.category)}</td>
+      <td>${safe(b.location)}</td><td>${b.copies}</td></tr>`).join("")}</table>`
+    : "<p>لا توجد مقتنيات مسجلة.</p>";
+}
+
+function renderStats() {
+  const active = loans.filter(l => !l.returned);
+  const late = active.filter(l => l.due &&
+    l.due < new Date().toISOString().slice(0,10));
+
+  document.getElementById("bookCount").textContent = books.length;
+  document.getElementById("copyCount").textContent =
+    books.reduce((sum,b) => sum + Number(b.copies || 1), 0);
+  document.getElementById("loanCount").textContent = active.length;
+  document.getElementById("lateCount").textContent = late.length;
+
+  const categories = [...new Set(books.map(b => b.category))];
+  document.getElementById("report").innerHTML =
+    `<p>إجمالي عناوين المقتنيات: ${books.length}</p>
+     <p>إجمالي النسخ: ${books.reduce((s,b)=>s+Number(b.copies||1),0)}</p>
+     <p>عمليات الإعارة: ${loans.length}</p>
+     <p>الإعارات الحالية: ${active.length}</p>
+     <p>الإعارات المتأخرة: ${late.length}</p>` +
+     categories.map(c => `<p>${safe(c)}: ${books.filter(b=>b.category===c).length} عنوان</p>`).join("");
+}
+
+function renderAll() {
+  renderBooks();
+  renderLoans();
+  renderInventory();
+  renderStats();
+}
+
+function backup() {
+  const blob = new Blob(
+    [JSON.stringify({books, loans}, null, 2)],
+    {type:"application/json"}
+  );
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "نسخة-مكتبة-تجارة.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function restore() {
+  const file = document.getElementById("restoreFile").files[0];
+  if (!file) return alert("اختر ملف النسخة الاحتياطية.");
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!Array.isArray(data.books) || !Array.isArray(data.loans)) {
+        throw new Error("invalid");
+      }
+      if (!confirm("ستُستبدل البيانات الحالية. هل تريد المتابعة؟")) return;
+      books = data.books;
+      loans = data.loans;
+      save();
+      alert("تمت استعادة البيانات.");
+    } catch(e) {
+      alert("ملف النسخة الاحتياطية غير صالح.");
+    }
+  };
+  reader.readAsText(file);
+}
+
+function clearAll() {
+  if (!confirm("سيتم حذف كل الكتب والإعارات. هل أنت متأكد؟")) return;
+  books = [];
+  loans = [];
+  save();
+}
+
+function safe(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;",
+    '"':"&quot;", "'":"&#39;"
+  }[ch]));
+}
+
+const today = new Date().toISOString().slice(0,10);
+document.getElementById("loanDate").value = today;
+
+renderAll();
+</script>
 </body>
 </html>
